@@ -1,0 +1,33 @@
+{
+    "user": {
+        "enabled": "User Enabled",
+        "disabled": "User disabled",
+        "verify": "User verified",
+        "unverify": "User unverified",
+        "resetPassword": "Reset password",
+        "unsetBanner": "Unset Banner",
+        "unsetMainPicture": "Unset Main picture"
+    },
+    "role": {
+        "notAllowedRemoveASystemRol": "You can not remove a system role",
+        "enabled": "Rol Enabled",
+        "disabled": "Rol disabled",
+        "permissionsUpdated": "Permissions updated",
+        "allowedViewsUpdated": "Allowed views updated",
+        "scopeConfigUpdated": "Scope config updated",
+        "notFoundOrDisabledRol": "Not found or disabled rol",
+        "syncPermissions": "Sync"
+    },
+    "auth": {
+        "logout": "Logout.",
+        "changeMyPassword": "Change My password",
+        "register": "Register",
+        "invalidConfirmationToken": "Invalid activation token",
+        "activatedAccount": "Acount atived",
+        "disabledUser": "Disabled user",
+        "forgotPassword": "Forgot password",
+        "changeForgotPassword": "Change forgot password",
+        "resetPassword": "Reset password"
+    }
+}
+

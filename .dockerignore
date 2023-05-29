@@ -1,0 +1,16 @@
+.git/
+.husky/
+.idea/
+coverage/
+documentation/
+dist/
+docker/
+node_modules/
+test/
+tools/
+.env.example
+env.d.ts
+LICENCE
+Makefile
+README.md
+local-server.sh

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json.schemastore.org/swcrc",
+  "sourceMaps": true,
+  "module": {
+    "type": "commonjs"
+  },
+  "jsc": {
+    "parser": {
+      "syntax": "typescript",
+      "decorators": true,
+      "dynamicImport": true
+    },
+    "transform": {
+      "legacyDecorator": true,
+      "decoratorMetadata": true
+    },
+    "keepClassNames": true,
+    "baseUrl": "./",
+    "paths": {
+     "@src/*": ["./dist/*"],
+     "@config/*": ["./dist/config/*"],
+     "@shared/*": ["./dist/shared/*"],
+     "@modules/*": ["./dist/modules/*"],
+    },
+  },
+  "minify": false,
+}

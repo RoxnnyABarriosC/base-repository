@@ -1,0 +1,54 @@
+import { CORRELATION_ID_HEADER } from '@modules/common/logger/presentation/middlewares';
+import { ConfigService } from '@nestjs/config';
+import { CreateFileStream } from '@shared/utils';
+import { blue, cyan, green, yellow } from 'colorette';
+import { Params } from 'nestjs-pino';
+import pinoms from 'pino-multi-stream';
+import PinoPretty from 'pino-pretty';
+
+export const loggerFactory = async(configService: ConfigService): Promise<Params> =>
+{
+    const colorize = configService.get<boolean>('logger.colorize');
+
+    const streams = [
+        {
+            stream: CreateFileStream({
+                fileName: 'trace',
+                path: '.logs',
+                extension: '.log'
+            })
+        },
+        {
+            stream: PinoPretty({
+                colorize,
+                colorizeObjects: colorize,
+                translateTime: 'yyyy/mm/dd\' T\'HH:MM:ss.l\'Z\'',
+                messageFormat: '{correlationId} [{context}] {msg}',
+                ignore: 'context,res,req,correlationId',
+                errorLikeObjectKeys: ['err', 'error'],
+                singleLine: configService.get('logger.singleLine'),
+                customPrettifiers: {
+                    time: timestamp => blue(`🕰 ${timestamp}`),
+                    hostname: hostname => green(hostname as any),
+                    pid: pid => yellow(pid as any),
+                    name: name => blue(name as any),
+                    caller: caller => cyan(caller as any)
+                }
+            })
+        }
+    ];
+
+    return {
+        pinoHttp: {
+            logger: pinoms({ streams }) as any,
+            autoLogging: false,
+            customProps(req)
+            {
+                return {
+                    correlationId: req[CORRELATION_ID_HEADER]
+                };
+            }
+        },
+        exclude: configService.get('logger.exclude')
+    };
+};

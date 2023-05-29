@@ -1,0 +1,73 @@
+version: '3.9'
+
+services:
+  api:
+    volumes:
+      - .:/app:cached
+
+  doc:
+    container_name: base_repository_api_doc
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: doc
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=internal_base_repository_network
+      - traefik.http.routers.doc.entrypoints=${ENTRYPOINT:-https}
+      - traefik.http.routers.doc.tls=${TLS:-true}
+      - traefik.http.routers.doc.tls.certresolver=lets-encrypt
+      - traefik.http.routers.doc.rule=Host(`${API_DOMAIN:-doc.api.localhost}`)
+      - traefik.http.services.doc.loadbalancer.server.port=8080
+    depends_on:
+      - api
+    networks:
+      - internal_base_repository_network
+      - external_base_repository_network
+
+  db:
+    ports:
+      - "5433:5432"
+
+  mail:
+    container_name: base_repository_mail
+    restart: always
+    image: mailhog/mailhog:latest
+    ports:
+      - "8025:8025"
+    labels:
+      # TODO: bloquear por password esta ruta
+      - traefik.enable=true
+      - traefik.docker.network=internal_base_repository_network
+      - traefik.http.routers.mail.entrypoints=http
+      - traefik.http.routers.mail.rule=Host(`mail.localhost`)
+      - traefik.http.services.mail.loadbalancer.server.port=8025
+    networks:
+      - internal_base_repository_network
+      - external_base_repository_network
+
+  rest:
+    container_name: base_repository_rest
+    restart: always
+    image: hoppscotch/hoppscotch:latest
+    environment:
+      - GOOGLE_CLIENT_ID=230980793764-cavn2oec5cd75mht7uvrijpcn8v8udtr.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=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
+    ports:
+      - "8026:3000"
+    labels:
+      # TODO: bloquear por password esta ruta
+      - traefik.enable=true
+      - traefik.docker.network=internal_base_repository_network
+      - traefik.http.routers.rest.entrypoints=http
+      - traefik.http.routers.rest.rule=Host(`rest.localhost`)
+      - traefik.http.services.rest.loadbalancer.server.port=3000
+    networks:
+      - internal_base_repository_network
+      - external_base_repository_network
+
+  s3:
+    ports:
+      - "9000:9000"
+      - "9001:9001"

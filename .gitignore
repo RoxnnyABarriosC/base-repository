@@ -4,6 +4,7 @@
 
 # Logs
 logs
+/.logs
 *.log
 npm-debug.log*
 pnpm-debug.log*
@@ -33,3 +34,12 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+
+# Traefik
+/.traefik
+
+.env
+
+# Documentation
+/documentation

@@ -1,0 +1,158 @@
+import { ManagePermissions, Protected, RequirePermissions } from '@modules/auth/index/presentation/decorators';
+import { UserFilter, UserSort } from '@modules/auth/user/presentation/criterias';
+import { MimeTypeEnum } from '@modules/common/file/domain/enums';
+import {
+    DeleteFileUseCase,
+    GetFileUseCase,
+    ListFilesUseCase,
+    RestoreFileUseCase, SaveFileUseCase, SaveFilesUseCase
+} from '@modules/common/file/domain/useCases';
+import { FilePermissionsEnum } from '@modules/common/file/file.permissions';
+import {
+    UploadFile,
+    UploadFiles, UploadedFile, UploadedFiles
+} from '@modules/common/file/presentation/decorators';
+import { SaveFileDto } from '@modules/common/file/presentation/dtos/save-file.dto';
+import { FileSerializer } from '@modules/common/file/presentation/serializers';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Logger, Patch, Post } from '@nestjs/common';
+import { CriteriaBuilder, PaginationFilter, UrisInterface } from '@shared/criterias';
+import {
+    Criteria,
+    DeletePermanently,
+    Filter, Pagination,
+    PartialRemoved,
+    Sort, UUID,
+    Uris
+} from '@shared/decorators';
+import { ALL_MANAGE_PERMISSION } from '@shared/factories';
+import { Serializer } from '@shared/utils';
+import { MulterFile } from 'fastify-file-interceptor';
+
+@Controller({
+    path: 'files',
+    version: '1'
+})
+@Protected()
+@ManagePermissions(ALL_MANAGE_PERMISSION, FilePermissionsEnum.MANAGE)
+export class FileController
+{
+    private readonly logger = new Logger(FileController.name);
+
+    constructor(
+        private readonly saveUseCase: SaveFileUseCase,
+        private readonly saveManyUseCase: SaveFilesUseCase,
+        private readonly getUseCase: GetFileUseCase,
+        private readonly deleteUseCase: DeleteFileUseCase,
+        private readonly restoreUseCase: RestoreFileUseCase,
+        private readonly listUseCase: ListFilesUseCase
+    )
+    {}
+
+    @Get()
+    @Criteria()
+    @HttpCode(HttpStatus.OK)
+    @RequirePermissions(FilePermissionsEnum.LIST)
+    async list(
+        @Filter() filters: UserFilter,
+        @Sort() sorts: UserSort,
+        @Pagination() pagination: PaginationFilter,
+        @Uris() uris: UrisInterface
+    )
+    {
+        const criteria = new CriteriaBuilder({
+            filters,
+            sorts,
+            pagination,
+            uris
+        });
+
+        return (await Serializer(
+            await this.listUseCase.handle({
+                criteria
+            }), FileSerializer)) as typeof FileSerializer[];
+    }
+
+    @Get(':id')
+    @HttpCode(HttpStatus.OK)
+    @RequirePermissions(FilePermissionsEnum.SHOW)
+    async get(
+        @UUID() id: string,
+        @PartialRemoved() partialRemoved?: boolean
+
+    )
+    {
+        return (await Serializer(
+            await this.getUseCase.handle({
+                id,
+                partialRemoved
+            }),
+            FileSerializer
+        )) as typeof FileSerializer;
+    }
+
+    @Delete(':id')
+    @HttpCode(HttpStatus.OK)
+    @RequirePermissions(FilePermissionsEnum.DELETE)
+    async delete(
+        @UUID() id: string,
+        @DeletePermanently() deletePermanently?: boolean
+    )
+    {
+        return (await Serializer(await this.deleteUseCase.handle({
+            id,
+            deletePermanently
+        }), FileSerializer)) as typeof FileSerializer;
+    }
+
+    @Patch(':id/restore')
+    @HttpCode(HttpStatus.OK)
+    @RequirePermissions(FilePermissionsEnum.RESTORE)
+    async restore(
+        @UUID() id: string
+    )
+    {
+        return (await Serializer(await this.restoreUseCase.handle({
+            id
+        }), FileSerializer)) as typeof FileSerializer;
+    }
+
+    @Post()
+    @HttpCode(HttpStatus.CREATED)
+    @UploadFile()
+    @RequirePermissions(FilePermissionsEnum.SAVE)
+    async save(
+        @UploadedFile({
+            fileType: [MimeTypeEnum.WEBP, MimeTypeEnum.PNG]
+        }) rawFile: MulterFile,
+        @Body() dto: SaveFileDto
+    )
+    {
+        return (await Serializer(
+            await this.saveUseCase.handle({
+                rawFile,
+                dto
+            }),
+            FileSerializer
+        )) as typeof FileSerializer;
+    }
+
+    @Post('many')
+    @HttpCode(HttpStatus.CREATED)
+    @UploadFiles()
+    @RequirePermissions(FilePermissionsEnum.SAVE_MANY)
+    async saveMany(
+        @UploadedFiles({
+            fileType: [MimeTypeEnum.WEBP, MimeTypeEnum.PNG]
+        }) rawFiles: MulterFile[],
+        @Body() dto: SaveFileDto
+    )
+    {
+        return (await Serializer(
+            await this.saveManyUseCase.handle({
+                rawFiles,
+                dto
+            }),
+            FileSerializer
+        )) as typeof FileSerializer[];
+    }
+}

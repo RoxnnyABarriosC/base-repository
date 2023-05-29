@@ -1,0 +1,17 @@
+{
+    "shared": {
+        "notFound": "{entity} not found.",
+        "badRequest": "Bad request.",
+        "forbidden": "Forbidden."
+     },
+    "common": {
+        "uniqueAttribute": "The value of the {name} attribute is already in use",
+        "uniqueAttributes": "The combination of the {name} attribute values are already in use"
+    },
+    "auth": {
+        "badCredentials": "Bad credentials",
+        "permissionsRequired": "Required permissions",
+        "superAdminOnly": "Super Admin only",
+        "invalidConfirmationToken": "invalid Confirmation Token"
+    }
+}

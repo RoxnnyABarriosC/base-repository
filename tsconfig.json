@@ -1,12 +1,31 @@
 {
   "compilerOptions": {
+    "composite": true,
+    "declarationMap": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": false,
+    "skipDefaultLibCheck": true,
+    "inlineSourceMap": false,
+    "useUnknownInCatchVariables": true,
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2017",
+    "target": "ESNext",
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "types": [
+      "node",
+      "jest",
+      "multer"
+    ],
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
@@ -16,6 +35,13 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "esModuleInterop": true,
+    "paths": {
+      "@src/*": ["src/*"],
+      "@config/*": ["src/config/*"],
+      "@shared/*": ["src/shared/*"],
+      "@modules/*": ["src/modules/*"],
+    }
   }
 }

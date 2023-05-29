@@ -1,0 +1,45 @@
+import { User } from '@modules/auth/user/domain/entities';
+import { PropertyFileEnum } from '@modules/auth/user/domain/enums';
+import { UserRepository } from '@modules/auth/user/infrastructure/repositories';
+import { File } from '@modules/common/file/domain/entities';
+import { MinioService } from '@modules/common/file/domain/services';
+import { FileRepository } from '@modules/common/file/infrastructure/repositories';
+import { Injectable, Logger } from '@nestjs/common';
+import { MulterFile } from 'fastify-file-interceptor';
+
+interface Props {
+    rawFile: MulterFile;
+    authUser: User;
+    property: PropertyFileEnum;
+}
+
+@Injectable()
+export class SetMainPictureOrBannerUseCase
+{
+    private readonly logger = new Logger(SetMainPictureOrBannerUseCase.name);
+
+    constructor(
+        private readonly repository: UserRepository,
+        private readonly fileRepository: FileRepository,
+        private readonly minioService: MinioService
+    )
+    { }
+
+    // TODO: Esta accion debe encolarse a futuro
+    async handle({ rawFile, property, authUser }: Props): Promise<File>
+    {
+        const file = new File(rawFile);
+
+        file.setPath(() => `users/${authUser.userName}/${property}/`);
+
+        // Tradicionalmente todas las fotos que se suben deberia ir a una galeria privada del usuario para cuando la imagen se cambie este la pueda ver en su galeria
+        void await this.repository.transaction(async(transactionManager) =>
+        {
+            authUser[property] = await this.fileRepository.save(file, transactionManager) as File;
+            void await this.repository.update(authUser, transactionManager);
+            void await this.minioService.upload(rawFile, file);
+        });
+
+        return file;
+    }
+}
