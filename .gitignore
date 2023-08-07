@@ -43,3 +43,7 @@ lerna-debug.log*
 
 # Documentation
 /documentation
+
+
+pnpm-lock.yaml
+local-server.sh
