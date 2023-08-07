@@ -1,10 +1,17 @@
 import { Logger } from '@nestjs/common';
-import { ErrorContext } from '@shared/constants';
+import { LoggerContext } from '@shared/constants';
 
+/**
+ * Function to parse an input value and convert it to a specific type.
+ * @param {any} value - The value to be parsed.
+ * @returns {T} The parsed value converted to the type specified by T.
+ * @template T
+ * @type {number | string | boolean | [] | object | Date}
+ */
 export const Parse = <T extends number | string | boolean | [] | object | Date>(value: any): T =>
 {
-    Logger.log('Parsing...', ErrorContext.PARSE);
-    Logger.log(`Original value: ${ typeof  value}`, ErrorContext.PARSE);
+    Logger.log('Parsing...', LoggerContext.PARSE);
+    Logger.log(`Original value: ${ typeof  value}`, LoggerContext.PARSE);
 
     try
     {
@@ -12,7 +19,7 @@ export const Parse = <T extends number | string | boolean | [] | object | Date>(
     }
     catch (e)
     {
-        Logger.log('Changing parsing strategy...', ErrorContext.PARSE);
+        Logger.log('Changing parsing strategy...', LoggerContext.PARSE);
     }
 
     if (typeof value === 'string')
@@ -29,7 +36,7 @@ export const Parse = <T extends number | string | boolean | [] | object | Date>(
         }
     }
 
-    Logger.log(`New value: ${ typeof  value}`, ErrorContext.PARSE);
+    Logger.log(`New value: ${ typeof  value}`, LoggerContext.PARSE);
 
     return value;
 };

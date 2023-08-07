@@ -15,7 +15,8 @@ RUN wget --no-check-certificate https://storage.googleapis.com/downloads.webmpro
       cd .. && \
       rm -rf libwebp-1.0.0 libwebp-1.0.0.tar.gz
 
-RUN npm install --location=global pnpm
+RUN npm install --location=global pnpm vitest
+
 
 COPY --chown=node:node . .
 
@@ -69,6 +70,8 @@ ARG PORT
 EXPOSE ${PORT}
 
 FROM deps as doc
+
+RUN pnpm test:cov
 
 ENTRYPOINT [ "dumb-init", "pnpm", "start:doc" ]
 

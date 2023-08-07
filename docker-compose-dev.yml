@@ -18,7 +18,7 @@ services:
       - traefik.http.routers.doc.entrypoints=${ENTRYPOINT:-https}
       - traefik.http.routers.doc.tls=${TLS:-true}
       - traefik.http.routers.doc.tls.certresolver=lets-encrypt
-      - traefik.http.routers.doc.rule=Host(`${API_DOMAIN:-doc.api.localhost}`)
+      - traefik.http.routers.doc.rule=Host(`${DOC_API_DOMAIN:-doc.api.localhost}`)
       - traefik.http.services.doc.loadbalancer.server.port=8080
     depends_on:
       - api

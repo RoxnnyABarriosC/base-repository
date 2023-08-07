@@ -7,7 +7,7 @@ import {
     FastifyAdapter,
     NestFastifyApplication
 } from '@nestjs/platform-fastify';
-import { ErrorContext } from '@shared/constants';
+import { LoggerContext } from '@shared/constants';
 import { CustomExceptionsFilter } from '@shared/filters';
 import { UserAgentMiddleware } from '@shared/middlewares';
 import { ValidationPipe } from '@shared/pipes';
@@ -104,12 +104,12 @@ void (async(): Promise<void> =>
 
         NestLogger.log(
             `Application is running on: ${await app.getUrl()}`,
-            ErrorContext.BOOTSTRAP
+            LoggerContext.BOOTSTRAP
         );
     }
     catch (error)
     {
-        NestLogger.error(error, ErrorContext.BOOTSTRAP);
+        NestLogger.error(error, LoggerContext.BOOTSTRAP);
     }
 
     if (module.hot)

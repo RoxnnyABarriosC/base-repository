@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { BaseSerializer } from '@shared/abstractClass';
-import { ErrorContext } from '@shared/constants';
+import { LoggerContext } from '@shared/constants';
 import { NewConstructor } from '@shared/types';
 import { SerializerMap } from '@shared/utils/serializer-map';
 
@@ -8,7 +8,7 @@ export const Serializer = async <S extends NewConstructor<BaseSerializer >, D = 
 {
     const valid = !!data;
 
-    Logger.log(`Data to serialize valid: ${valid}`, ErrorContext.SERIALIZER);
+    Logger.log(`Data to serialize valid: ${valid}`, LoggerContext.SERIALIZER);
 
     if (serializer)
     {

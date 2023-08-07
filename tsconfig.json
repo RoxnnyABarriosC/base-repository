@@ -13,9 +13,9 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ESNext",
+    "target": "esnext",
     "lib": [
-      "ESNext",
+      "esnext",
       "DOM"
     ],
     "types": [

@@ -1,6 +1,6 @@
 import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ErrorContext } from '@shared/constants';
+import { LoggerContext } from '@shared/constants';
 import { FastifyRequest } from 'fastify';
 import { Observable, catchError, throwError } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -11,7 +11,7 @@ export const SkipCache = () => SetMetadata(SKIP_LOGGING, true);
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor
 {
-    private readonly logger = new Logger(ErrorContext.HTTP);
+    private readonly logger = new Logger(LoggerContext.HTTP);
 
     constructor(private readonly reflector: Reflector)
     {}

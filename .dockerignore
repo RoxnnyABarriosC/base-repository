@@ -1,7 +1,6 @@
 .git/
 .husky/
 .idea/
-coverage/
 documentation/
 dist/
 docker/

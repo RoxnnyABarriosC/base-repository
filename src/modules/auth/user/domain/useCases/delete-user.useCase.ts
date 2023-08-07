@@ -24,3 +24,5 @@ export class DeleteUserUseCase
         return await this.repository.delete({ id, softDelete: !deletePermanently, withDeleted: deletePermanently });
     }
 }
+
+
