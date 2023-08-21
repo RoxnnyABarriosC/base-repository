@@ -71,6 +71,8 @@ EXPOSE ${PORT}
 
 FROM deps as doc
 
+RUN pnpm i -D unplugin-swc
+
 RUN pnpm test:cov
 
 ENTRYPOINT [ "dumb-init", "pnpm", "start:doc" ]
