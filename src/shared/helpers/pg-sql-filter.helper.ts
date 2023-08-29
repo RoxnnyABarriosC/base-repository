@@ -106,7 +106,7 @@ export class PgSqlFilter<F = any, E = any>
      * @param condition
      * @param alias
      */
-    filterInArray(attribute: Omit<AttributeConfig<F, E>, 'toLower' | 'isBoolean'>  | KeyAttribute<F>, condition: FilterCondition, alias = 'i'): void
+    filterInArrayString(attribute: Omit<AttributeConfig<F, E>, 'toLower' | 'isBoolean'>  | KeyAttribute<F>, condition: FilterCondition, alias = 'i'): void
     {
         let _attribute: string = attribute as string;
         let _dbAttribute: string = attribute as string;
@@ -119,6 +119,11 @@ export class PgSqlFilter<F = any, E = any>
 
         if (this._filter.has(_attribute))
         {
+            if (!PrototypeToString(this._filter.get(_attribute), StringPrototypes.STRING))
+            {
+                throw new Error('The value of the property sent as a filter must be strings separated by commas ","');
+            }
+
             let valueAttribute: string[] | string = this._filter.get(_attribute).split(',');
             valueAttribute = `'${  valueAttribute.join('\',\'')  }'`;
 

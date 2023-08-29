@@ -8,6 +8,6 @@ describe('SlugGenerator', () =>
         const string = 'Hello WORLD  2023';
         const slug = SlugGenerator(string);
 
-        expect(slug).toBe('hello-world-2023')
+        expect(slug).toBe('hello-world-2023');
     });
 });

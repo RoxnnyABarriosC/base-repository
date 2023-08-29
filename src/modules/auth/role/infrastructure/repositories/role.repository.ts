@@ -74,8 +74,8 @@ export class RoleRepository extends BaseRepository<Role>
             '='
         );
 
-        void filter.filterInArray(RoleFilters.PERMISSIONS, 'andWhere');
-        void filter.filterInArray(RoleFilters.ALLOWED_VIEWS, 'andWhere');
+        void filter.filterInArrayString(RoleFilters.PERMISSIONS, 'andWhere');
+        void filter.filterInArrayString(RoleFilters.ALLOWED_VIEWS, 'andWhere');
 
         void (await filter.search(
             RoleFilters.SEARCH,

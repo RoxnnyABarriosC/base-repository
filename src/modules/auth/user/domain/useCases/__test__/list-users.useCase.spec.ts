@@ -63,13 +63,13 @@ describe('ListUsersUseCase', () =>
             it('should get a user', async() =>
             {
                 // Act
-                const result = await store.runWith(storeObject,() => useCase.handle({ criteria: {} as any }));
+                const result = await store.runWith(storeObject, () => useCase.handle({ criteria: {} as any }));
 
                 // Assert
                 expect(result).toBeDefined();
                 expect(result.length).toEqual(1);
-                expect(storeObject.res.pagination['total']).toEqual(1)
-                expect(storeObject.res.metadata['meta']).toEqual(true)
+                expect(storeObject.res.pagination['total']).toEqual(1);
+                expect(storeObject.res.metadata['meta']).toEqual(true);
             });
         });
     });
