@@ -6,6 +6,7 @@ import {
     NestInterceptor,
     SetMetadata
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { SerializerGroupsEnum } from '@shared/abstractClass';
 import { GROUP_SERIALIZER_METHOD, SCOPE_SERIALIZER_GROUPS } from '@shared/decorators';
@@ -18,7 +19,8 @@ export const SetScopeSerializer = (scope: string) => SetMetadata(SCOPE_SERIALIZE
 export class SerializerInterceptor implements NestInterceptor
 {
     constructor(
-        private readonly reflector: Reflector
+        private readonly reflector: Reflector,
+        private readonly configService: ConfigService
     )
     { }
 
@@ -43,9 +45,7 @@ export class SerializerInterceptor implements NestInterceptor
         }
 
         const serializer = new ClassSerializerInterceptor(this.reflector, {
-            excludePrefixes: ['_'],
-            enableCircularCheck: true,
-            excludeExtraneousValues: true,
+            ... this.configService.get('serializer'),
             groups: groups as string[]
         });
 

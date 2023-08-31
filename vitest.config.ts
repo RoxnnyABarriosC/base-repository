@@ -22,7 +22,7 @@ export default defineConfig({
             provider: 'v8',
             reporter: ['text', 'html', 'json', 'json-summary'],
             include: ['src'],
-            exclude: ['src/**/index.*'],
+            exclude: ['src/**/index.*', 'src/**/__mocks__/*', 'src/**/__stubs__/*'],
             ...(check ? {
                 lines: 80,
                 statements: 80,
@@ -33,7 +33,9 @@ export default defineConfig({
         testTimeout: 16000,
         setupFiles: [
             'dotenv/config'
-        ]
+        ],
+        include: ['src/**/*.spec.ts'],
+        exclude: ['src/**/__mocks__/*', 'src/**/__stubs__/*']
     },
     resolve: {
         alias

@@ -35,7 +35,7 @@ export default (): ConfigInterface => ({
     },
     setCookieSecure: process.env.SET_COOKIE_SECURE,
     setCookieSameSite: process.env.SET_COOKIE_SAME_SITE,
-    db: <any>{
+    db: {
         host: process.env.DB_HOST,
         port: process.env.DB_PORT,
         username: process.env.DB_USER,
@@ -88,5 +88,11 @@ export default (): ConfigInterface => ({
         rootPath: process.env.MINIO_ROOT_PATH,
         region: process.env.MINIO_REGION,
         expire: process.env.MINIO_SIGN_EXPIRE
+    },
+    serializer: {
+        excludePrefixes: ['_'],
+        enableCircularCheck: true,
+        excludeExtraneousValues: true,
+        exposeDefaultValues: true
     }
 });

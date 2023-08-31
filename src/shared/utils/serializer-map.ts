@@ -3,6 +3,15 @@ import { BaseSerializer } from '@shared/abstractClass';
 import { LoggerContext } from '@shared/constants';
 import { NewConstructor } from '@shared/types';
 
+/**
+ * This function serializes an array of data or a single data value using a specified serializer class.
+ * @async
+ * @param {D | D[]} data - The data to be serialized.
+ * @param {S | null} [serializer] - The serializer class to be used for serializing the data.
+ * @returns {Promise<(D | S)[] | D | S>} A promise that resolves to the serialized data, or the original data if no serializer is provided.
+ * @template S
+ * @template D
+ */
 export const SerializerMap = async <S extends NewConstructor<BaseSerializer>, D = any>(data: D | D[], serializer?: S | null): Promise<(D | S)[] | D | S> =>
 {
     let result: any[] | any = [];

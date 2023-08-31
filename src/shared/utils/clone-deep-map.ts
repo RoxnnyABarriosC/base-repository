@@ -2,6 +2,15 @@ import { PrototypeToString, StringPrototypes } from '@shared/utils/prototype-to-
 
 declare type Fn = (value: any, key?: string) => any;
 
+/**
+ * This function creates a deep clone of an object or array, with the option to copy the prototype and apply a custom function to each value.
+ * @param {object} object - The object or array to be cloned.
+ * @param {boolean} [copyPrototype=false] - Whether to copy the prototype of the object.
+ * @param {Fn} [fn=(value) => value] - A custom function to be applied to each value in the object or array.
+ * @param {any} [ctx] - The context to be used when calling the custom function.
+ * @returns {I} The deep cloned object or array.
+ */
+
 export function CloneDeepMap<I extends object = any>(
     object: I,
     copyPrototype = false,
