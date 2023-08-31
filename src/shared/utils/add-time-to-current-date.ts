@@ -1,6 +1,12 @@
 import dayjs, { Dayjs } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
+/**
+ * Adds time to the current date.
+ * @param {string} time - The time to add in the format 'number[unit]', where unit can be 'd' for day, 'h' for hour, 'm' for minute, 's' for second, or 'ms' for millisecond.
+ * @param {number} [moreTime=0] - Additional time to add in milliseconds.
+ * @returns {Dayjs} The resulting date after adding the specified time.
+ */
 export const addTimeToCurrentDate = (time: string, moreTime = 0): Dayjs =>
 {
     dayjs.extend(utc);

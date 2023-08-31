@@ -1,6 +1,7 @@
 /**
- * Returns a promise that is fulfilled with an array of promise state snapshots,
- * but only after all the original promises have settled, i.e. become either fulfilled or rejected.
+ * This function settles an array of promises, returning a promise that resolves to an array of the settled values or rejects with the first rejected reason.
+ * @param {Promise<any>[]} promises - The array of promises to be settled.
+ * @returns {Promise<any[]>} A promise that resolves to an array of the settled values, or rejects with the first rejected reason.
  */
 export const Settle = (promises: Promise<any>[]) =>
 {
