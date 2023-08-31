@@ -33,6 +33,30 @@ describe('PrototypeToString', () =>
         expect(getPrototype).toBe(StringPrototypes.Boolean);
     });
 
+    it('should to be return function prototype', async() =>
+    {
+        const getPrototype = PrototypeToString(() => null);
+        expect(getPrototype).toBe(StringPrototypes.FUNCTION);
+    });
+
+    it('should to be return date prototype', async() =>
+    {
+        const getPrototype = PrototypeToString(new Date());
+        expect(getPrototype).toBe(StringPrototypes.DATE);
+    });
+
+    it('should to be return null prototype', async() =>
+    {
+        const getPrototype = PrototypeToString(null);
+        expect(getPrototype).toBe(StringPrototypes.NULL);
+    });
+
+    it('should to be return undefined prototype', async() =>
+    {
+        const getPrototype = PrototypeToString(undefined);
+        expect(getPrototype).toBe(StringPrototypes.UNDEFINED);
+    });
+
     it('should to be return a boolean', async() =>
     {
         const getPrototype = PrototypeToString({ message:'hola mundo' }, StringPrototypes.OBJECT);
