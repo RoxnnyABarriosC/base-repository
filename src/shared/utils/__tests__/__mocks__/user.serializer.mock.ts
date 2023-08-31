@@ -1,6 +1,13 @@
 import { BaseSerializer } from '@shared/abstractClass';
 import { Exclude, Expose } from 'class-transformer';
 
+export interface UserSerializerMockInterface {
+    id: string;
+    fullName: string;
+    email: string;
+    defaultValue: boolean;
+}
+
 export class UserSerializerMock extends BaseSerializer
 {
     @Exclude({

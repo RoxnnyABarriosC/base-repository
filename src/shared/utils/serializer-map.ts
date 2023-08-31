@@ -12,7 +12,6 @@ import { NewConstructor } from '@shared/types';
  * @template S
  * @template D
  */
-
 export const SerializerMap = async <S extends NewConstructor<BaseSerializer>, D = any>(data: D | D[], serializer?: S | null): Promise<(D | S)[] | D | S> =>
 {
     let result: any[] | any = [];

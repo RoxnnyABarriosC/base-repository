@@ -18,7 +18,6 @@ export enum StringPrototypes {
  * @returns {StringPrototypes | string | boolean} If a stringPrototype is provided, the function returns true if the prototype of the value matches
  * the given string representation, and false otherwise. If no stringPrototype is provided, the function returns the string representation of the prototype of the value.
  */
-
 export function PrototypeToString(value: any, stringPrototype?: StringPrototypes | string): StringPrototypes | string | boolean
 {
     const prototypeString = Object.prototype.toString.call(value);

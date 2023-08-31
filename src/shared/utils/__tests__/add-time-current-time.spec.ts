@@ -71,7 +71,6 @@ describe('AddTimeToCurrentDate', () =>
         });
     });
 
-
     describe('error', () =>
     {
         it('should to be return invalid time format error', () =>

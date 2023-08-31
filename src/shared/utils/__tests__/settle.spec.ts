@@ -30,7 +30,9 @@ describe('Settle', () =>
             const arrResultPromises = await Settle(arrPromises);
 
             expect(arrResultPromises.length).toBe(3);
-            expect(arrResultPromises.every(msg => typeof msg === 'string')).toBe(true);
+            expect(
+                arrResultPromises.every((msg: any) => typeof msg === 'string')
+            ).toBe(true);
             expect(arrResultPromises.toString()).toBe(messages.toString());
         });
 

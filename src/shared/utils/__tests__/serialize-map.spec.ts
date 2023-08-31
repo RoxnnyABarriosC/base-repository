@@ -1,6 +1,9 @@
 import configuration from '@config/configuration';
 import { SerializerMap } from '@shared/utils';
-import { UserSerializerMock } from '@shared/utils/__tests__/__mocks__/user.serializer.mock';
+import {
+    UserSerializerMock,
+    UserSerializerMockInterface
+} from '@shared/utils/__tests__/__mocks__/user.serializer.mock';
 import { instanceToPlain } from 'class-transformer';
 import { describe, expect } from 'vitest';
 
@@ -22,7 +25,7 @@ describe('SerializeMap', () =>
                 await SerializerMap(
                     users,
                     UserSerializerMock
-                ) as typeof UserSerializerMock[], configSerializer);
+                ) as typeof UserSerializerMock[], configSerializer) as UserSerializerMockInterface[];
 
             expect(data.length).toBe(3);
             expect(data.every(item =>
@@ -47,7 +50,7 @@ describe('SerializeMap', () =>
                 await SerializerMap(
                     users,
                     UserSerializerMock
-                ) as typeof UserSerializerMock[], configSerializer);
+                ) as typeof UserSerializerMock[], configSerializer) as UserSerializerMockInterface[];
 
             expect(data.length).toBe(3);
             expect(data.every(item =>
@@ -75,7 +78,7 @@ describe('SerializeMap', () =>
             const data = instanceToPlain(
                 await SerializerMap(
                     users
-                ) as typeof UserSerializerMock[], configSerializer);
+                ) as typeof UserSerializerMock[], configSerializer) as UserSerializerMockInterface[];
 
             expect(data.length).toBe(3);
             expect(data.every(item =>

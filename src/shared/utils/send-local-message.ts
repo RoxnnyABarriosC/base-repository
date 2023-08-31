@@ -6,7 +6,6 @@ import { I18nContext } from 'nestjs-i18n';
  * @param {() => string} fn - A function that returns the message key to be translated.
  * @returns {LocalMessageInterface} An object containing the translated message and the message key.
  */
-
 export const SendLocalMessage = (fn: () => string): LocalMessageInterface  =>
 {
     const key = fn();
