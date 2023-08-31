@@ -104,7 +104,6 @@
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.17",
     "update": "^0.7.4",
-    "utc": "link:dayjs/plugin/utc",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

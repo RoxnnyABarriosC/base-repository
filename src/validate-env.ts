@@ -7,42 +7,52 @@ export function validateEnv(config: Record<string, any>): Record<string, any>
             choices: ['development', 'test', 'production', 'staging']
         }),
         PORT: port({ default: 3000 }),
-        URL_API: url(),
-        URL_WEB: url(),
-        PREFIX: str(),
-        VERSION: str(),
-        WHITE_LIST: str(),
+        URL_API: url({ default:'http://api.localhost' }),
+        URL_WEB: url({ default: 'http://app.localhost' }),
+        PREFIX: str({ default: '/api' }),
+        VERSION: str({ default: '/v1' }),
+        WHITE_LIST: str({ default: 'api.localhost,http://mail.localhost/' }),
 
-        LOGGER_COLORIZE: bool({ default: false }),
-        LOGGER_SINGLE_LINE: bool({ default: true }),
+        LOGGER_COLORIZE: bool({ default: true }),
+        LOGGER_SINGLE_LINE: bool({ default: false }),
 
         SENTRY_DSN: url({ default: undefined }),
         SENTRY_ENABLE: bool({ default: false }),
 
         LOCALE: str({ default: 'en', choices: ['en', 'es'] }),
 
+        SET_COOKIE_SECURE: bool({ default: false }),
+        SET_COOKIE_SAME_SITE: str({
+            default: 'none', choices: ['none', 'strict', 'lax']
+        }),
+
         JWT_SECRET: str(),
-        JWT_EXPIRES: str(),
-        JWT_CONFIRMATION_EXPIRES: str(),
-        JWT_REFRESH_EXPIRES: str(),
+        JWT_EXPIRES: str({ default: '8h' }),
+        JWT_CONFIRMATION_EXPIRES: str({ default: '1d' }),
+        JWT_REFRESH_EXPIRES: str({ default: '1d' }),
         JWT_ISS: str(),
         JWT_AUD: str(),
-        JWT_CHECK_BLACK_LIST: bool(),
+        JWT_ALGORITHM: str({ default: 'HS512' }),
+        JWT_CHECK_BLACK_LIST: bool({ default: false }),
 
         DB_HOST: host(),
         DB_USER: str(),
         DB_DATABASE: str(),
         DB_PASSWORD: str(),
-        DB_PORT: port(),
-        DB_SYNCHRONIZE: bool(),
+        DB_PORT: port({ default: 5432 }),
+        DB_SYNCHRONIZE: bool({ default: false }),
         DB_TYPE: str({
-            choices: ['postgres']
+            default: 'postgres', choices: ['postgres']
         }),
-        PAGINATION_LIMIT: num(),
+        PAGINATION_LIMIT: num({ default: 10 }),
 
         ENCRYPTION_DEFAULT: str({
-            choices: ['bcrypt', 'md5']
+            default: 'bcrypt', choices: ['bcrypt', 'md5']
         }),
+
+        CACHE_HOST: str({ default: 'redis' }),
+        CACHE_PORT: num({ default: 6379 }),
+        CACHE_PASSWORD: str(),
 
         SMTP_HOST: str(),
         SMTP_PORT: num(),
