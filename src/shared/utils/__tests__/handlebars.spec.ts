@@ -1,6 +1,6 @@
 import { handlebars } from '@src/shared/utils/handlebars';
 import { describe, expect, it } from 'vitest';
-describe('Handleblars', () =>
+describe('Handlebars', () =>
 {
     it('should to be return a stringify object', () =>
     {

@@ -3,7 +3,7 @@ import { describe, expect } from 'vitest';
 
 describe('MegabytesToBytes', () =>
 {
-    it('Transfor megabytes to bytes', async() =>
+    it('Transform megabytes to bytes', async() =>
     {
         const megabytes = 2;
         const bytes = 1000000;

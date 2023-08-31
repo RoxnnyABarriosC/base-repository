@@ -1,4 +1,6 @@
 import { MiddlewareConfigProxy } from '@nestjs/common/interfaces';
+import { ClassSerializerInterceptorOptions } from '@nestjs/common/serializer/class-serializer.interceptor';
+import { ClassTransformOptions } from 'class-transformer/types/interfaces';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
 export interface UriInterface {
@@ -49,6 +51,7 @@ export interface DBInterface extends  PostgresConnectionOptions {
     migrationsRun: boolean;
     logging: boolean;
     subscribers: string[];
+    autoLoadEntities?: boolean;
 }
 
 export interface PaginationInterface {
@@ -115,4 +118,5 @@ export interface ConfigInterface {
     cache: CacheConfigInterface;
     smtp: SMTPConfigInterface;
     s3: S3ConfigInterface;
+    serializer: Partial<ClassTransformOptions>
 }
