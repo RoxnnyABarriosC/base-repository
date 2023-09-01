@@ -6,7 +6,7 @@ import { Observable, catchError, throwError } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 export const SKIP_LOGGING = 'skip_logging';
-export const SkipCache = () => SetMetadata(SKIP_LOGGING, true);
+export const SkipLogging = () => SetMetadata(SKIP_LOGGING, true);
 
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor
