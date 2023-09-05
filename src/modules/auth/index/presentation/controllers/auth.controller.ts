@@ -70,7 +70,7 @@ dayjs.extend(utc);
 @SetScopeSerializer(SCOPE)
 export class AuthController
 {
-    private readonly logger = new Logger();
+    private readonly logger = new Logger(AuthController.name);
 
     constructor(
         private readonly store: ClsService<MyStore>,

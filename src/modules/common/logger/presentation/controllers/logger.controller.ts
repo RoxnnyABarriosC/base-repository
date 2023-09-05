@@ -1,11 +1,12 @@
 import { SkipLogging } from '@modules/common/logger/presentation/interceptors';
-import { Controller, Get, Logger, Render, UseInterceptors } from '@nestjs/common';
-import { NotInterceptResponse } from '@shared/interceptors';
+import { Controller, Get, Logger, Render } from '@nestjs/common';
+import { NotInterceptResponse, SkipCache } from '@shared/interceptors';
 import { toArrayOfPlainStringsOrJson } from 'log-parsed-json';
 import * as fs from 'fs';
 
 export const loggerTemplates = 'common/logger/presentation/views/';
 
+@SkipCache()
 @SkipLogging()
 @Controller('logs')
 @NotInterceptResponse()
