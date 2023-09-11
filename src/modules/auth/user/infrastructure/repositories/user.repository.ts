@@ -34,26 +34,11 @@ export class UserRepository extends BaseRepository<User>
 
         void await filter.partialRemoved(UserFilters.WITH_PARTIAL_REMOVED);
 
-        // void await filter.customFilter(async(fltr, qb) =>
-        // {
-        //     if (fltr.has(UserFilters.WITH_PARTIAL_REMOVED))
-        //     {
-        //         const withDeleted = fltr.get<boolean>(UserFilters.WITH_PARTIAL_REMOVED);
-
-        //         if (withDeleted)
-        //         {
-        //             qb.withDeleted();
-        //         }
-        //     }
-        // });
-
-
         void filter.is({
             attribute: UserFilters.PARTIAL_REMOVED,
             isBoolean: true,
             dbAttribute: 'deletedAt'
         }, 'andWhere', 'IS NOT NULL');
-
 
         void filter.filter({
             attribute: UserFilters.ENABLE,

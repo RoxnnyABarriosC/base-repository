@@ -33,18 +33,7 @@ export class RoleRepository extends BaseRepository<Role>
 
         queryBuilder.where('1 = 1');
 
-        void (await filter.customFilter(async(fltr, qb) =>
-        {
-            if (fltr.has(RoleFilters.WITH_PARTIAL_REMOVED))
-            {
-                const withDeleted = fltr.get<boolean>(RoleFilters.WITH_PARTIAL_REMOVED);
-
-                if (withDeleted)
-                {
-                    qb.withDeleted();
-                }
-            }
-        }));
+        void await filter.partialRemoved(RoleFilters.WITH_PARTIAL_REMOVED);
 
         void filter.is(
             {
