@@ -28,18 +28,7 @@ export class FileRepository extends BaseRepository<File>
 
         queryBuilder.where('1 = 1');
 
-        void (await filter.customFilter(async(fltr, qb) =>
-        {
-            if (fltr.has(FileFilters.WITH_PARTIAL_REMOVED))
-            {
-                const withDeleted = fltr.get<boolean>(FileFilters.WITH_PARTIAL_REMOVED);
-
-                if (withDeleted)
-                {
-                    qb.withDeleted();
-                }
-            }
-        }));
+        void await filter.partialRemoved(FileFilters.WITH_PARTIAL_REMOVED);
 
         void filter.is(
             {

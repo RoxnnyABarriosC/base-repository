@@ -451,5 +451,21 @@ export class PgSqlFilter<F = any, E = any>
             }));
         }
     }
+
+    async partialRemoved(filter: string): Promise<void>
+    {
+        void (await this.customFilter(async(fltr, qb) =>
+        {
+            if (fltr.has(filter))
+            {
+                const withDeleted = fltr.get<boolean>(filter as any);
+
+                if (withDeleted)
+                {
+                    qb.withDeleted();
+                }
+            }
+        }));
+    }
 }
 

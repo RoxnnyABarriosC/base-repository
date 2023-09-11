@@ -18,7 +18,7 @@ export class FilterCriteria<E = any>
             const defaultKey: string = Object.keys(defaultFilter)[0];
             const defaultValue: string = defaultFilter[defaultKey];
 
-            if (defaultValue)
+            if (defaultValue !== undefined && defaultValue !== null)
             {
                 this.filters.set(defaultKey, defaultValue);
             }
@@ -29,7 +29,7 @@ export class FilterCriteria<E = any>
             const _filter: Record<string, any> = filter.Filter as Record<string, any>;
             let value = {};
 
-            if (_filter[key])
+            if (_filter[key] !== undefined && _filter[key] !== null)
             {
                 value = {
                     [key]: _filter[key]
