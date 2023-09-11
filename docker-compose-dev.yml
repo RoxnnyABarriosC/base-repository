@@ -20,8 +20,13 @@ services:
       - traefik.http.routers.doc.tls.certresolver=lets-encrypt
       - traefik.http.routers.doc.rule=Host(`${DOC_API_DOMAIN:-doc.api.localhost}`)
       - traefik.http.services.doc.loadbalancer.server.port=8080
+      - traefik.http.middlewares.auth.basicauth.users=${LOAD_USERS:-nodebaserepository:$$apr1$$RTZSd6uA$$9zpPRgArFsHX2UWgPNXL..}
+      - traefik.http.middlewares.auth.basicauth.usersfile=/usersfile
+      - traefik.http.routers.doc.middlewares=auth
     depends_on:
       - api
+    volumes:
+      - ./usersfile:/usersfile
     networks:
       - internal_base_repository_network
       - external_base_repository_network
@@ -47,6 +52,11 @@ services:
       - traefik.http.routers.mail.entrypoints=http
       - traefik.http.routers.mail.rule=Host(`mail.localhost`)
       - traefik.http.services.mail.loadbalancer.server.port=8025
+      - traefik.http.middlewares.auth.basicauth.users=${LOAD_USERS:-nodebaserepository:$$apr1$$RTZSd6uA$$9zpPRgArFsHX2UWgPNXL..}
+      - traefik.http.middlewares.auth.basicauth.usersfile=/usersfile
+      - traefik.http.routers.mail.middlewares=auth
+    volumes:
+      - ./usersfile:/usersfile
     networks:
       - internal_base_repository_network
       - external_base_repository_network
@@ -67,6 +77,11 @@ services:
       - traefik.http.routers.rest.entrypoints=http
       - traefik.http.routers.rest.rule=Host(`rest.localhost`)
       - traefik.http.services.rest.loadbalancer.server.port=3000
+      - traefik.http.middlewares.auth.basicauth.users=${LOAD_USERS:-nodebaserepository:$$apr1$$RTZSd6uA$$9zpPRgArFsHX2UWgPNXL..}
+      - traefik.http.middlewares.auth.basicauth.usersfile=/usersfile
+      - traefik.http.routers.rest.middlewares=auth
+    volumes:
+      - ./usersfile:/usersfile
     networks:
       - internal_base_repository_network
       - external_base_repository_network

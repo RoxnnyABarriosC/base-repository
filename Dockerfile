@@ -17,7 +17,6 @@ RUN wget --no-check-certificate https://storage.googleapis.com/downloads.webmpro
 
 RUN npm install --location=global pnpm vitest
 
-
 COPY --chown=node:node . .
 
 ARG PORT
@@ -59,7 +58,7 @@ RUN npm install -g pm2
 COPY --from=prerelease --chown=node:node /app/package.json /app/pnpm-lock.yaml ./
 COPY --from=prerelease --chown=node:node /app/node_modules/ ./node_modules/
 COPY --from=prerelease --chown=node:node /app/dist/ ./dist/
-COPY --chown=node:node .env ecosystem.config.js ./
+COPY --chown=node:node .env ecosystem.config.js usersfile ./
 
 RUN mkdir .logs
 

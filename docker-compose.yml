@@ -108,7 +108,8 @@ services:
       - traefik.http.routers.proxy.rule=Host(`${LOAD_DOMAIN:-load.localhost}`)
       - traefik.http.services.proxy.loadbalancer.server.port=8080
       # TODO: Cambiar el password
-      - traefik.http.middlewares.auth.basicauth.users=${LOAD_USERS:-basedprofessionals:$$apr1$$yOBzgKUj$$mUo95mUyLEEF78DiM4ZxA/}
+      - traefik.http.middlewares.auth.basicauth.users=${LOAD_USERS:-nodebaserepository:$$apr1$$RTZSd6uA$$9zpPRgArFsHX2UWgPNXL..}
+      - traefik.http.middlewares.auth.basicauth.usersfile=/usersfile
       - traefik.http.routers.proxy.middlewares=auth
 #      # Middleware Redirect
       - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
@@ -119,6 +120,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./.traefik/letsencrypt:/letsencrypt
+      - ./usersfile:/usersfile
     networks:
       - internal_base_repository_network
       - external_base_repository_network
