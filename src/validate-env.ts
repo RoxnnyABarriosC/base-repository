@@ -15,6 +15,7 @@ export function validateEnv(config: Record<string, any>): Record<string, any>
 
         LOGGER_COLORIZE: bool({ default: true }),
         LOGGER_SINGLE_LINE: bool({ default: false }),
+        LOGGER_TASK_DELETE_TRACE_LOG: str({ default: '*/30 * * * *' }),
 
         SENTRY_DSN: url({ default: undefined }),
         SENTRY_ENABLE: bool({ default: false }),
@@ -44,6 +45,8 @@ export function validateEnv(config: Record<string, any>): Record<string, any>
         DB_TYPE: str({
             default: 'postgres', choices: ['postgres']
         }),
+        DB_LOGGING: bool({ default: true }),
+
         PAGINATION_LIMIT: num({ default: 10 }),
 
         ENCRYPTION_DEFAULT: str({

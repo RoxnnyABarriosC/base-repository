@@ -23,13 +23,20 @@ export class CustomExceptionsFilter implements ExceptionFilter
     {
         const { httpAdapter } = this.httpAdapterHost;
 
-        this.logger.error(exception);
-
         const ctx = host.switchToHttp();
         const req = ctx.getRequest<FastifyRequest>();
         const res = ctx.getResponse<FastifyReply>();
 
         const httpStatus = exception instanceof _HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+
+        if (httpStatus >= HttpStatus.INTERNAL_SERVER_ERROR)
+        {
+            this.logger.error(exception);
+        }
+        else if (httpStatus >= HttpStatus.BAD_REQUEST)
+        {
+            this.logger.warn(exception);
+        }
 
         const args = exception['args'] ? (Object.keys(exception['args']).length ? exception['args'] : undefined) : undefined;
         const errorData = exception['errorData'] ? exception['errorData'] : undefined;

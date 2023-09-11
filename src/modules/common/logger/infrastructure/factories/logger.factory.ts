@@ -1,4 +1,4 @@
-import { CORRELATION_ID_HEADER } from '@modules/common/logger/presentation/middlewares';
+import { CORRELATION_ID_HEADER, REAL_IP } from '@modules/common/logger/presentation/middlewares';
 import { ConfigService } from '@nestjs/config';
 import { CreateFileStream } from '@shared/utils';
 import { blue, cyan, green, yellow } from 'colorette';
@@ -23,8 +23,8 @@ export const loggerFactory = async(configService: ConfigService): Promise<Params
                 colorize,
                 colorizeObjects: colorize,
                 translateTime: 'yyyy/mm/dd\' T\'HH:MM:ss.l\'Z\'',
-                messageFormat: '{correlationId} [{context}] {msg}',
-                ignore: 'context,res,req,correlationId',
+                messageFormat: '{correlationId}:[{realIp}] [{context}] {msg}',
+                ignore: 'context,res,req,correlationId,realIp',
                 errorLikeObjectKeys: ['err', 'error'],
                 singleLine: configService.get('logger.singleLine'),
                 customPrettifiers: {
@@ -45,7 +45,8 @@ export const loggerFactory = async(configService: ConfigService): Promise<Params
             customProps(req)
             {
                 return {
-                    correlationId: req[CORRELATION_ID_HEADER]
+                    correlationId: req[CORRELATION_ID_HEADER],
+                    realIp: req[REAL_IP]
                 };
             }
         },

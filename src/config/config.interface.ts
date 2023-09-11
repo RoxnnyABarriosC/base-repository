@@ -70,8 +70,10 @@ export interface EncryptionInterface {
 }
 
 export interface CacheConfigInterface {
-    host: string;
-    port: number;
+    socket: {
+        host: string;
+        port: number;
+    };
     password: string;
 }
 
@@ -102,6 +104,11 @@ export interface S3ConfigInterface {
     expire: number;
 }
 
+export interface TasksInterfaces {
+    logger: {
+        deleteTraceLog: string
+    }
+}
 
 export interface ConfigInterface {
     environment: string;
@@ -119,4 +126,5 @@ export interface ConfigInterface {
     smtp: SMTPConfigInterface;
     s3: S3ConfigInterface;
     serializer: Partial<ClassTransformOptions>
+    tasks: TasksInterfaces;
 }
