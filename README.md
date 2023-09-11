@@ -1,73 +1,231 @@
+# Node Base Repository
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
+  <a href="https://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
+<p align="center">A progressive <a href="https://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+<p align="center">
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Api Rest
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+**STATUS:** UNDER DEVELOPMENT
 
-## Description
+## Table of Contents
+1. [Explanation](#explanation)
+2. [First Steps](#first-steps)
+3. [Installation](#installation)
+4. [Start-up](#start-up)
+5. [Unit tests](#unit-tests)
+6. [Url panel](#url-panel)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Installation
+## EXPLANATION
+___
 
-```bash
-$ npm install
+### PHASES 📅
+- [x] Home
+- [ ] Planning and estimation
+- [ ] Implementation
+- [ ] Review and retrospective
+- [ ] Launch
+
+
+### FUNCTIONAL ASPECTS 📋
+
+#### General objective:
+
+-
+
+#### Specific objectives:
+
+-
+
+#### Who is it addressed to:
+
+-
+
+### TECHNICAL ASPECTS 🛠
+
+#### Technological platform:
+* Application type: **REST API**
+* Development framework: **Nestjs**
+* Application Server:
+* Database Server:
+* Programming Language: **Node js - Typesc
+
+## FIRST STEPS
+___
+
+```
+$ git clone <url>
+```
+Set your username and password and press enter. Then go to the <folder> folder.
+
+```sh
+cd <folder>
 ```
 
-## Running the app
+## INSTALLATION
+___
 
+Install the dependencies and development ones by doing:
+
+```bash
+$ pnpm install
+```
+
+Then create a new .env file, copy and paste all the variables from the .env.example file and put the corresponding values such as:
+
+```dotenv
+NODE_ENV=development
+URL_API=http://api.localhost
+URL_WEB=http://app.localhost
+PREFIX=/api
+PORT=3000
+VERSION=/v1
+WHITE_LIST=api.localhost,http://mail.localhost/
+
+LOGGER_COLORIZE=true
+LOGGER_SINGLE_LINE=false
+LOGGER_TASK_DELETE_TRACE_LOG='*/30 * * * *'
+
+SENTRY_DSN=https://cf403ff08f4c439981c03d9433e677f4@o4505325982121984.ingest.sentry.io/4505325995819008
+SENTRY_ENABLE=false
+
+LOCALE=en
+
+JWT_SECRET=nodebaserepository
+JWT_EXPIRES=8h
+JWT_CONFIRMATION_EXPIRES=1d
+JWT_REFRESH_EXPIRES=1d
+JWT_ISS=nodebaserepository
+JWT_AUD=nodebaserepository.com
+JWT_ALGORITHM='HS512'
+JWT_CHECK_BLACK_LIST=false
+
+SET_COOKIE_SECURE=false
+SET_COOKIE_SAME_SITE=none
+
+DB_HOST=db
+DB_USER=baserepository
+DB_DATABASE=baserepository
+DB_PASSWORD=baserepository
+DB_PORT=5432
+DB_SYNCHRONIZE=false
+DB_TYPE=postgres
+DB_LOGGING=false
+
+PAGINATION_LIMIT=10
+
+ENCRYPTION_DEFAULT=bcrypt
+
+CACHE_HOST=redis
+CACHE_PORT=6379
+CACHE_PASSWORD=baserepository
+
+SMTP_HOST=mail
+SMTP_PORT=1025
+SMTP_USERNAME=
+SMTP_PASSWORD=
+SMTP_SECURE_SSL=false
+SMTP_SENDER_NAME=Notifications
+SMTP_SENDER_EMAIL_DEFAULT=notification@localhost.com
+
+MINIO_EXPOSE_HOST=s3.localhost
+MINIO_EXPOSE_HTTPS=false
+MINIO_HOST=s3
+MINIO_ACCESS_KEY=baserepository
+MINIO_SECRET_KEY=baserepository
+MINIO_USE_SSL=false
+MINIO_PORT=9000
+MINIO_PUBLIC_BUCKET=baserepository
+MINIO_PRIVATE_BUCKET=baserepository
+MINIO_ROOT_PATH=data
+MINIO_REGION=us-east-1
+MINIO_SIGN_EXPIRE=9000
+```
+
+## START UP
+___
+
+### Local Server Intranet
+Create file `local-server.sh` in root project
+
+```shell
+#!/bin/bash
+STAGE=dev \
+    API_PORT=4000 \
+    API_DOMAIN=<YOUR_IP>:4000 \
+    S3_API_DOMAIN=<YOUR_IP>:9000 \
+    S3_PANEL_DOMAIN=<YOUR_IP>:9001 \
+    LOAD_DOMAIN=<YOUR_IP> \
+    docker compose -f docker-compose.yml -f docker-compose-dev.yml up --build -d
+```
+run the file in the terminal
+
+```shell
+ ./local-server.sh
+```
+
+or execute ```make local```
+
+**_NOTE:_** If when executing it gives any permissions problem, execute the following command
+
+```shell
+chmod +x local-server.sh
+```
+
+Once you have created local-server.sh and run the ```make local``` command, you must run ```make migrate``` to run the project migrations and ```make seed``` to create the first data
+
+### Main commands:
 ```bash
 # development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
+$ make dev
 
 # production mode
-$ npm run start:prod
+$ make prod
+
+# down containers
+$ make down
+
+# stop containers
+$ make stop
+
+# run migrations
+$ make migrate
+
+# run seeds
+$ make seed
 ```
 
-## Test
+## UNIT TESTS
+___
 
 ```bash
 # unit tests
-$ npm run test
+$ pnpm run test
 
 # e2e tests
-$ npm run test:e2e
+$ pnpm run test:e2e
 
 # test coverage
-$ npm run test:cov
+$ pnpm run test:cov
+
+# test coverage
+$ pnpm run test:cov:check
 ```
 
-## Support
+## URL PANEL
+___
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+* [Traefick](http://load.localhost)
+* [S3Panel](http://panel.s3.localhost)
+* [S3](http://s3.localhost)
+* [Mail](http://mail.localhost)
+* [Doc](http://doc.api.localhost)
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+---
+**_NOTE:_** Generate password load balancer
+```shell
+echo $(htpasswd -nb user password) | sed -e s/\\$/\\$\\$/g
+```
