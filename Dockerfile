@@ -61,6 +61,10 @@ COPY --from=prerelease --chown=node:node /app/node_modules/ ./node_modules/
 COPY --from=prerelease --chown=node:node /app/dist/ ./dist/
 COPY --chown=node:node .env ecosystem.config.js ./
 
+RUN mkdir .logs
+
+RUN chmod 777 .logs
+
 USER node
 
 ENTRYPOINT ["dumb-init", "pm2-runtime", "start", "ecosystem.config.js"]

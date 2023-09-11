@@ -1,6 +1,7 @@
 import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { LoggerContext } from '@shared/constants';
+import { RmProp } from '@shared/utils';
 import { FastifyRequest } from 'fastify';
 import { Observable, catchError, throwError } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -21,7 +22,10 @@ export class LoggerInterceptor implements NestInterceptor
         const req = context.switchToHttp().getRequest<FastifyRequest['raw']>();
         const res = context.switchToHttp().getResponse();
 
-        const skipLogging = (this.reflector.get<boolean>(SKIP_LOGGING, context.getClass()) || this.reflector.get<boolean>(SKIP_LOGGING, context.getHandler())) ?? false;
+        const skipLogging = this.reflector.getAllAndOverride(SKIP_LOGGING, [
+            context.getHandler(),
+            context.getClass()
+        ]) ?? false;
 
         if (skipLogging)
         {
@@ -30,9 +34,16 @@ export class LoggerInterceptor implements NestInterceptor
 
         const reqData = {};
 
-        Object.assign(reqData, { token: req.headers['authorization'] });
+        // TODO: solo mostrar informacion sensible en entornos locales o de desarrollo, para produccion esto no debe verse
+
+        // Object.assign(reqData, { token: req.headers['authorization'] });
         Object.assign(reqData, { query: req['query'] });
-        Object.assign(reqData, { body: req['body'] });
+
+        const body = { ...req['body'] };
+
+        RmProp(body, ['password', 'currentPassword', 'passwordConfirmation']);
+
+        Object.assign(reqData, { body });
 
         this.logger.log(`Request ${req.method} ${req.url}`);
         this.logger.log(reqData);
@@ -41,7 +52,6 @@ export class LoggerInterceptor implements NestInterceptor
             tap(() => this.logger.log(`Response ${res.statusCode}`)),
             catchError(error =>
             {
-                this.logger.error(error);
                 return throwError(() => error);
             })
         );

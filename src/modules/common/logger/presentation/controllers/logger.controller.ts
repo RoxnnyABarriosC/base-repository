@@ -1,36 +1,49 @@
+import { Protected } from '@modules/auth/index/presentation/decorators';
+import { CheckSuperAdmin } from '@modules/auth/index/presentation/guards';
 import { SkipLogging } from '@modules/common/logger/presentation/interceptors';
 import { Controller, Get, Logger, Render } from '@nestjs/common';
+import { PaginationFilter } from '@shared/criterias';
+import { Criteria, Pagination } from '@shared/decorators';
 import { NotInterceptResponse, SkipCache } from '@shared/interceptors';
 import { toArrayOfPlainStringsOrJson } from 'log-parsed-json';
 import * as fs from 'fs';
 
-export const loggerTemplates = 'common/logger/presentation/views/';
 
 @SkipCache()
 @SkipLogging()
 @Controller('logs')
 @NotInterceptResponse()
+@Protected()
+@CheckSuperAdmin()
 export class LoggerController
 {
     private readonly logger = new Logger(LoggerController.name);
 
     @Get()
-    @Render(loggerTemplates.concat('index'))
-    index()
+    @Criteria()
+    list(
+        @Pagination() pagination: PaginationFilter
+    )
     {
         const logContent = fs.readFileSync('.logs/trace.log', 'utf8');
-        const logData = [];
-
+        const _data = [];
         toArrayOfPlainStringsOrJson(logContent).map(log =>
         {
             try
             {
-                logData.push(JSON.parse(log));
+                _data.push((JSON.parse(log)));
             }
             catch (e)
             {}
         });
 
-        return { logData };
+        let data = _data.reverse();
+
+        if (pagination.limit && pagination.offset)
+        {
+            data = data.slice(+pagination.offset, +pagination.offset + +pagination.limit);
+        }
+
+        return { data, total: _data.length };
     }
 }

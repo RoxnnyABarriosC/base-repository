@@ -1,4 +1,6 @@
 import { RequestMethod } from '@nestjs/common';
+import dotenv from 'dotenv';
+dotenv.config();
 import { ConfigInterface } from './config.interface';
 
 export default (): ConfigInterface => ({
@@ -43,7 +45,7 @@ export default (): ConfigInterface => ({
         synchronize: process.env.DB_SYNCHRONIZE,
         database: process.env.DB_DATABASE,
         type: process.env.DB_TYPE,
-        logging: true,
+        logging: process.env.DB_LOGGING,
         migrationsRun: false,
         autoLoadEntities: true,
         subscribers: [`${process.cwd()}/dist/modules/**/infrastructure/subscribers/*.subscriber{.ts,.js}`]
@@ -60,8 +62,10 @@ export default (): ConfigInterface => ({
         }
     },
     cache: {
-        host: process.env.CACHE_HOST,
-        port: process.env.CACHE_PORT,
+        socket: {
+            host: process.env.CACHE_HOST,
+            port: process.env.CACHE_PORT
+        },
         password: process.env.CACHE_PASSWORD
     },
     smtp: {
@@ -94,5 +98,10 @@ export default (): ConfigInterface => ({
         enableCircularCheck: true,
         excludeExtraneousValues: true,
         exposeDefaultValues: true
+    },
+    tasks: {
+        logger: {
+            deleteTraceLog: process.env.LOGGER_TASK_DELETE_TRACE_LOG
+        }
     }
 });

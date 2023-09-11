@@ -17,9 +17,7 @@ import {
 } from '@shared/providers';
 import { CacheConfigInterface } from '@src/config';
 import { validateEnv } from '@src/validate-env';
-import redisStore from 'cache-manager-redis-store';
-import { RedisClientOptions } from 'redis';
-import { DataSource } from 'typeorm';
+import { redisStore } from 'cache-manager-redis-yet';
 
 @Module({
     imports: [
@@ -29,14 +27,15 @@ import { DataSource } from 'typeorm';
             cache: true,
             validate: validateEnv
         }),
-        CacheModule.registerAsync<RedisClientOptions>({
+        CacheModule.registerAsync({
             inject: [ConfigService],
             isGlobal: true,
             useFactory: (config: ConfigService) => ({
-                store: redisStore as unknown as CacheStore,
+                store: redisStore,
                 ...config.get<CacheConfigInterface>('cache')
             })
         }),
+        ScheduleModule.forRoot(),
         EventEmitterModule.forRoot({ global: true }),
         ThrottlerModule.forRoot({
             ttl: 60,
@@ -51,13 +50,13 @@ import { DataSource } from 'typeorm';
                 };
             }
         }),
-        ScheduleModule.forRoot(),
         HttpModule,
         CommonModule,
         AuthModule
     ],
     controllers: [],
     providers: [
+        ResponseInterceptorProvider,
         {
             provide: APP_GUARD,
             useClass: ThrottlerGuard
@@ -66,8 +65,7 @@ import { DataSource } from 'typeorm';
             provide: APP_INTERCEPTOR,
             useClass: CacheInterceptor
         },
-        SerializerInterceptorProvider,
-        ResponseInterceptorProvider
+        SerializerInterceptorProvider
     ]
 })
 export class AppModule

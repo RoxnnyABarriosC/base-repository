@@ -10,6 +10,7 @@ declare namespace NodeJS {
 
         LOGGER_COLORIZE: boolean;
         LOGGER_SINGLE_LINE: boolean;
+        LOGGER_TASK_DELETE_TRACE_LOG: string;
 
         SENTRY_DSN: string;
         SENTRY_ENABLE: boolean;
@@ -35,6 +36,7 @@ declare namespace NodeJS {
         DB_SYNCHRONIZE: boolean;
         DB_DATABASE: string;
         DB_TYPE: 'postgres';
+        DB_LOGGING: boolean;
         PAGINATION_LIMIT: number;
 
         ENCRYPTION_DEFAULT: 'bcrypt' | 'md5';
