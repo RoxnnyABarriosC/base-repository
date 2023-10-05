@@ -2,7 +2,7 @@ import {
     ActivateAccountEvent,
     ActivatedAccountEvent,
     ChangeForgotPasswordEvent,
-    ForgotPasswordEvent, ResetPasswordEvent
+    ForgotPasswordEvent, ResetPasswordEvent, SendOtpEvent
 } from '@modules/common/mail/domain/events';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -16,6 +16,7 @@ export enum MailEventEnum {
     FORGOT_PASSWORD ='mail.forgot.password',
     CHANGE_FORGOT_PASSWORD ='mail.change.forgot.password',
     RESET_PASSWORD ='mail.reset.password',
+    SEND_OTP = 'mail.send.otp',
 }
 
 @Injectable()
@@ -25,7 +26,7 @@ export class MailListener
 
     constructor(
         private readonly configService: ConfigService,
-        private mailerService: MailerService
+        private readonly mailerService: MailerService
     )
     { }
 
@@ -106,6 +107,23 @@ export class MailListener
                 fullName: user.FullName,
                 newPassword,
                 urlConfirmationToken,
+                urlWeb: this.configService.get('server.url.web'),
+                urlApi: this.configService.get('server.url.api'),
+                emailSupport: this.configService.get('smtp.emails.default')
+            }
+        });
+    }
+
+    @OnEvent(MailEventEnum.SEND_OTP, { async: true })
+    async handleSendOtpEvent({ user, otp }: SendOtpEvent)
+    {
+        await this.mailerService.sendMail({
+            to: user.email,
+            subject: 'Verification code',
+            template: './mail/otp/send-otp', // `.hbs` extension is appended automatically
+            context: { // ✏️ filling curly brackets with content
+                fullName: user.FullName,
+                otp,
                 urlWeb: this.configService.get('server.url.web'),
                 urlApi: this.configService.get('server.url.api'),
                 emailSupport: this.configService.get('smtp.emails.default')

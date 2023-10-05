@@ -30,7 +30,7 @@ export class SetMainPictureOrBannerUseCase
     {
         const file = new File(rawFile);
 
-        file.setPath(() => `users/${authUser.userName}/${property}/`);
+        file.setPath(() => `users/${authUser._id}/${property}/`);
 
         // Tradicionalmente todas las fotos que se suben deberia ir a una galeria privada del usuario para cuando la imagen se cambie este la pueda ver en su galeria
         void await this.repository.transaction(async(transactionManager) =>

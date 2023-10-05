@@ -3,3 +3,4 @@ export * from './activated-account.event';
 export * from './change-forgot-password.event';
 export * from './forgot-password.event';
 export * from './reset-password.event';
+export * from './send-otp.event';

@@ -2,20 +2,13 @@ import { RoleSerializer } from '@modules/auth/role/presentation/serializers';
 import { SCOPE } from '@modules/auth/user/domain/constants';
 import { User } from '@modules/auth/user/domain/entities';
 import { GenderEnum } from '@modules/auth/user/domain/enums';
+import { UserSerializerGroupsEnum } from '@modules/auth/user/presentation/enums';
 import { UrlFileInterface, UrlFileService } from '@modules/common/file/domain/services';
-import { SerializerGroupsEnum, SerializerScope } from '@shared/abstractClass';
+import { SerializerScope } from '@shared/abstractClass';
 import { UnixDate } from '@shared/decorators';
 import { Serializer as SerializerMap } from '@shared/utils';
-import { Exclude, Expose } from 'class-transformer';
+import { Expose } from 'class-transformer';
 
-export enum UserSerializerGroupsEnum {
-    ALL = `${SCOPE}ALL`,
-    ID_AND_TIMESTAMP = `${SCOPE}${SerializerGroupsEnum.ID_AND_TIMESTAMP}`,
-    ONLY_TIMESTAMP = `${SCOPE}${SerializerGroupsEnum.ONLY_TIMESTAMP}`,
-    ONLY_ID = `${SCOPE}${SerializerGroupsEnum.ONLY_ID}`,
-    WITH_PERMISSIONS = `${SCOPE}WITH_PERMISSIONS`,
-    WITH_ROLES = `${SCOPE}WITH_ROLE`,
-}
 
 export class UserSerializer extends SerializerScope(SCOPE)
 {

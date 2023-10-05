@@ -21,7 +21,8 @@ import {
     ScopeConfigDto,
     UpdateRoleDto
 } from '@modules/auth/role/presentation/dtos';
-import { RoleSerializer, RoleSerializerGroupsEnum } from '@modules/auth/role/presentation/serializers';
+import { RoleSerializerGroupsEnum } from '@modules/auth/role/presentation/enums';
+import { RoleSerializer } from '@modules/auth/role/presentation/serializers';
 import { RolePermissionsEnum } from '@modules/auth/role/role.permissions';
 import { CacheTTL } from '@nestjs/cache-manager';
 import {

@@ -14,3 +14,6 @@ export * from './send-local-message';
 export * from './megabyte-to-byte';
 export * from './create-search-regex';
 export * from './settle';
+export * from './string-to-array';
+export * from './otp-generator';
+export * from './encode-text';

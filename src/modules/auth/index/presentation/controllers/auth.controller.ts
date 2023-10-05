@@ -27,12 +27,14 @@ import { LoginDto } from '@modules/auth/index/presentation/dtos/login.dto';
 import { MeDto } from '@modules/auth/index/presentation/dtos/me.dto';
 import { RegisterDto } from '@modules/auth/index/presentation/dtos/register.dto';
 import { AuthSerializer, AuthUserSerializer } from '@modules/auth/index/presentation/serializers';
-import { RoleSerializerGroupsEnum } from '@modules/auth/role/presentation/serializers';
+import { OtpPropertiesEnum } from '@modules/auth/otp/domain/enums';
+import { OtpAuth, RequiredOtpProperties } from '@modules/auth/otp/presentation/decorators';
+import { RoleSerializerGroupsEnum } from '@modules/auth/role/presentation/enums';
 import { SCOPE } from '@modules/auth/user/domain/constants';
 import { User } from '@modules/auth/user/domain/entities';
 import { PropertyFileEnum } from '@modules/auth/user/domain/enums';
 import { PasswordDto } from '@modules/auth/user/presentation/dtos';
-import { UserSerializerGroupsEnum } from '@modules/auth/user/presentation/serializers';
+import { UserSerializerGroupsEnum } from '@modules/auth/user/presentation/enums';
 import { MimeTypeEnum } from '@modules/common/file/domain/enums';
 import { UploadFile, UploadedFile
 } from '@modules/common/file/presentation/decorators';
@@ -50,7 +52,7 @@ import {
     Patch,
     Post,
     Put, Query,
-    Res, ValidationPipe
+    Res
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Agent, SetSerializerGroups, UserAgent } from '@shared/decorators';
@@ -186,6 +188,7 @@ export class AuthController
     // ======================================================================AUTH======================================================================
 
     @Post('login')
+    @OtpAuth()
     @LocalAuth()
     @HttpCode(HttpStatus.CREATED)
     @SetSerializerGroups(
@@ -197,10 +200,11 @@ export class AuthController
     @Res({ passthrough: true }) res: FastifyReply,
     @Body() dto: LoginDto,
     @AuthUser() authUser: User,
-    @UserAgent() agent: Agent
+    @UserAgent() agent: Agent,
+    @RequiredOtpProperties() otpProperties: OtpPropertiesEnum[]
     )
     {
-        const data = await this.loginUseCase.handle({ user: authUser });
+        const data = await this.loginUseCase.handle({ user: authUser, dto, otpProperties });
 
         SendRefresh({
             res,

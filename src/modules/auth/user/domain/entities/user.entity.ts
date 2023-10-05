@@ -1,4 +1,5 @@
 import { PasswordValueObject } from '@modules/auth/index/domain/valueObjects';
+import { OTP } from '@modules/auth/otp/domain/entities';
 import { Role } from '@modules/auth/role/domain/entities';
 import { GenderEnum } from '@modules/auth/user/domain/enums';
 import { File } from '@modules/common/file/domain/entities';
@@ -25,6 +26,7 @@ export class User extends BaseEntity
     @Expose() public roles: Role[];
     @Expose() public mainPicture?: File;
     @Expose() public banner?: File;
+    @Expose() public otp: Promise<OTP>;
 
     constructor(data?: Partial<User>, validate?: boolean)
     {
@@ -46,14 +48,16 @@ export class User extends BaseEntity
     {
         roles = Array.isArray(roles) ? roles : [roles];
 
-        if (Array.isArray(this.roles))
+        if (!Array.isArray(this.roles))
         {
-            this.roles = [...new Set([...roles as Role[], ...this.roles])];
+            this.roles = [];
         }
-        else
-        {
-            this.roles = roles;
-        }
+
+        const roleIds = new Set(this.roles.map(role => role?._id));
+
+        const newRoles = roles.filter(role => !roleIds.has(role._id));
+
+        this.roles.push(...newRoles);
     }
 
     public get RolesIds(): string[]
@@ -64,8 +68,9 @@ export class User extends BaseEntity
     public get Permissions(): string[]
     {
         const permissions = Array.isArray(this.permissions) ? this.permissions : [];
+        const roles = Array.isArray(this.roles) ? this.roles : [];
 
-        const rolesPermissions = this.roles?.filter((r) => r.enable)?.reduce<string[]>((ac, role) =>
+        const rolesPermissions = roles?.filter((r) => r.enable)?.reduce<string[]>((ac, role) =>
         {
             const rolePermissions = Array.isArray(role.permissions) ? role.permissions : [];
 

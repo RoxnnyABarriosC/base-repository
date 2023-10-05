@@ -1,6 +1,6 @@
 import { ManagePermissions, Protected, RequirePermissions } from '@modules/auth/index/presentation/decorators';
 import { PermissionsDto } from '@modules/auth/role/presentation/dtos';
-import { RoleSerializerGroupsEnum } from '@modules/auth/role/presentation/serializers';
+import { RoleSerializerGroupsEnum } from '@modules/auth/role/presentation/enums';
 import { SCOPE } from '@modules/auth/user/domain/constants';
 import {
     DeleteUserUseCase, EnableOrDisableUserUseCase,
@@ -10,7 +10,8 @@ import {
 } from '@modules/auth/user/domain/useCases';
 import { UserFilter, UserSort } from '@modules/auth/user/presentation/criterias';
 import { SaveUserDto, SetRolesUserDto, UpdateUserDto } from '@modules/auth/user/presentation/dtos';
-import { UserSerializer, UserSerializerGroupsEnum } from '@modules/auth/user/presentation/serializers';
+import { UserSerializerGroupsEnum } from '@modules/auth/user/presentation/enums';
+import { UserSerializer } from '@modules/auth/user/presentation/serializers';
 import { UserPermissionsEnum } from '@modules/auth/user/user.permissions';
 import {
     Body,

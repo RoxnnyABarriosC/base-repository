@@ -22,3 +22,4 @@ export * from './id-validate-permissions.decorator';
 export * from './partial-removed.decorator';
 export * from './delete-permanently.decorator';
 export * from './set-serializer-groups.decorator';
+export * from './cache-no-auth.decorator';

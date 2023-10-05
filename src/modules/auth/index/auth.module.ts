@@ -17,6 +17,7 @@ import {
 import { TokenRepository } from '@modules/auth/index/infrastructure/repositories';
 import { AuthController } from '@modules/auth/index/presentation/controllers';
 import { RefreshTokenMiddleware } from '@modules/auth/index/presentation/middlewares';
+import { OTPModule } from '@modules/auth/otp';
 import { RoleModule } from '@modules/auth/role';
 import { UserModule } from '@modules/auth/user';
 import { CommonModule } from '@modules/common';
@@ -39,6 +40,7 @@ import { AuthService,  TokenService } from './domain/services';
         }),
         UserModule,
         RoleModule,
+        OTPModule,
         CommonModule,
         PassportModule,
         RouterModule.register([
@@ -52,6 +54,15 @@ import { AuthService,  TokenService } from './domain/services';
                     {
                         path: '/',
                         module: RoleModule
+                    }
+                ]
+            },
+            {
+                path: 'auth',
+                children: [
+                    {
+                        path: '/',
+                        module: OTPModule
                     }
                 ]
             }

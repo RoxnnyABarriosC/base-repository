@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;600;700&family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<style type="text/css">
+    body {
+        color: #1E293B !important;
+    }
+
+    a {
+        color: #6366F1;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .text-primary {
+        color: #6366F1;
+    }
+</style>
+
+<body style="outline: 0; width: 100%; min-width: 100%; height: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; font-family: Inter; line-height: 24px; font-size: 15px; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; margin: 0; padding: 0; border: 0;">
+<div style="display: flex; justify-content: center;">
+    <div style="background-color: #F1F5F9; width: 600px;">
+      <img width="100%" style="margin-top: -100px;" src="{{urlApi}}/public/email-banner.webp" alt="email banner"> </img>
+        <h2 style='text-align: center; font-family: Comfortaa; font-weight: 700; margin-top: 40px;'>Base Repository - Verification code</h2>
+        <div style='text-align: center; padding: 0 10%; margin-top: 40px;'>
+            Hello, <span class='text-primary'>{{fullName}}</span> <br />
+            <br />
+            <p style='margin-top: 20px;'>
+              your verification code is <strong>{{otp}}</strong>
+            </p>
+        </div>
+        <div style='background-color: #1e293b; margin-top: 100px; padding: 4% 10%; color: white; text-align:center'>
+            <h4 style='margin: 0 0 30px 0; font-weight: 700; font-family: Comfortaa;'>Connect with the future <br />
+                you want to create </h4>
+            <hr style='color: white;' />
+            <div style='margin-top: 30px;'>
+              <img src='{{urlApi}}/public/logo.webp' height='50px' width='50px'  alt="logo"/>
+                <p style='font-size: 13px;'>
+                    Support email: {{emailSupport}} <br />
+                    Web: <a href="{{urlWeb}}" target='_blank' style='color: #bdcee4 !important;'>{{urlWeb}}</a>
+                </p>
+            </div>
+        </div>
+
+        <div style='background-color: #F1F5F9; padding: 2% 10%; font-size: 11px;'>
+            This is an automatic message. Please do not reply this email.
+        </div>
+    </div>
+</div>
+</body>
+</html>

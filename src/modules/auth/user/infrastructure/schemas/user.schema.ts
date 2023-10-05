@@ -1,3 +1,4 @@
+import { OTP } from '@modules/auth/otp/domain/entities';
 import { Role } from '@modules/auth/role/domain/entities';
 import { User } from '@modules/auth/user/domain/entities';
 import { GenderEnum } from '@modules/auth/user/domain/enums';
@@ -6,7 +7,7 @@ import { BaseColumnsSchema } from '@shared/schemas';
 import { EntitySchema } from 'typeorm';
 
 export const UserSchema = new EntitySchema<User>({
-    name: 'User',
+    name: User.name,
     target: User,
     tableName: 'users',
     columns: {
@@ -102,6 +103,12 @@ export const UserSchema = new EntitySchema<User>({
             joinColumn: true,
             nullable: true,
             eager: true
+        },
+        otp: {
+            type: 'one-to-one',
+            target: OTP.name,
+            inverseSide: 'user',
+            lazy: true
         }
     }
 });

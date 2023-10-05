@@ -106,8 +106,22 @@ export interface S3ConfigInterface {
 
 export interface TasksInterfaces {
     logger: {
-        deleteTraceLog: string
+        deleteTraceLog: string;
+    },
+    otp: {
+        restartingAttempts: string;
     }
+}
+
+export interface OTPInterface {
+    codeExpire: string;
+    limitAttempts: number
+}
+
+export interface TwilioInterface {
+    accountSid: string;
+    authToken: string;
+    fromNumber: string;
 }
 
 export interface ConfigInterface {
@@ -127,4 +141,6 @@ export interface ConfigInterface {
     s3: S3ConfigInterface;
     serializer: Partial<ClassTransformOptions>
     tasks: TasksInterfaces;
+    otp: OTPInterface;
+    twilio: TwilioInterface;
 }

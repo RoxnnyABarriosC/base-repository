@@ -76,7 +76,15 @@ export function validateEnv(config: Record<string, any>): Record<string, any>
         MINIO_PRIVATE_BUCKET: str(),
         MINIO_REGION: str(),
         MINIO_ROOT_PATH: str(),
-        MINIO_SIGN_EXPIRE: num()
+        MINIO_SIGN_EXPIRE: num(),
+
+        OTP_CODE_EXPIRE: str(),
+        OTP_LIMIT_ATTEMPTS: num(),
+        OTP_TASK_RESTARTING_ATTEMPTS: str(),
+
+        TWILIO_ACCOUNT_SID: str(),
+        TWILIO_AUTH_TOKEN: str(),
+        TWILIO_FROM_NUMBER: str()
     });
 
     config = { ...config, ...clean };

@@ -102,6 +102,18 @@ export default (): ConfigInterface => ({
     tasks: {
         logger: {
             deleteTraceLog: process.env.LOGGER_TASK_DELETE_TRACE_LOG
+        },
+        otp: {
+            restartingAttempts: process.env.OTP_TASK_RESTARTING_ATTEMPTS
         }
+    },
+    otp: {
+        codeExpire: process.env.OTP_CODE_EXPIRE,
+        limitAttempts: process.env.OTP_LIMIT_ATTEMPTS
+    },
+    twilio: {
+        accountSid: process.env.TWILIO_ACCOUNT_SID,
+        authToken: process.env.TWILIO_AUTH_TOKEN,
+        fromNumber: process.env.TWILIO_FROM_NUMBER
     }
 });
