@@ -1,6 +1,9 @@
 import { CacheInterceptor as Cache } from '@nestjs/cache-manager';
 import { CallHandler, ExecutionContext, Logger, SetMetadata } from '@nestjs/common';
+import { CACHE_NO_AUTH } from '@shared/decorators';
+import { AppResponseInterface } from '@shared/interceptors/response-interceptor.interface';
 import { FastifyReply, FastifyRequest } from 'fastify';
+import { map } from 'rxjs/operators';
 
 export const SKIP_CACHE = 'skip_cache';
 export const SkipCache = () => SetMetadata(SKIP_CACHE, true);
@@ -26,18 +29,23 @@ export class CacheInterceptor extends Cache
 
     protected override trackBy(context: ExecutionContext): string | undefined
     {
-        if (!this.isRequestCacheable(context))
+        const trackKey = super.trackBy(context);
+
+        if (!trackKey)
         {
             return undefined;
         }
 
-        const request = context.getArgByIndex(0) as FastifyRequest;
+        const cacheNoAuth: boolean = this.reflector.getAllAndOverride<boolean>(CACHE_NO_AUTH, [
+            context.getHandler(),
+            context.getClass()
+        ]) ?? false;
 
-        const trackKey = request.url;
+        const request = context.getArgByIndex(0) as FastifyRequest;
 
         const authorizationToken = request.headers?.authorization?.split(/\s+/)[1];
 
-        return authorizationToken ? `${authorizationToken}:${trackKey}` : trackKey;
+        return authorizationToken && !cacheNoAuth ? `${authorizationToken}:${trackKey}` : trackKey;
     }
 
     override async intercept(context: ExecutionContext, next: CallHandler)
@@ -46,10 +54,18 @@ export class CacheInterceptor extends Cache
         const response = http.getResponse<FastifyReply>();
 
         const cacheKey = this.trackBy(context);
-        const isCached = cacheKey ? await this.cacheManager.get(cacheKey) : false;
 
-        response.header('X-Cached-Response', `${!!isCached}`);
+        const isCached = cacheKey ? !!(await this.cacheManager.get(cacheKey)) : false;
 
-        return super.intercept(context, next);
+        response.header('X-Cached-Response', `${isCached}`);
+
+        return (await super.intercept(context, next)).pipe(
+            map((data: AppResponseInterface) =>
+            {
+                data.isCached = isCached;
+
+                return data;
+            })
+        );
     }
 }

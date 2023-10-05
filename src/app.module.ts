@@ -56,7 +56,6 @@ import { redisStore } from 'cache-manager-redis-yet';
     ],
     controllers: [],
     providers: [
-        ResponseInterceptorProvider,
         {
             provide: APP_GUARD,
             useClass: ThrottlerGuard
@@ -65,6 +64,7 @@ import { redisStore } from 'cache-manager-redis-yet';
             provide: APP_INTERCEPTOR,
             useClass: CacheInterceptor
         },
+        ResponseInterceptorProvider,
         SerializerInterceptorProvider
     ]
 })

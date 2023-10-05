@@ -65,5 +65,13 @@ declare namespace NodeJS {
         MINIO_SIGN_EXPIRE: number;
         MINIO_EXPOSE_HTTPS: boolean;
         MINIO_EXPOSE_HOST: string;
+
+        OTP_CODE_EXPIRE: string;
+        OTP_LIMIT_ATTEMPTS: number;
+        OTP_TASK_RESTARTING_ATTEMPTS: string;
+
+        TWILIO_ACCOUNT_SID: string;
+        TWILIO_AUTH_TOKEN: string;
+        TWILIO_FROM_NUMBER: string;
     }
 }

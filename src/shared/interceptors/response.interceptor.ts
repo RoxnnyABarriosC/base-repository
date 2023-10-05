@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AppResponseInterface } from '@shared/interceptors';
-import { Parse } from '@shared/utils';
 import { FastifyReply } from 'fastify';
 import { ClsService } from 'nestjs-cls';
 import { Observable } from 'rxjs';
@@ -45,7 +44,7 @@ export class ResponseInterceptor implements NestInterceptor
                 return <AppResponseInterface>{
                     folio: res.getHeader('x-correlation-id').toString(),
                     isArray: Array.isArray(data),
-                    isCached: Parse(res.getHeader('X-Cached-Response')),
+                    isCached: false,
                     data,
                     pagination: this.store.get('res.pagination') ?? undefined,
                     metadata: this.store.get('res.metadata') ?? undefined
