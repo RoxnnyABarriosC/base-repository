@@ -20,9 +20,9 @@ interface Props {
 }
 
 @Injectable()
-export class SaveOTPUseCase
+export class SendOtpUseCase
 {
-    private readonly logger = new Logger(SaveOTPUseCase.name);
+    private readonly logger = new Logger(SendOtpUseCase.name);
 
     constructor(
         private readonly configService: ConfigService,
@@ -67,6 +67,6 @@ export class SaveOTPUseCase
 
         await this.repository.update(otp);
 
-        return SendLocalMessage(() => `messages.otp.${target}.sent`);
+        return SendLocalMessage(() => `messages.otp.${target}.send`);
     }
 }

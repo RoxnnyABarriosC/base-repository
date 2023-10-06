@@ -1,4 +1,3 @@
-import { MimeTypeEnum } from '@modules/common/file/domain/enums';
 import { FileValidator, ValidatorOptions } from '@modules/common/file/presentation/validators/file.validator';
 import {
     ParseFilePipe,

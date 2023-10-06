@@ -27,7 +27,7 @@ export class JwtStrategy extends PassportStrategy(Strategy)
     )
     {
         super({
-            secretOrKey: configService.get('jwt.secret'),
+            secretOrKey: configService.getOrThrow('jwt.secret'),
             ignoreExpiration: false,
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
         });
@@ -35,7 +35,7 @@ export class JwtStrategy extends PassportStrategy(Strategy)
 
     async validate(payload: DecodeTokenInterface): Promise<AuthDataInterface>
     {
-        const checkBlackList = this.configService.get<boolean>('jwt.checkBlackList');
+        const checkBlackList = this.configService.getOrThrow<boolean>('jwt.checkBlackList');
 
         if (checkBlackList)
         {

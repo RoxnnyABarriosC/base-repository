@@ -32,7 +32,7 @@ import { redisStore } from 'cache-manager-redis-yet';
             isGlobal: true,
             useFactory: (config: ConfigService) => ({
                 store: redisStore,
-                ...config.get<CacheConfigInterface>('cache')
+                ...config.getOrThrow<CacheConfigInterface>('cache')
             })
         }),
         ScheduleModule.forRoot(),
@@ -46,7 +46,7 @@ import { redisStore } from 'cache-manager-redis-yet';
             useFactory: (config: ConfigService) =>
             {
                 return {
-                    ...config.get('db')
+                    ...config.getOrThrow('db')
                 };
             }
         }),

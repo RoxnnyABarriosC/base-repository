@@ -16,7 +16,7 @@ export class UserSubscriber implements EntitySubscriberInterface<User>
     async afterInsert(event: InsertEvent<User>): Promise<void>
     {
         const otp  = new OTP();
-        otp.user = event.entity;
+        otp.User = event.entity;
 
         await event.manager.save(OTP, otp);
     }

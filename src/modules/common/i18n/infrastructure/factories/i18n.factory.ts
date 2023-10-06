@@ -5,7 +5,7 @@ import path from 'path';
 export const i18nFactory = async(configService: ConfigService): Promise<I18nOptionsWithoutResolvers> =>
 {
     return {
-        fallbackLanguage: configService.get('locale'),
+        fallbackLanguage: configService.getOrThrow('locale'),
         loaderOptions: {
             path: path.join(process.cwd(), 'dist/config/locales/'),
             watch: true

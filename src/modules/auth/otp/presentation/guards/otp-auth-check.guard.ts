@@ -25,6 +25,14 @@ export class OtpAuthCheckGuard implements CanActivate
         const bodyProperties = Object.keys(body);
 
         const requiredOtpProperties = await this.service.getConfigOfUser(user);
+
+        request[REQUIRED_OTP_PROPERTIES] = requiredOtpProperties;
+
+        if (!requiredOtpProperties.length)
+        {
+            return true;
+        }
+
         const values  = requiredOtpProperties.reduce((prev, otp) =>
         {
             const otpType = this.service.getType(otp);
@@ -35,14 +43,12 @@ export class OtpAuthCheckGuard implements CanActivate
             };
         }, {});
 
-        const existOtpProperties = requiredOtpProperties.every((c) => bodyProperties.some((p) => p === c));
+        const existOtpProperties = requiredOtpProperties.every((c) => bodyProperties.includes(c));
 
-        if (!existOtpProperties)
+        if (!existOtpProperties || !requiredOtpProperties.some(c => !!body[c]))
         {
             throw new OtpConfigException(requiredOtpProperties, values);
         }
-
-        request[REQUIRED_OTP_PROPERTIES] = requiredOtpProperties;
 
         return true;
     }

@@ -45,7 +45,7 @@ export class SerializerInterceptor implements NestInterceptor
         }
 
         const serializer = new ClassSerializerInterceptor(this.reflector, {
-            ... this.configService.get('serializer'),
+            ... this.configService.getOrThrow('serializer'),
             groups: groups as string[]
         });
 

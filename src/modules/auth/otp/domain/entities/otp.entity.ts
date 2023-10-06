@@ -21,11 +21,18 @@ export class OTP extends BaseEntity
             attempts: 0
         }
     };
-    @Expose() public user: User;
+    @Expose() public readonly user: Promise<User>;
 
     constructor(data?: Partial<OTP>, validate?: boolean)
     {
         super();
         this.build(data, validate);
+    }
+
+    set User(user: User)
+    {
+        Object.assign(this, {
+            __user__: user, user
+        });
     }
 }

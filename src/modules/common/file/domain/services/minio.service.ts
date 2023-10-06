@@ -17,16 +17,16 @@ export class MinioService
         private readonly configService: ConfigService
     )
     {
-        this.bucket = this.configService.get('s3.publicBucket');
+        this.bucket = this.configService.getOrThrow('s3.publicBucket');
 
         this.client = new Client(
             {
-                endPoint: this.configService.get('s3.host'),
-                region: this.configService.get('s3.region'),
-                accessKey: this.configService.get('s3.accessKey'),
-                secretKey: this.configService.get('s3.secretKey'),
-                port: this.configService.get('s3.port'),
-                useSSL: this.configService.get('s3.useSSL')
+                endPoint: this.configService.getOrThrow('s3.host'),
+                region: this.configService.getOrThrow('s3.region'),
+                accessKey: this.configService.getOrThrow('s3.accessKey'),
+                secretKey: this.configService.getOrThrow('s3.secretKey'),
+                port: this.configService.getOrThrow('s3.port'),
+                useSSL: this.configService.getOrThrow('s3.useSSL')
             });
     }
 

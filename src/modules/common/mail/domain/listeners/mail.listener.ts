@@ -40,9 +40,9 @@ export class MailListener
             context: { // ✏️ filling curly brackets with content
                 fullName: user.FullName,
                 urlConfirmationToken,
-                urlWeb: this.configService.get('server.url.web'),
-                urlApi: this.configService.get('server.url.api'),
-                emailSupport: this.configService.get('smtp.emails.default')
+                urlWeb: this.configService.getOrThrow('server.url.web'),
+                urlApi: this.configService.getOrThrow('server.url.api'),
+                emailSupport: this.configService.getOrThrow('smtp.emails.default')
             }
         });
     }
@@ -56,9 +56,9 @@ export class MailListener
             template: './mail/auth/activated-account', // `.hbs` extension is appended automatically
             context: { // ✏️ filling curly brackets with content
                 fullName: user.FullName,
-                urlWeb: this.configService.get('server.url.web'),
-                urlApi: this.configService.get('server.url.api'),
-                emailSupport: this.configService.get('smtp.emails.default')
+                urlWeb: this.configService.getOrThrow('server.url.web'),
+                urlApi: this.configService.getOrThrow('server.url.api'),
+                emailSupport: this.configService.getOrThrow('smtp.emails.default')
             }
         });
     }
@@ -73,9 +73,9 @@ export class MailListener
             context: { // ✏️ filling curly brackets with content
                 fullName: user.FullName,
                 urlConfirmationToken,
-                urlWeb: this.configService.get('server.url.web'),
-                urlApi: this.configService.get('server.url.api'),
-                emailSupport: this.configService.get('smtp.emails.default')
+                urlWeb: this.configService.getOrThrow('server.url.web'),
+                urlApi: this.configService.getOrThrow('server.url.api'),
+                emailSupport: this.configService.getOrThrow('smtp.emails.default')
             }
         });
     }
@@ -89,9 +89,9 @@ export class MailListener
             template: './mail/auth/updated-password', // `.hbs` extension is appended automatically
             context: { // ✏️ filling curly brackets with content
                 fullName: user.FullName,
-                urlWeb: this.configService.get('server.url.web'),
-                urlApi: this.configService.get('server.url.api'),
-                emailSupport: this.configService.get('smtp.emails.default')
+                urlWeb: this.configService.getOrThrow('server.url.web'),
+                urlApi: this.configService.getOrThrow('server.url.api'),
+                emailSupport: this.configService.getOrThrow('smtp.emails.default')
             }
         });
     }
@@ -107,9 +107,9 @@ export class MailListener
                 fullName: user.FullName,
                 newPassword,
                 urlConfirmationToken,
-                urlWeb: this.configService.get('server.url.web'),
-                urlApi: this.configService.get('server.url.api'),
-                emailSupport: this.configService.get('smtp.emails.default')
+                urlWeb: this.configService.getOrThrow('server.url.web'),
+                urlApi: this.configService.getOrThrow('server.url.api'),
+                emailSupport: this.configService.getOrThrow('smtp.emails.default')
             }
         });
     }
@@ -124,9 +124,9 @@ export class MailListener
             context: { // ✏️ filling curly brackets with content
                 fullName: user.FullName,
                 otp,
-                urlWeb: this.configService.get('server.url.web'),
-                urlApi: this.configService.get('server.url.api'),
-                emailSupport: this.configService.get('smtp.emails.default')
+                urlWeb: this.configService.getOrThrow('server.url.web'),
+                urlApi: this.configService.getOrThrow('server.url.api'),
+                emailSupport: this.configService.getOrThrow('smtp.emails.default')
             }
         });
     }

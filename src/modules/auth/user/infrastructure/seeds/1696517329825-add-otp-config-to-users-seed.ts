@@ -19,7 +19,7 @@ export class AddOtpConfigToUsersSeed1696517329825 implements MigrationInterface
         const newOtpConfigs =  usersWithoutOtpConfig.map((user) =>
         {
             const otp = new OTP();
-            otp.user = user;
+            otp.User = user;
 
             return otp;
         });

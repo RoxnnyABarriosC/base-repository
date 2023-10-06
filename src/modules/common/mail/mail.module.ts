@@ -14,8 +14,8 @@ import { join } from 'path';
             {
                 const auth = {
                     auth: {
-                        user: config.get('smtp.username'),
-                        pass: config.get('smtp.password')
+                        user: config.getOrThrow('smtp.username'),
+                        pass: config.getOrThrow('smtp.password')
                     }
                 };
 
@@ -25,13 +25,13 @@ import { join } from 'path';
 
                 return {
                     transport: {
-                        host: config.get('smtp.host'),
-                        secure: config.get('smtp.secure'),
-                        port: config.get('smtp.port'),
+                        host: config.getOrThrow('smtp.host'),
+                        secure: config.getOrThrow('smtp.secure'),
+                        port: config.getOrThrow('smtp.port'),
                         ...data
                     },
                     defaults: {
-                        from: `"Support Team" ${config.get('smtp.emails.default')}`
+                        from: `"Support Team" ${config.getOrThrow('smtp.emails.default')}`
                     },
                     template: {
                         dir: join(__dirname, 'presentation/templates'),

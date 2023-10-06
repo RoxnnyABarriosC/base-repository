@@ -3,7 +3,7 @@ import { TwilioListener } from '@modules/auth/otp/domain/listeners';
 import { OTPService } from '@modules/auth/otp/domain/services';
 import {
     EnableOrDisableOtpUseCase,
-    SaveOTPUseCase,
+    SendOtpUseCase,
     SetPhoneOtpProvidersOtpUseCase
 } from '@modules/auth/otp/domain/useCases';
 import { OTPRepository } from '@modules/auth/otp/infrastructure/repositories';
@@ -31,7 +31,7 @@ import { TwilioModule } from 'nestjs-twilio';
     ],
     controllers: [OTPController],
     providers: [
-        SaveOTPUseCase,
+        SendOtpUseCase,
         EnableOrDisableOtpUseCase,
         SetPhoneOtpProvidersOtpUseCase,
         OTPRepository,

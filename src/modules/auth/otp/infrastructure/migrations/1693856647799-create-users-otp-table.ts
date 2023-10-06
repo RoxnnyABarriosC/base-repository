@@ -20,7 +20,7 @@ export class CreateUsersOtpTable1693856647799 implements MigrationInterface
                     new TableColumn({
                         name: 'user_id',
                         type: 'uuid',
-                        isNullable: true,
+                        isNullable: false,
                         isUnique: true
                     })
                 ],

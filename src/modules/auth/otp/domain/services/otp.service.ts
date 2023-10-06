@@ -2,6 +2,7 @@ import { EncryptionFactory } from '@modules/auth/index/domain/factories';
 import { OTP } from '@modules/auth/otp/domain/entities';
 import { OtpPropertiesEnum, OtpTypeEnum } from '@modules/auth/otp/domain/enums';
 import { OTPRepository } from '@modules/auth/otp/infrastructure/repositories';
+import { AuthOtpDto } from '@modules/auth/otp/presentation/dtos';
 import { User } from '@modules/auth/user/domain/entities';
 import { Injectable, Logger } from '@nestjs/common';
 import { BadRequestCustomException } from '@shared/exceptions';
@@ -31,7 +32,7 @@ export class OTPService
                 .filter(value => value.includes(otp)));
     }
 
-    async checkOtp(data: { [key in OtpPropertiesEnum]?: string }, otpProperties: OtpPropertiesEnum[], authUser: User)
+    async checkOtp(data: AuthOtpDto, otpProperties: OtpPropertiesEnum[], authUser: User)
     {
         const errors = [];
 

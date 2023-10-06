@@ -42,10 +42,10 @@ export const SendRefresh = ({
             refreshHash,
             {
                 expires: dayjs.unix(expiresRefresh).utc().toDate(),
-                path: `${configService.get('server.prefix')}${configService.get('server.version')}/auth`,
-                secure: configService.get('setCookieSecure'),
+                path: `${configService.getOrThrow('server.prefix')}${configService.getOrThrow('server.version')}/auth`,
+                secure: configService.getOrThrow('setCookieSecure'),
                 httpOnly: true,
-                sameSite: configService.get('setCookieSameSite')
+                sameSite: configService.getOrThrow('setCookieSameSite')
             });
     }
 

@@ -26,7 +26,7 @@ export const loggerFactory = async(configService: ConfigService): Promise<Params
                 messageFormat: '{correlationId}:[{realIp}] [{context}] {msg}',
                 ignore: 'context,res,req,correlationId,realIp',
                 errorLikeObjectKeys: ['err', 'error'],
-                singleLine: configService.get('logger.singleLine'),
+                singleLine: configService.getOrThrow('logger.singleLine'),
                 customPrettifiers: {
                     time: timestamp => blue(`🕰 ${timestamp}`),
                     hostname: hostname => green(hostname as any),
@@ -50,6 +50,6 @@ export const loggerFactory = async(configService: ConfigService): Promise<Params
                 };
             }
         },
-        exclude: configService.get('logger.exclude')
+        exclude: configService.getOrThrow('logger.exclude')
     };
 };

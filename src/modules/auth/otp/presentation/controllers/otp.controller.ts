@@ -3,7 +3,7 @@ import { LoginDto } from '@modules/auth/index/presentation/dtos/login.dto';
 import { SCOPE } from '@modules/auth/otp/domain/constants';
 import {
     EnableOrDisableOtpUseCase,
-    SaveOTPUseCase,
+    SendOtpUseCase,
     SetPhoneOtpProvidersOtpUseCase
 } from '@modules/auth/otp/domain/useCases';
 import { SetProvidersDto } from '@modules/auth/otp/presentation/dtos';
@@ -35,7 +35,7 @@ export class OTPController
     private readonly logger = new Logger(OTPController.name);
 
     constructor(
-        private readonly saveUseCase: SaveOTPUseCase,
+        private readonly saveUseCase: SendOtpUseCase,
         private readonly enableOrDisableUseCase: EnableOrDisableOtpUseCase,
         private readonly setPhoneProvidersUseCase: SetPhoneOtpProvidersOtpUseCase
     )

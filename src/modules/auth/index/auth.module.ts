@@ -33,9 +33,9 @@ import { AuthService,  TokenService } from './domain/services';
         JwtModule.registerAsync({
             inject: [ConfigService],
             useFactory: (config: ConfigService) => ({
-                secret: config.get('jwt.secret'),
-                signOptions: { expiresIn: config.get('jwt.expires') },
-                algorithm: config.get('jwt.algorithm')
+                secret: config.getOrThrow('jwt.secret'),
+                signOptions: { expiresIn: config.getOrThrow('jwt.expires') },
+                algorithm: config.getOrThrow('jwt.algorithm')
             })
         }),
         UserModule,
