@@ -1,7 +1,12 @@
 import { UseInterceptors, applyDecorators } from '@nestjs/common';
 import { FilesFastifyInterceptor } from 'fastify-file-interceptor';
 
-export function UploadFiles(paramName = 'files', limit = 5)
+interface Props  {
+    paramName?: string;
+    limit?: number;
+}
+
+export function UploadFiles({ paramName = 'files', limit = 5 }: Props = {})
 {
     return applyDecorators(
         UseInterceptors(

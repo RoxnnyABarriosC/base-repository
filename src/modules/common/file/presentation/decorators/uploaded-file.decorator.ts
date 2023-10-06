@@ -1,4 +1,5 @@
 import { MimeTypeEnum } from '@modules/common/file/domain/enums';
+import { FileValidator, ValidatorOptions } from '@modules/common/file/presentation/validators/file.validator';
 import {
     FileTypeValidator,
     MaxFileSizeValidator,
@@ -7,21 +8,16 @@ import {
 } from '@nestjs/common';
 import { createSearchRegex, megabytesToBytes } from '@shared/utils';
 
-interface Props {
+interface Props extends ValidatorOptions {
     required?: boolean;
-    maxSize?: number; // In MegaByte
-    fileType: MimeTypeEnum | MimeTypeEnum[];
-    paramName?: string;
 }
-
-export const  UploadedFile = ({ required =  true, fileType, maxSize = 10, paramName = 'file' }: Props) =>
+export const  UploadedFile = ({ required = true, ...options }: Props) =>
 {
-    return _UploadedFile(paramName,
+    return _UploadedFile(
         new ParseFilePipe({
             fileIsRequired: required,
             validators: [
-                new MaxFileSizeValidator({ maxSize: megabytesToBytes(maxSize) }),
-                new FileTypeValidator({ fileType:  Array.isArray(fileType) ? createSearchRegex(fileType) : fileType })
+                new FileValidator(options)
             ]
         })
     );

@@ -6,5 +6,5 @@ export class SaveFileDto
     @IsOptional()
     @IsBoolean()
     @ParseBoolean()
-    public isPrivate = false;
+    public isPrivate;
 }

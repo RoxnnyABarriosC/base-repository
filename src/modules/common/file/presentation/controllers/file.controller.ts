@@ -1,29 +1,15 @@
 import { ManagePermissions, Protected, RequirePermissions } from '@modules/auth/index/presentation/decorators';
 import { UserFilter, UserSort } from '@modules/auth/user/presentation/criterias';
 import { MimeTypeEnum } from '@modules/common/file/domain/enums';
-import {
-    DeleteFileUseCase,
-    GetFileUseCase,
-    ListFilesUseCase,
-    RestoreFileUseCase, SaveFileUseCase, SaveFilesUseCase
-} from '@modules/common/file/domain/useCases';
+import { DeleteFileUseCase, GetFileUseCase, ListFilesUseCase, RestoreFileUseCase, SaveFileUseCase, SaveFilesUseCase } from '@modules/common/file/domain/useCases';
 import { FilePermissionsEnum } from '@modules/common/file/file.permissions';
-import {
-    UploadFile,
-    UploadFiles, UploadedFile, UploadedFiles
-} from '@modules/common/file/presentation/decorators';
+import { UploadFile, UploadFileFields, UploadFiles, UploadedFile, UploadedFiles } from '@modules/common/file/presentation/decorators';
+import { UploadedFileFields } from '@modules/common/file/presentation/decorators/uploaded-file-fields.decorator';
 import { SaveFileDto } from '@modules/common/file/presentation/dtos/save-file.dto';
 import { FileSerializer } from '@modules/common/file/presentation/serializers';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Logger, Patch, Post } from '@nestjs/common';
 import { CriteriaBuilder, PaginationFilter, UrisInterface } from '@shared/criterias';
-import {
-    Criteria,
-    DeletePermanently,
-    Filter, Pagination,
-    PartialRemoved,
-    Sort, UUID,
-    Uris
-} from '@shared/decorators';
+import { Criteria, DeletePermanently, Filter, Pagination, PartialRemoved, Sort, UUID, Uris } from '@shared/decorators';
 import { ALL_MANAGE_PERMISSION } from '@shared/factories';
 import { Serializer } from '@shared/utils';
 import { MulterFile } from 'fastify-file-interceptor';
@@ -142,7 +128,8 @@ export class FileController
     @RequirePermissions(FilePermissionsEnum.SAVE_MANY)
     async saveMany(
         @UploadedFiles({
-            fileType: [MimeTypeEnum.WEBP, MimeTypeEnum.PNG]
+            fileType: [MimeTypeEnum.WEBP, MimeTypeEnum.PNG, MimeTypeEnum.WEBM],
+            maxSize: 1
         }) rawFiles: MulterFile[],
         @Body() dto: SaveFileDto
     )
@@ -150,6 +137,37 @@ export class FileController
         return (await Serializer(
             await this.saveManyUseCase.handle({
                 rawFiles,
+                dto
+            }),
+            FileSerializer
+        )) as typeof FileSerializer[];
+    }
+
+    @Post('many-v2')
+    @HttpCode(HttpStatus.CREATED)
+    @UploadFileFields({
+        fields:[
+            { name: 'file1', maxCount: 1 },
+            { name: 'file2', maxCount: 1 }
+        ]
+    })
+    @RequirePermissions(FilePermissionsEnum.SAVE_MANY)
+    async saveMany2(
+      @UploadedFileFields({
+          fields: [
+              { name: 'file1', fileType: [MimeTypeEnum.WEBM], maxSize: 10 },
+              { name: 'file2' }
+          ],
+          maxSize: 1,
+          fileType: MimeTypeEnum.PNG
+      })
+      { file1:[rawFile1], file2:[rawFile2] }: Record<string, MulterFile[]>,
+      @Body() dto: SaveFileDto
+    )
+    {
+        return (await Serializer(
+            await this.saveManyUseCase.handle({
+                rawFiles: [rawFile1, rawFile2],
                 dto
             }),
             FileSerializer
