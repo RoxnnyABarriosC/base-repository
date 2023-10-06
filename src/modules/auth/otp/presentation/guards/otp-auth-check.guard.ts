@@ -24,7 +24,7 @@ export class OtpAuthCheckGuard implements CanActivate
 
         const bodyProperties = Object.keys(body);
 
-        const requiredOtpProperties = await this.service.getConfigOfUser(user._id);
+        const requiredOtpProperties = await this.service.getConfigOfUser(user);
         const values  = requiredOtpProperties.reduce((prev, otp) =>
         {
             const otpType = this.service.getType(otp);

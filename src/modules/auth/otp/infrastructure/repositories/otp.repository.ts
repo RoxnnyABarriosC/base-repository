@@ -16,14 +16,6 @@ export class OTPRepository extends BaseRepository<OTP>
         super(OTP, repository);
     }
 
-    async getOTPByUserId(userId: string)
-    {
-        return await this.repository.createQueryBuilder('i')
-            .innerJoinAndSelect('i.user', 'u')
-            .where('i.user_id = :userId', { userId })
-            .getOne();
-    }
-
     async restartingAttempts(): Promise<void>
     {
         const queryBuilder = this.repository.createQueryBuilder().update();

@@ -23,12 +23,7 @@ export class SetPhoneOtpProvidersOtpUseCase
 
     async handle({ authUser, dto }: Props)
     {
-        const otp = await this.repository.getOneBy({
-            condition: { user: { _id: authUser._id } },
-            options: {
-                initThrow: true
-            }
-        });
+        const otp = await authUser.otp;
 
         if (!otp?.config?.phone?.enable)
         {

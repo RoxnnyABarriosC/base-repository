@@ -20,9 +20,9 @@ export class OTPService
     )
     { }
 
-    async getConfigOfUser(userId: string)
+    async getConfigOfUser(user: User)
     {
-        const otpConfig = await this.repository.getOTPByUserId(userId);
+        const otpConfig = await user.otp;
         const otpData = otpConfig.config;
 
         return Object.keys(otpData)
@@ -35,7 +35,7 @@ export class OTPService
     {
         const errors = [];
 
-        const _otp = await this.repository.getOTPByUserId(authUser._id) as OTP;
+        const _otp = await authUser.otp;
 
         const otpChecks = otpProperties.map(async(otp) =>
         {

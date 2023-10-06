@@ -3,7 +3,6 @@ import { LoginDto } from '@modules/auth/index/presentation/dtos/login.dto';
 import { SCOPE } from '@modules/auth/otp/domain/constants';
 import {
     EnableOrDisableOtpUseCase,
-    GetOTPUseCase,
     SaveOTPUseCase,
     SetPhoneOtpProvidersOtpUseCase
 } from '@modules/auth/otp/domain/useCases';
@@ -37,7 +36,6 @@ export class OTPController
 
     constructor(
         private readonly saveUseCase: SaveOTPUseCase,
-        private readonly getUseCase: GetOTPUseCase,
         private readonly enableOrDisableUseCase: EnableOrDisableOtpUseCase,
         private readonly setPhoneProvidersUseCase: SetPhoneOtpProvidersOtpUseCase
     )
@@ -57,7 +55,7 @@ export class OTPController
     {
         this.logger.log('Processing get otp request...');
 
-        return (await Serializer(await this.getUseCase.handle({ authUser }), OTPSerializer)) as typeof OTPSerializer;
+        return (await Serializer(await authUser.otp, OTPSerializer)) as typeof OTPSerializer;
     }
 
     @Post(':target')

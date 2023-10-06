@@ -34,7 +34,7 @@ export class SaveOTPUseCase
 
     async handle({ target, user }: Props): Promise<LocalMessageInterface>
     {
-        const otp = await this.repository.getOTPByUserId(user._id);
+        const otp = await user.otp;
 
         if (!otp.config[target].enable)
         {
