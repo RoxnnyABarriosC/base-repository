@@ -2,7 +2,7 @@ import configuration from '@config/configuration';
 import { AuthModule } from '@modules/auth';
 import { CommonModule } from '@modules/common';
 import { HttpModule } from '@nestjs/axios';
-import { CacheModule, CacheStore } from '@nestjs/cache-manager';
+import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
@@ -15,7 +15,7 @@ import {
     ResponseInterceptorProvider,
     SerializerInterceptorProvider
 } from '@shared/providers';
-import { CacheConfigInterface } from '@src/config';
+import { ICacheConfig } from '@src/config';
 import { validateEnv } from '@src/validate-env';
 import { redisStore } from 'cache-manager-redis-yet';
 
@@ -32,7 +32,7 @@ import { redisStore } from 'cache-manager-redis-yet';
             isGlobal: true,
             useFactory: (config: ConfigService) => ({
                 store: redisStore,
-                ...config.getOrThrow<CacheConfigInterface>('cache')
+                ...config.getOrThrow<ICacheConfig>('cache')
             })
         }),
         ScheduleModule.forRoot(),

@@ -1,5 +1,4 @@
-import { ManagePermissions, Protected, RequirePermissions } from '@modules/auth/index/presentation/decorators';
-import { UserFilter, UserSort } from '@modules/auth/user/presentation/criterias';
+import { ManagePermissions, Protected, RequirePermissions } from '@modules/auth/presentation/decorators';
 import { MimeTypeEnum } from '@modules/common/file/domain/enums';
 import { DeleteFileUseCase, GetFileUseCase, ListFilesUseCase, RestoreFileUseCase, SaveFileUseCase, SaveFilesUseCase } from '@modules/common/file/domain/useCases';
 import { FilePermissionsEnum } from '@modules/common/file/file.permissions';
@@ -7,8 +6,9 @@ import { UploadFile, UploadFileFields, UploadFiles, UploadedFile, UploadedFiles 
 import { UploadedFileFields } from '@modules/common/file/presentation/decorators/uploaded-file-fields.decorator';
 import { SaveFileDto } from '@modules/common/file/presentation/dtos/save-file.dto';
 import { FileSerializer } from '@modules/common/file/presentation/serializers';
+import { UserFilter, UserSort } from '@modules/user/presentation/criterias';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Logger, Patch, Post } from '@nestjs/common';
-import { CriteriaBuilder, PaginationFilter, UrisInterface } from '@shared/criterias';
+import { CriteriaBuilder, IUris, PaginationFilter } from '@shared/criterias';
 import { Criteria, DeletePermanently, Filter, Pagination, PartialRemoved, Sort, UUID, Uris } from '@shared/decorators';
 import { ALL_MANAGE_PERMISSION } from '@shared/factories';
 import { Serializer } from '@shared/utils';
@@ -42,7 +42,7 @@ export class FileController
         @Filter() filters: UserFilter,
         @Sort() sorts: UserSort,
         @Pagination() pagination: PaginationFilter,
-        @Uris() uris: UrisInterface
+        @Uris() uris: IUris
     )
     {
         const criteria = new CriteriaBuilder({

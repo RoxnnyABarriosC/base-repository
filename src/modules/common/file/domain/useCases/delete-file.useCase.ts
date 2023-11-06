@@ -3,7 +3,7 @@ import { MinioService } from '@modules/common/file/domain/services';
 import { FileRepository } from '@modules/common/file/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
 
-interface Props {
+interface IDeleteFileUseCaseProps {
     id: string;
     deletePermanently: boolean;
 }
@@ -19,7 +19,7 @@ export class DeleteFileUseCase
     )
     { }
 
-    async handle({ id, deletePermanently }: Props): Promise<File>
+    async handle({ id, deletePermanently }: IDeleteFileUseCaseProps): Promise<File>
     {
         let file: File;
 

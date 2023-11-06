@@ -2,16 +2,19 @@ import { Abstract, DynamicModule, INestApplicationContext, Type } from '@nestjs/
 import { ContextId } from '@nestjs/core';
 import { ClassConstructor, ClassTransformOptions, TransformFnParams, TransformOptions, TransformationType, plainToClass } from 'class-transformer';
 
-export interface Transformer {
+export interface ITransformer
+{
     transform(params: TransformFnParams): Promise<unknown>;
 }
 
-export interface TransformerFunction {
+export interface ITransformerFunction
+{
     (params: AsyncTransformerParams): Promise<unknown>;
 }
 
-export interface TransformerResolver {
-    resolveTransformer(options: TransformerResolverOptions): Promise<Transformer>;
+export interface ITransformerResolver
+{
+    resolveTransformer(options: TransformerResolverOptions): Promise<ITransformer>;
 }
 
 export type TransformerResolverOptions = {
@@ -32,7 +35,7 @@ export type AsyncTransformWithOptions = BaseTransformOptions & {
 };
 
 export type AsyncTransformOptions = BaseTransformOptions & {
-    body?: TransformerFunction;
+    body?: ITransformerFunction;
 };
 
 export type AnyTransformOptions = AsyncTransformOptions | AsyncTransformWithOptions;
@@ -47,20 +50,20 @@ export type TransformEntry = {
 };
 
 type Token<T> = string | symbol | Type<T> | Abstract<T>;
-type AbstractTransformerType = Abstract<Transformer>;
-type TransformerType = Type<Transformer>;
+type AbstractTransformerType = Abstract<ITransformer>;
+type TransformerType = Type<ITransformer>;
 type TransformerToken = string | symbol | (() => AbstractTransformerType | TransformerType);
 type ResolvedTransformerToken = string | symbol | AbstractTransformerType | TransformerType;
 
 const TRANSFORM_ENTRIES = Symbol('TRANSFORM_ENTRIES');
 
-class TransformContext implements TransformerResolver
+class TransformContext implements ITransformerResolver
 {
     public appContext: INestApplicationContext;
     public appContextId: ContextId | undefined;
-    public resolverToken: Token<TransformerResolver> | undefined;
+    public resolverToken: Token<ITransformerResolver> | undefined;
 
-    async _initialize(appContext: INestApplicationContext, appContextId: ContextId | undefined, resolverToken: Token<TransformerResolver> | undefined): Promise<void>
+    async _initialize(appContext: INestApplicationContext, appContextId: ContextId | undefined, resolverToken: Token<ITransformerResolver> | undefined): Promise<void>
     {
         if (this.appContext)
         {
@@ -80,7 +83,7 @@ class TransformContext implements TransformerResolver
         }
     }
 
-    async getTransformer(options: AsyncTransformWithOptions): Promise<Transformer>
+    async getTransformer(options: AsyncTransformWithOptions): Promise<ITransformer>
     {
         const resolvedOptions = this.resolveOptions(options);
         const { nestContext, strict, token } = resolvedOptions;
@@ -100,7 +103,7 @@ class TransformContext implements TransformerResolver
         options: TransformerResolverOptions & {
             nestContext: INestApplicationContext;
         }
-    ): Promise<Transformer>
+    ): Promise<ITransformer>
     {
         const { nestContext, strict, contextId, scoped, token } = options;
 
@@ -178,21 +181,22 @@ function resolveToken(token: TransformerToken): ResolvedTransformerToken
     return typeof token === 'function' ? token() : token;
 }
 
-export interface UseContainerOptions {
+export interface IUseContainerOptions
+{
     contextId?: ContextId;
-    resolver?: Token<TransformerResolver>;
+    resolver?: Token<ITransformerResolver>;
 }
 
-export async function useContainer(_appContext: INestApplicationContext, options: UseContainerOptions = {}): Promise<void>
+export async function useContainer(_appContext: INestApplicationContext, options: IUseContainerOptions = {}): Promise<void>
 {
     getContext()._initialize(_appContext, options.contextId, options.resolver);
 }
 
-export function AsyncTransform(fn: TransformerFunction, options?: AsyncTransformOptions): PropertyDecorator;
+export function AsyncTransform(fn: ITransformerFunction, options?: AsyncTransformOptions): PropertyDecorator;
 // eslint-disable-next-line no-redeclare
 export function AsyncTransform(options: AsyncTransformOptions & { body: TransformerToken }): PropertyDecorator;
 // eslint-disable-next-line no-redeclare
-export function AsyncTransform(_body: TransformerFunction | (AsyncTransformOptions & { body: TransformerToken }), _options: AsyncTransformOptions = {}): PropertyDecorator
+export function AsyncTransform(_body: ITransformerFunction | (AsyncTransformOptions & { body: TransformerToken }), _options: AsyncTransformOptions = {}): PropertyDecorator
 {
     let options = _options;
 

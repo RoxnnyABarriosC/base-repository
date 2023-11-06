@@ -1,13 +1,13 @@
-import { FileValidator, ValidatorOptions } from '@modules/common/file/presentation/validators/file.validator';
+import { FileValidator, IValidatorOptions } from '@modules/common/file/presentation/validators/file.validator';
 import {
     ParseFilePipe,
     UploadedFile as _UploadedFile
 } from '@nestjs/common';
 
-interface Props extends ValidatorOptions {
+interface IUploadedFileProps extends IValidatorOptions {
     required?: boolean;
 }
-export const  UploadedFile = ({ required = true, ...options }: Props) =>
+export const  UploadedFile = ({ required = true, ...options }: IUploadedFileProps) =>
 {
     return _UploadedFile(
         new ParseFilePipe({

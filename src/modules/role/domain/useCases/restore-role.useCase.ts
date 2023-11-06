@@ -1,0 +1,24 @@
+import { Role } from '@modules/role/domain/entities';
+import { RoleRepository } from '@modules/role/infrastructure/repositories';
+import { Injectable, Logger } from '@nestjs/common';
+
+declare interface IRestoreRoleUseCaseProps {
+    id: string;
+}
+
+@Injectable()
+export class RestoreRoleUseCase
+{
+    private readonly logger = new Logger(RestoreRoleUseCase.name);
+
+    constructor(
+        private readonly repository: RoleRepository
+    )
+    {}
+
+    async handle({ id }: IRestoreRoleUseCaseProps): Promise<Role>
+    {
+        this.logger.log('Restoring role...');
+        return await this.repository.restore(id);
+    }
+}

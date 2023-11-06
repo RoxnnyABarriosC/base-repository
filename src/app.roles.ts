@@ -1,6 +1,6 @@
-import { AdminRole, ModeratorRole } from '@modules/auth/role/domain/roles';
-import { RolePermissions } from '@modules/auth/role/role.permissions';
-import { UserPermissions } from '@modules/auth/user/user.permissions';
+import { AdminRole, ModeratorRole } from '@modules/role/domain/roles';
+import { RolePermissions } from '@modules/role/role.permissions';
+import { UserPermissions } from '@modules/user/user.permissions';
 
 export class AppRolesFactory
 {

@@ -1,4 +1,4 @@
-import { MyStore } from '@modules/common/store';
+import { IMyStore } from '@modules/common/store';
 import {
     CallHandler,
     ExecutionContext,
@@ -6,7 +6,7 @@ import {
     NestInterceptor, SetMetadata
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { AppResponseInterface } from '@shared/interceptors';
+import { IAppResponse } from '@shared/interceptors';
 import { FastifyReply } from 'fastify';
 import { ClsService } from 'nestjs-cls';
 import { Observable } from 'rxjs';
@@ -19,12 +19,12 @@ export const NotInterceptResponse = () => SetMetadata(NOT_INTERCEPT_RESPONSE, tr
 export class ResponseInterceptor implements NestInterceptor
 {
     constructor(
-        private readonly store: ClsService<MyStore>,
+        private readonly store: ClsService<IMyStore>,
         private readonly reflector: Reflector
     )
     {}
 
-    intercept(context: ExecutionContext, next: CallHandler): Observable<AppResponseInterface>
+    intercept(context: ExecutionContext, next: CallHandler): Observable<IAppResponse>
     {
         const notInterceptResponse = this.reflector.getAllAndOverride(NOT_INTERCEPT_RESPONSE, [
             context.getHandler(),
@@ -41,7 +41,7 @@ export class ResponseInterceptor implements NestInterceptor
             {
                 const res = context.switchToHttp().getResponse<FastifyReply>();
 
-                return <AppResponseInterface>{
+                return <IAppResponse>{
                     folio: res.getHeader('x-correlation-id').toString(),
                     isArray: Array.isArray(data),
                     isCached: false,

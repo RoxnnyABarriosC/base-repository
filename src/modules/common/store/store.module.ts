@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ClsModule, ClsStore } from 'nestjs-cls';
 
-export interface MyStore extends ClsStore {
+export interface IMyStore extends ClsStore {
     res: {
         metadata: object
         pagination: object

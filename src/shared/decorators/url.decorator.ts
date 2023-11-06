@@ -1,11 +1,11 @@
 import configuration from '@config/configuration';
 import { ExecutionContext, createParamDecorator } from '@nestjs/common';
-import { UrisInterface } from '@shared/criterias';
+import { IUris } from '@shared/criterias';
 import { FastifyRequest } from 'fastify';
 
 
 export const Uris = createParamDecorator(
-    (data: unknown, ctx: ExecutionContext): UrisInterface =>
+    (data: unknown, ctx: ExecutionContext): IUris =>
     {
         const { server: { prefix } } = configuration();
 

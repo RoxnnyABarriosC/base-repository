@@ -1,5 +1,5 @@
 
-export interface LocalMessageInterface
+export interface ILocalMessage
 {
     message: string;
     messageCode: string;

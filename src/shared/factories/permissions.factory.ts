@@ -4,17 +4,17 @@ export type GroupPermissions<E> = {
     permissions: E[]
 }
 
-interface PermissionsFactoryMethodsInterface<E> {
+interface IPermissionsFactoryMethods<E> {
     Get(original?: boolean): string[];
-    Reset(): PermissionsFactoryMethodsInterface<E>;
+    Reset(): IPermissionsFactoryMethods<E>;
     Group(): GroupPermissions<E>;
-    Manage(): PermissionsFactoryMethodsInterface<E>;
-    Exclude(...permissions: E[]): PermissionsFactoryMethodsInterface<E>;
+    Manage(): IPermissionsFactoryMethods<E>;
+    Exclude(...permissions: E[]): IPermissionsFactoryMethods<E>;
 }
 
 export interface PermissionsFactoryInterface<E> {
-    I: PermissionsFactoryMethodsInterface<E>;
-    new(): PermissionsFactoryMethodsInterface<E>;
+    I: IPermissionsFactoryMethods<E>;
+    new(): IPermissionsFactoryMethods<E>;
 }
 
 export const ALL_MANAGE_PERMISSION = 'all:manage';

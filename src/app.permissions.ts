@@ -1,6 +1,6 @@
-import { RolePermissions, RolePermissionsEnum } from '@modules/auth/role/role.permissions';
-import { UserPermissions, UserPermissionsEnum } from '@modules/auth/user/user.permissions';
 import { OtherPermissions, OtherPermissionsEnum } from '@modules/common/index/other.permissions';
+import { RolePermissions, RolePermissionsEnum } from '@modules/role/role.permissions';
+import { UserPermissions, UserPermissionsEnum } from '@modules/user/user.permissions';
 import { ALL_MANAGE_PERMISSION, GroupPermissions } from '@shared/factories';
 
 export const allPermissionsEnums = [

@@ -5,7 +5,7 @@ import { MulterFile } from 'fastify-file-interceptor';
 import { File } from '../entities/file.entity';
 import { MinioService } from '../services/minio.service';
 
-interface Props {
+interface ISaveFileUseCaseProps {
     rawFile: MulterFile;
     dto: SaveFileDto
 }
@@ -21,7 +21,7 @@ export class SaveFileUseCase
     )
     {}
 
-    async handle({ rawFile, dto: { isPrivate } }: Props): Promise<File>
+    async handle({ rawFile, dto: { isPrivate } }: ISaveFileUseCaseProps): Promise<File>
     {
         let file = new File(rawFile, isPrivate);
 

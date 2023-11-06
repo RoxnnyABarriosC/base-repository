@@ -1,0 +1,55 @@
+import { OtpConfigException } from '@modules/otp/domain/exceptions';
+import { OTPService } from '@modules/otp/domain/services';
+import { User } from '@modules/user/domain/entities';
+import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
+import { EncodeText } from '@shared/utils';
+
+export const REQUIRED_OTP_PROPERTIES = 'requiredOtpProperties';
+
+@Injectable()
+export class OtpAuthCheckGuard implements CanActivate
+{
+    private readonly logger = new Logger(OtpAuthCheckGuard.name);
+
+    constructor(private readonly service: OTPService)
+    {
+    }
+
+
+    async canActivate(context: ExecutionContext): Promise<boolean>
+    {
+        const request = context.switchToHttp().getRequest<Request & { user: User }>();
+
+        const {  body, user } = request;
+
+        const bodyProperties = Object.keys(body);
+
+        const requiredOtpProperties = await this.service.getConfigOfUser(user);
+
+        request[REQUIRED_OTP_PROPERTIES] = requiredOtpProperties;
+
+        if (!requiredOtpProperties.length)
+        {
+            return true;
+        }
+
+        const values  = requiredOtpProperties.reduce((prev, otp) =>
+        {
+            const otpType = this.service.getType(otp);
+
+            return {
+                ...prev,
+                [otpType]: EncodeText(user[otpType], otpType)
+            };
+        }, {});
+
+        const existOtpProperties = requiredOtpProperties.every((c) => bodyProperties.includes(c));
+
+        if (!existOtpProperties || !requiredOtpProperties.some(c => !!body[c]))
+        {
+            throw new OtpConfigException(requiredOtpProperties, values);
+        }
+
+        return true;
+    }
+}

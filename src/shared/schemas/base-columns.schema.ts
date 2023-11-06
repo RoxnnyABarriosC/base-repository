@@ -1,13 +1,13 @@
 import { EntitySchemaColumnOptions } from 'typeorm';
 
-interface BaseColumns {
+interface IBaseColumns {
     _id: EntitySchemaColumnOptions;
     createdAt: EntitySchemaColumnOptions;
     updatedAt: EntitySchemaColumnOptions;
     deletedAt?: EntitySchemaColumnOptions;
 }
 
-export const BaseColumnsSchema: BaseColumns = {
+export const BaseColumnsSchema: IBaseColumns = {
     _id: {
         type: 'uuid',
         primary: true,

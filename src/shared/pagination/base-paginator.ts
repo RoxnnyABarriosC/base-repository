@@ -1,7 +1,8 @@
 import { CriteriaBuilder, FilterCriteria, PaginationCriteria, SortCriteria } from '@shared/criterias';
 import { PaginatorSerializer } from '@shared/pagination/paginator.serializer';
 
-export interface ConfigPaginator {
+export interface IPaginatorConfig
+{
     metadata?:  object,
     helper?:  (data: any) => Promise<any>,
     withRaw?:  boolean
@@ -31,7 +32,7 @@ export abstract class BasePaginator
     protected readonly withRaw?: boolean;
     protected readonly useTakeSkip?: boolean;
 
-    protected constructor(criteria: CriteriaBuilder, { helper = undefined, withRaw = false, useTakeSkip = false, metadata = {} }: ConfigPaginator = {})
+    protected constructor(criteria: CriteriaBuilder, { helper = undefined, withRaw = false, useTakeSkip = false, metadata = {} }: IPaginatorConfig = {})
     {
         this.total = 0;
         this._perPage = 5;

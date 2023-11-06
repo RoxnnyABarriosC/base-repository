@@ -1,5 +1,5 @@
 export enum MimeTypeEnum {
-    // Imágenes
+    // Images
     JPEG = 'image/jpeg',
     PNG = 'image/png',
     GIF = 'image/gif',
@@ -7,7 +7,7 @@ export enum MimeTypeEnum {
     WEBP = 'image/webp',
     SVG = 'image/svg+xml',
 
-    // Documentos
+    // Documents
     PDF = 'application/pdf',
     DOC = 'application/msword',
     DOCX = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -16,14 +16,14 @@ export enum MimeTypeEnum {
     PPT = 'application/vnd.ms-powerpoint',
     PPTX = 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
 
-    // Audio
+    // Audios
     MP3 = 'audio/mpeg',
     WAV = 'audio/wav',
     OGG = 'audio/ogg',
     AAC = 'audio/aac',
     WMA = 'audio/x-ms-wma',
 
-    // Video
+    // Videos
     MP4 = 'video/mp4',
     AVI = 'video/x-msvideo',
     MOV = 'video/quicktime',

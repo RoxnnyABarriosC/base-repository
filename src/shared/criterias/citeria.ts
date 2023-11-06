@@ -1,18 +1,18 @@
 import { Filter, Sort } from '@shared/abstractClass';
 import {
     FilterCriteria,
+    IUris,
     PaginationCriteria,
     PaginationFilter,
-    SortCriteria,
-    UrisInterface
+    SortCriteria
 } from '@shared/criterias';
 
 
-declare interface Props {
+declare interface ICriteriaBuilderProps {
     filters: Filter;
     sorts: Sort;
     pagination: PaginationFilter;
-    uris: UrisInterface;
+    uris: IUris;
 }
 
 export class CriteriaBuilder
@@ -21,7 +21,7 @@ export class CriteriaBuilder
     private readonly filter: FilterCriteria;
     private readonly pagination: PaginationCriteria;
 
-    constructor({ filters, sorts, pagination, uris }: Props)
+    constructor({ filters, sorts, pagination, uris }: ICriteriaBuilderProps)
     {
         this.filter = new FilterCriteria(filters);
         this.sort = new SortCriteria(sorts);

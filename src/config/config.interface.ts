@@ -3,33 +3,38 @@ import { ClassSerializerInterceptorOptions } from '@nestjs/common/serializer/cla
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
-export interface UriInterface {
+export interface IUriConfig
+{
     api: string;
     web: string;
 }
 
-export interface ServerInterface {
-    url: UriInterface;
+export interface IServerConfig
+{
+    url: IUriConfig;
     prefix: string;
     version: string;
     port: number;
     whiteList: string;
 }
 
-export interface LoggerInterface {
+export interface ILoggerConfig
+{
     singleLine: boolean;
     colorize: boolean;
     exclude: Parameters<MiddlewareConfigProxy['exclude']>;
 }
 
-export interface SentryInterface {
+export interface ISentryConfig
+{
     dsn: string;
     enable: boolean;
 }
 
 export declare type AppLocale = 'en' | 'es';
 
-export interface JwtConfigInterface {
+export interface IJwtConfig
+{
     secret: string;
     expires: string;
     refreshExpires: string;
@@ -40,7 +45,7 @@ export interface JwtConfigInterface {
     checkBlackList: boolean;
 }
 
-export interface DBInterface extends  PostgresConnectionOptions {
+export interface IDBConfig extends  PostgresConnectionOptions {
     type: 'postgres';
     host: string;
     port: number;
@@ -54,22 +59,26 @@ export interface DBInterface extends  PostgresConnectionOptions {
     autoLoadEntities?: boolean;
 }
 
-export interface PaginationInterface {
+export interface IPaginationConfig
+{
     limit: number;
 }
 
-export interface BCryptTypeInterface {
+export interface IBCryptTypeConfig
+{
     type: string;
     saltRounds: number;
     algorithm: any;
 }
 
-export interface EncryptionInterface {
-    bcrypt: BCryptTypeInterface;
+export interface IEncryptionConfig
+{
+    bcrypt: IBCryptTypeConfig;
     default: 'bcrypt' | 'md5';
 }
 
-export interface CacheConfigInterface {
+export interface ICacheConfig
+{
     socket: {
         host: string;
         port: number;
@@ -77,7 +86,7 @@ export interface CacheConfigInterface {
     password: string;
 }
 
-type SMTPConfigInterface = {
+type ISMTPConfig = {
     host: string;
     port: number;
     username: string;
@@ -89,7 +98,8 @@ type SMTPConfigInterface = {
     }
 };
 
-export interface S3ConfigInterface {
+export interface IS3Config
+{
     host: string;
     exposeHost: string;
     exposeHttps: boolean;
@@ -104,7 +114,8 @@ export interface S3ConfigInterface {
     expire: number;
 }
 
-export interface TasksInterfaces {
+export interface ITasksConfig
+{
     logger: {
         deleteTraceLog: string;
     },
@@ -113,12 +124,13 @@ export interface TasksInterfaces {
     }
 }
 
-export interface OTPInterface {
+export interface IOTPConfig
+{
     codeExpire: string;
     limitAttempts: number
 }
 
-export interface TwilioInterface {
+export interface ITwilioConfig {
     accountSid: string;
     authToken: string;
     fromNumber: string;
@@ -126,21 +138,21 @@ export interface TwilioInterface {
 
 export interface ConfigInterface {
     environment: string;
-    server: ServerInterface;
-    logger: LoggerInterface;
+    server: IServerConfig;
+    logger: ILoggerConfig;
     locale: AppLocale;
-    sentry: SentryInterface;
-    jwt: JwtConfigInterface;
+    sentry: ISentryConfig;
+    jwt: IJwtConfig;
     setCookieSecure: boolean;
     setCookieSameSite: boolean | 'none' | 'lax' | 'strict';
-    db: DBInterface;
-    pagination: PaginationInterface;
-    encryption: EncryptionInterface;
-    cache: CacheConfigInterface;
-    smtp: SMTPConfigInterface;
-    s3: S3ConfigInterface;
+    db: IDBConfig;
+    pagination: IPaginationConfig;
+    encryption: IEncryptionConfig;
+    cache: ICacheConfig;
+    smtp: ISMTPConfig;
+    s3: IS3Config;
     serializer: Partial<ClassTransformOptions>
-    tasks: TasksInterfaces;
-    otp: OTPInterface;
-    twilio: TwilioInterface;
+    tasks: ITasksConfig;
+    otp: IOTPConfig;
+    twilio: ITwilioConfig;
 }

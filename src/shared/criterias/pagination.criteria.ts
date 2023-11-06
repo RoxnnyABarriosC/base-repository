@@ -1,7 +1,7 @@
 import configuration from '@config/configuration';
 import { PaginationFilter } from '@shared/criterias/pagination-filter';
 
-export interface UrisInterface {
+export interface IUris {
     fullUrl: string;
     base: string;
 }
@@ -15,7 +15,7 @@ export class PaginationCriteria
     private readonly host: string;
     private readonly url: string;
 
-    constructor(pagination: PaginationFilter, uris: UrisInterface)
+    constructor(pagination: PaginationFilter, uris: IUris)
     {
         const config = configuration();
         this.url = uris.fullUrl;
