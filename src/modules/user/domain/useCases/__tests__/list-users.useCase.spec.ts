@@ -1,7 +1,7 @@
-import { User } from '@modules/auth/user/domain/entities';
-import { ListUsersUseCase } from '@modules/auth/user/domain/useCases';
-import { UserRepository } from '@modules/auth/user/infrastructure/repositories';
 import { IMyStore, StoreModule } from '@modules/common/store';
+import { User } from '@modules/user/domain/entities';
+import { ListUsersUseCase } from '@modules/user/domain/useCases';
+import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ClsService } from 'nestjs-cls';
 import { afterEach, describe, expect, it, vi } from 'vitest';

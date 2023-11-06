@@ -1,6 +1,6 @@
-import { User } from '@modules/auth/user/domain/entities';
-import { DeleteUserUseCase } from '@modules/auth/user/domain/useCases';
-import { UserRepository } from '@modules/auth/user/infrastructure/repositories';
+import { User } from '@modules/user/domain/entities';
+import { DeleteUserUseCase } from '@modules/user/domain/useCases';
+import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundCustomException } from '@shared/exceptions';
 import { I18nContext } from 'nestjs-i18n';
