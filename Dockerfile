@@ -2,6 +2,8 @@ FROM node:18-alpine as deps
 
 WORKDIR /app
 
+RUN chmod -R 777 /app
+
 RUN apk add bash dumb-init curl
 RUN curl -s https://raw.githubusercontent.com/Intervox/node-webp/latest/bin/install_webp | bash
 RUN apk add --no-cache --update libwebp-tools

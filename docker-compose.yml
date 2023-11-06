@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   api:
-    container_name: base_repository_api
+    container_name: ${PROJECT_NAME:-base_repository}_api
     restart: always
     build:
       context: .
@@ -10,11 +10,13 @@ services:
       target: ${STAGE:-dev}
       args:
         - PORT=${API_PORT:-4000}
+    depends_on:
+      - db
     ports:
       - "9228:9228"
     labels:
       - traefik.enable=true
-      - traefik.docker.network=internal_base_repository_network
+      - traefik.docker.network=internal_network
       - traefik.http.routers.api.entrypoints=${ENTRYPOINT:-https}
       - traefik.http.routers.api.tls=${TLS:-true}
       - traefik.http.routers.api.tls.certresolver=lets-encrypt
@@ -27,11 +29,11 @@ services:
     volumes:
       - api:/app
     networks:
-      - internal_base_repository_network
-      - external_base_repository_network
+      - internal_network
+      - external_network
 
   db:
-    container_name: base_repository_db
+    container_name: ${PROJECT_NAME:-base_repository}_db
     restart: always
     build:
       context: docker/postgres/
@@ -43,11 +45,11 @@ services:
     volumes:
       - data:/var/lib/postgresql/data
     networks:
-      - internal_base_repository_network
-      - external_base_repository_network
+      - internal_network
+      - external_network
 
   s3:
-    container_name: base_repository_s3
+    container_name: ${PROJECT_NAME:-base_repository}_s3
     restart: always
     image: minio/minio
     environment:
@@ -55,7 +57,7 @@ services:
       MINIO_ROOT_PASSWORD: ${S3_PASSWORD:-baserepository}
     labels:
       - traefik.enable=true
-      - traefik.docker.network=internal_base_repository_network
+      - traefik.docker.network=internal_network
       # Configuración para el servicio de almacenamiento
       - traefik.http.routers.s3_storage.tls=${TLS:-true}
       - traefik.http.routers.s3_storage.tls.certresolver=lets-encrypt
@@ -75,13 +77,13 @@ services:
       - traefik.http.services.s3_panel.loadbalancer.server.port=9001
     volumes:
       - s3:/data
-    networks:
-      - internal_base_repository_network
-      - external_base_repository_network
     command: server --address 0.0.0.0:9000 --console-address 0.0.0.0:9001 /data
+    networks:
+      - internal_network
+      - external_network
 
   redis:
-    container_name: base_repository_redis
+    container_name: ${PROJECT_NAME:-base_repository}_redis
     restart: always
     image: bitnami/redis:latest
     environment:
@@ -90,18 +92,18 @@ services:
     volumes:
       - redis:/bitnami/redis/data
     networks:
-      - internal_base_repository_network
-      - external_base_repository_network
+      - internal_network
+      - external_network
 
   proxy:
-    container_name: base_repository_proxy
+    container_name: ${PROJECT_NAME:-base_repository}_proxy
     image: traefik:latest
     ports:
       - "80:80"
       - "443:443"
     labels:
       - traefik.enable=true
-      - traefik.docker.network=internal_base_repository_network
+      - traefik.docker.network=internal_network
       - traefik.http.routers.proxy.tls=${TLS:-true}
       - traefik.http.routers.proxy.tls.certresolver=lets-encrypt
       - traefik.http.routers.proxy.entrypoints=${ENTRYPOINT:-https}
@@ -111,9 +113,9 @@ services:
       - traefik.http.middlewares.auth.basicauth.users=${LOAD_USERS:-nodebaserepository:$$apr1$$RTZSd6uA$$9zpPRgArFsHX2UWgPNXL..}
       - traefik.http.middlewares.auth.basicauth.usersfile=/usersfile
       - traefik.http.routers.proxy.middlewares=auth
-#      # Middleware Redirect
+      # Middleware Redirect
       - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
-#      # Global Redirect to https
+      # Global Redirect to https
       - traefik.http.routers.redirs.entrypoints=http
       - ${APPLY_REDIRECT:+traefik.http.routers.redirs.middlewares=redirect-to-https}
       - ${APPLY_REDIRECT:+traefik.http.routers.redirs.rule=}hostregexp(`{host:.+}`)
@@ -122,8 +124,8 @@ services:
       - ./.traefik/letsencrypt:/letsencrypt
       - ./usersfile:/usersfile
     networks:
-      - internal_base_repository_network
-      - external_base_repository_network
+      - internal_network
+      - external_network
     command:
       - "--log.level=INFO"
       - "--api.insecure=true"
@@ -137,18 +139,23 @@ services:
       - "--certificatesresolvers.lets-encrypt.acme.httpchallenge.entrypoint=http"
 
 networks:
-  internal_base_repository_network:
+  internal_network:
     internal: true
-    name:  internal_base_repository_network
-  external_base_repository_network:
+    name:  internal_${PROJECT_NAME:-base_repository}_network
+  external_network:
     external: true
+    name:  external_${PROJECT_NAME:-base_repository}_network
 
 volumes:
   data:
     driver: "local"
+    name: ${PROJECT_NAME:-base_repository}_data
   s3:
     driver: "local"
+    name: ${PROJECT_NAME:-base_repository}_s3
   redis:
     driver: "local"
+    name: ${PROJECT_NAME:-base_repository}_redis
   api:
     driver: "local"
+    name: ${PROJECT_NAME:-base_repository}_api

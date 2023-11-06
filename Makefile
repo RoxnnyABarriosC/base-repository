@@ -8,7 +8,13 @@ network:
 	@echo '************                               ************'
 	@echo '************         CREATE NETWORK        ************'
 	@echo '************                               ************'
-	sh network.sh
+	sh network.sh $${PROJECT_NAME:-base_repository}
+
+volume:
+	@echo '************                               ************'
+	@echo '************         CREATE VOLUME         ************'
+	@echo '************                               ************'
+	sh volume.sh $${PROJECT_NAME:-base_repository}
 
 up:
 	@echo '************                               ************'
@@ -66,7 +72,7 @@ migrate:
 
 seed:
 	@echo '************                               ************'
-	@echo '************        SEED DB    	      ************'
+	@echo '************          SEED DB    	      ************'
 	@echo '************                               ************'
 	docker compose exec api npm run seed
 

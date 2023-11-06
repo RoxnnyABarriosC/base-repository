@@ -6,6 +6,7 @@ export function validateEnv(config: Record<string, any>): Record<string, any>
         NODE_ENV: str({
             choices: ['development', 'test', 'production', 'staging']
         }),
+        PROJECT_NAME: str({ default: 'base_repository' }),
         PORT: port({ default: 3000 }),
         URL_API: url({ default:'http://api.localhost' }),
         URL_WEB: url({ default: 'http://app.localhost' }),

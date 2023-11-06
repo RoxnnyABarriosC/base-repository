@@ -1,6 +1,8 @@
+require('dotenv').config();
+
 module.exports = {
     apps : [{
-        name: 'base-repository-api',
+        name: `${process.env.PROJECT_NAME}_api`,
         script: './dist/main.js',
         error_file: './dist/logs/err.log',
         watch: false,

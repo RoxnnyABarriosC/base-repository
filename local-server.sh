@@ -1,6 +1,7 @@
 #!/bin/bash
 
-#    APPLY_REDIRECT=true;
+#    APPLY_REDIRECT=true
+#    PROJECT_NAME=base_repository
 
 STAGE=dev \
     API_PORT=3000 \
