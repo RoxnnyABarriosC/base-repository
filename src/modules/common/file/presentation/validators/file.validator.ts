@@ -4,12 +4,13 @@ import { BadRequestCustomException } from '@shared/exceptions';
 import { megabytesToBytes } from '@shared/utils';
 import { MulterFile } from 'fastify-file-interceptor';
 
-export interface ValidatorOptions {
+export interface IValidatorOptions
+{
     maxSize?: number;
     fileType?: MimeTypeEnum | MimeTypeEnum[];
 }
 
-export class FileValidator extends _FileValidator<ValidatorOptions>
+export class FileValidator extends _FileValidator<IValidatorOptions>
 {
     private errors = [];
     buildErrorMessage(file: any): string

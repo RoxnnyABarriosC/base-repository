@@ -12,7 +12,7 @@ import { CustomExceptionsFilter } from '@shared/filters';
 import { UserAgentMiddleware } from '@shared/middlewares';
 import { ValidationPipe } from '@shared/pipes';
 import { handlebars } from '@shared/utils';
-import { ServerInterface } from '@src/config';
+import { IServerConfig } from '@src/config';
 import cookieParser from 'cookie-parser';
 import { contentParser } from 'fastify-file-interceptor';
 import qs from 'fastify-qs';
@@ -68,7 +68,7 @@ void (async(): Promise<void> =>
 
         const { port, prefix, url, version, whiteList } = app
             .get<ConfigService>(ConfigService)
-            .get<ServerInterface>('server');
+            .get<IServerConfig>('server');
 
         const _whiteList = whiteList.split(',').filter(u => u.length);
         _whiteList.push(url.web);

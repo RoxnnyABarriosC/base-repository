@@ -1,4 +1,4 @@
-import { User } from '@modules/auth/user/domain/entities';
+import { User } from '@modules/user/domain/entities';
 import { DefaultSorts, Sort } from '@shared/abstractClass';
 import { IsSort } from '@shared/decorators';
 import { SortEnum } from '@shared/enums';

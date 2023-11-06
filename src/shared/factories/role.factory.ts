@@ -1,16 +1,17 @@
 import { ALL_MANAGE_PERMISSION } from '@shared/factories/permissions.factory';
 
-export interface RoleFactoryMethodsInterface {
+export interface IRoleFactoryMethods
+{
     Get(): string[];
     Name: string;
-    AllManage(): RoleFactoryMethodsInterface;
-    Extends(...permissions: any[][]): RoleFactoryMethodsInterface;
-    Exclude(...permissions: any[]): RoleFactoryMethodsInterface;
+    AllManage(): IRoleFactoryMethods;
+    Extends(...permissions: any[][]): IRoleFactoryMethods;
+    Exclude(...permissions: any[]): IRoleFactoryMethods;
 }
 
 export interface RoleFactoryInterface {
-    I: RoleFactoryMethodsInterface;
-    new(): RoleFactoryMethodsInterface;
+    I: IRoleFactoryMethods;
+    new(): IRoleFactoryMethods;
 }
 
 export function Role(name: string)

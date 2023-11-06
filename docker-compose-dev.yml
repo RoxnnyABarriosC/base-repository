@@ -5,32 +5,6 @@ services:
     volumes:
       - .:/app:cached
 
-  doc:
-    container_name: base_repository_api_doc
-    restart: always
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: doc
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=internal_base_repository_network
-      - traefik.http.routers.doc.entrypoints=${ENTRYPOINT:-https}
-      - traefik.http.routers.doc.tls=${TLS:-true}
-      - traefik.http.routers.doc.tls.certresolver=lets-encrypt
-      - traefik.http.routers.doc.rule=Host(`${DOC_API_DOMAIN:-doc.api.localhost}`)
-      - traefik.http.services.doc.loadbalancer.server.port=8080
-      - traefik.http.middlewares.auth.basicauth.users=${LOAD_USERS:-nodebaserepository:$$apr1$$RTZSd6uA$$9zpPRgArFsHX2UWgPNXL..}
-      - traefik.http.middlewares.auth.basicauth.usersfile=/usersfile
-      - traefik.http.routers.doc.middlewares=auth
-    depends_on:
-      - api
-    volumes:
-      - ./usersfile:/usersfile
-    networks:
-      - internal_base_repository_network
-      - external_base_repository_network
-
   db:
     ports:
       - "5433:5432"

@@ -4,7 +4,8 @@ import { BadRequestCustomException } from '@shared/exceptions';
 import { megabytesToBytes } from '@shared/utils';
 import { MulterFile } from 'fastify-file-interceptor';
 
-export interface ValidatorOptions {
+export interface IValidatorOptions
+{
     fields?: {
         name: string;
         maxSize?: number;
@@ -16,7 +17,7 @@ export interface ValidatorOptions {
 }
 
 
-export class FileFieldsValidator extends FileValidator<ValidatorOptions>
+export class FileFieldsValidator extends FileValidator<IValidatorOptions>
 {
     private errors = [];
     buildErrorMessage(file: any): string

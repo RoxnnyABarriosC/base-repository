@@ -1,33 +1,33 @@
-export declare interface ByOptionsInterface
+export declare interface IByOptions
 {
     initThrow?: boolean | undefined;
     populate?: string | string[] | boolean | undefined;
 }
 
-export declare interface GetOneParamsInterface {
+export declare interface IGetOneParams {
     id: string;
     withDeleted?: boolean;
 }
 
-export declare interface DeleteParamsInterface {
+export declare interface IDeleteParams {
     id: string;
     softDelete?: boolean;
     withDeleted?: boolean;
 }
 
-export declare interface GetOneByParamsInterface {
+export declare interface IGetOneByParams {
     condition: Record<string, any>;
-    options?: ByOptionsInterface;
+    options?: IByOptions;
     withDeleted?: boolean;
     relations?: string[];
 }
 
-export declare interface ExistParamsInterface {
+export declare interface IExistParams {
     condition: Record<string, any> | Record<string, any>[],
     select: string[];
     initThrow?: boolean;
     withDeleted?: boolean
 }
 
-export declare interface GetByParamsInterface
-    extends Omit<GetOneByParamsInterface, 'withDeleted' | 'relations'> {}
+export declare interface IGetByParams
+    extends Omit<IGetOneByParams, 'withDeleted' | 'relations'> {}

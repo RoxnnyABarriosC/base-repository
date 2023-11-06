@@ -1,1 +1,1 @@
-export * from './index/index';
+export * from './auth.module';

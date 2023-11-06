@@ -1,5 +1,5 @@
-import { Protected } from '@modules/auth/index/presentation/decorators';
-import { CheckSuperAdmin } from '@modules/auth/index/presentation/guards';
+import { Protected } from '@modules/auth/presentation/decorators';
+import { CheckSuperAdmin } from '@modules/auth/presentation/guards';
 import { SkipLogging } from '@modules/common/logger/presentation/interceptors';
 import { Controller, Get, Logger, Render } from '@nestjs/common';
 import { PaginationFilter } from '@shared/criterias';

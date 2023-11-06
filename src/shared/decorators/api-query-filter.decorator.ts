@@ -3,7 +3,7 @@ import { ApiPropertyOptions } from '@nestjs/swagger/dist/decorators/api-property
 
 export function ApiQueryFilter(options?: Omit<ApiPropertyOptions, 'name'>)
 {
-    return (target, propertyKey) =>
+    return (target: string, propertyKey: string) =>
     {
         ApiProperty({ ...options, name: `filter[${propertyKey}]` })(target, propertyKey);
     };

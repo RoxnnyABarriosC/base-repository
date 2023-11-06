@@ -2,11 +2,20 @@ import { UnixDate } from '@shared/decorators';
 import { Exclude, Expose } from 'class-transformer';
 
 export enum SerializerGroupsEnum {
+    ALL = 'ALL',
     ID_AND_TIMESTAMP = 'ID_AND_TIMESTAMP',
     ONLY_ID = 'ONLY_ID',
     ONLY_TIMESTAMP = 'ONLY_TIMESTAMP'
 }
 
+const groups = (scope: string = null) =>
+{
+    return scope ? [
+        scope.concat(SerializerGroupsEnum.ALL),
+        scope.concat(SerializerGroupsEnum.ONLY_ID),
+        scope.concat(SerializerGroupsEnum.ID_AND_TIMESTAMP)
+    ] : [];
+};
 
 export abstract class BaseSerializer<D = any>
 {
@@ -16,7 +25,7 @@ export abstract class BaseSerializer<D = any>
     }
 }
 
-export function SerializerScope(scope  = '')
+export function SerializerScope(scope = null)
 {
     class _Serializer extends BaseSerializer
     {
@@ -27,10 +36,7 @@ export function SerializerScope(scope  = '')
 
         @Expose({
             name: 'id',
-            groups: [
-                scope.concat(SerializerGroupsEnum.ONLY_ID),
-                scope.concat(SerializerGroupsEnum.ID_AND_TIMESTAMP)
-            ]
+            groups: groups(scope)
         })
         get Id(): string
         {
@@ -38,28 +44,19 @@ export function SerializerScope(scope  = '')
         }
 
         @Expose({
-            groups: [
-                scope.concat(SerializerGroupsEnum.ONLY_TIMESTAMP),
-                scope.concat(SerializerGroupsEnum.ID_AND_TIMESTAMP)
-            ]
+            groups: groups(scope)
         })
         @UnixDate()
         public createdAt: Date | number;
 
         @Expose({
-            groups: [
-                scope.concat(SerializerGroupsEnum.ONLY_TIMESTAMP),
-                scope.concat(SerializerGroupsEnum.ID_AND_TIMESTAMP)
-            ]
+            groups: groups(scope)
         })
         @UnixDate()
         public updatedAt: Date | number;
 
         @Expose({
-            groups: [
-                scope.concat(SerializerGroupsEnum.ONLY_TIMESTAMP),
-                scope.concat(SerializerGroupsEnum.ID_AND_TIMESTAMP)
-            ]
+            groups: groups(scope)
         })
         @UnixDate()
         public deletedAt: Date | number;

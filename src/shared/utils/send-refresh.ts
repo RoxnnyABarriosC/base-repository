@@ -1,4 +1,4 @@
-import { MyStore } from '@modules/common/store';
+import { IMyStore } from '@modules/common/store';
 import { ConfigService } from '@nestjs/config';
 import { Agent } from '@shared/decorators';
 import dayjs from 'dayjs';
@@ -11,7 +11,7 @@ interface Props {
     res: FastifyReply;
     agent: Agent;
     configService: ConfigService;
-    store: ClsService<MyStore>;
+    store: ClsService<IMyStore>;
     refreshHash?: string;
     expiresRefresh?: number;
 }
@@ -21,7 +21,7 @@ interface Props {
  * @param {object} props - An object containing the properties for sending the refresh token.
  * @param {FastifyReply} props.res - The Fastify reply object.
  * @param {Agent} props.agent - The agent object containing information about the client.
- * @param {ClsService<MyStore>} props.store - The ClsService store object.
+ * @param {ClsService<IMyStore>} props.store - The ClsService store object.
  * @param {ConfigService} props.configService - The ConfigService object for accessing configuration values.
  * @param {string} [props.refreshHash=null] - The refresh token hash to be sent.
  * @param {number} [props.expiresRefresh=0] - The expiration time of the refresh token in seconds since the Unix epoch.

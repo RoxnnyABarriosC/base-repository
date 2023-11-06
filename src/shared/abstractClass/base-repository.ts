@@ -10,11 +10,9 @@ import {
 } from 'typeorm';
 import { IsolationLevel } from 'typeorm/driver/types/IsolationLevel';
 import type {
-    DeleteParamsInterface,
-    ExistParamsInterface,
-    GetByParamsInterface,
-    GetOneByParamsInterface,
-    GetOneParamsInterface
+    IDeleteParams,
+    IExistParams, IGetByParams, IGetOneByParams, IGetOneParams
+
 } from '@shared/abstractClass';
 
 @Injectable()
@@ -81,7 +79,7 @@ export abstract class BaseRepository<T extends ObjectLiteral>
         return entity;
     }
 
-    async delete({ id, softDelete = true, withDeleted = false }: DeleteParamsInterface, transactionManager?: EntityManager): Promise<T>
+    async delete({ id, softDelete = true, withDeleted = false }: IDeleteParams, transactionManager?: EntityManager): Promise<T>
     {
         const entity: any = await this.repository.findOne({ withDeleted, where: { _id: id } as any });
 
@@ -106,7 +104,7 @@ export abstract class BaseRepository<T extends ObjectLiteral>
         return entity;
     }
 
-    async getOne({ id, withDeleted = false }: GetOneParamsInterface): Promise<T>
+    async getOne({ id, withDeleted = false }: IGetOneParams): Promise<T>
     {
         const entity = await this.repository.findOne({ withDeleted, where: { _id: id } as any });
 
@@ -118,7 +116,7 @@ export abstract class BaseRepository<T extends ObjectLiteral>
         return entity;
     }
 
-    async getOneBy({ condition, options = { initThrow: true }, withDeleted = false, relations = [] }: GetOneByParamsInterface): Promise<T | null>
+    async getOneBy({ condition, options = { initThrow: true }, withDeleted = false, relations = [] }: IGetOneByParams): Promise<T | null>
     {
         const { initThrow } = options;
 
@@ -132,7 +130,7 @@ export abstract class BaseRepository<T extends ObjectLiteral>
         return entity;
     }
 
-    async getBy({ condition, options = { initThrow: false } }: GetByParamsInterface): Promise<T[]>
+    async getBy({ condition, options = { initThrow: false } }: IGetByParams): Promise<T[]>
     {
         const { initThrow } = options;
 
@@ -146,7 +144,7 @@ export abstract class BaseRepository<T extends ObjectLiteral>
         return entities;
     }
 
-    async exist<D = any>({ condition, select, initThrow = false, withDeleted = false }: ExistParamsInterface): Promise<D>
+    async exist<D = any>({ condition, select, initThrow = false, withDeleted = false }: IExistParams): Promise<D>
     {
         const conditionMap: FindOneOptions = {
             select,

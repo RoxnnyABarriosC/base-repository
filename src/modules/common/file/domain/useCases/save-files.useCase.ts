@@ -6,7 +6,7 @@ import { Settle } from '@shared/utils';
 import { MulterFile } from 'fastify-file-interceptor';
 import { File } from '../entities/file.entity';
 
-interface Props {
+interface ISaveFilesUseCaseProps {
     rawFiles: MulterFile[];
     dto: SaveFileDto
 }
@@ -23,7 +23,7 @@ export class SaveFilesUseCase
     )
     {}
 
-    async handle({ rawFiles, dto: { isPrivate } }: Props): Promise<File[]>
+    async handle({ rawFiles, dto: { isPrivate } }: ISaveFilesUseCaseProps): Promise<File[]>
     {
         const files: File[] = [];
 

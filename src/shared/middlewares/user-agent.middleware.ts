@@ -2,7 +2,7 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { UserAgent } from 'express-useragent';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
-interface UserAgentInfo {
+interface IUserAgentInfo {
     source: string;
     os: string;
     platform: string;
@@ -12,12 +12,12 @@ interface UserAgentInfo {
 
 declare global {
     interface Request {
-        useragent: UserAgentInfo;
+        useragent: IUserAgentInfo;
     }
 
     interface Response {
         locals: {
-            useragent: UserAgentInfo;
+            useragent: IUserAgentInfo;
         };
     }
 }

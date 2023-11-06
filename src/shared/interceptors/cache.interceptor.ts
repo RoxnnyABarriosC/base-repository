@@ -1,7 +1,7 @@
 import { CacheInterceptor as Cache } from '@nestjs/cache-manager';
 import { CallHandler, ExecutionContext, Logger, SetMetadata } from '@nestjs/common';
 import { CACHE_NO_AUTH } from '@shared/decorators';
-import { AppResponseInterface } from '@shared/interceptors/response-interceptor.interface';
+import { IAppResponse } from '@shared/interceptors/response-interceptor.interface';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { map } from 'rxjs/operators';
 
@@ -60,7 +60,7 @@ export class CacheInterceptor extends Cache
         response.header('X-Cached-Response', `${isCached}`);
 
         return (await super.intercept(context, next)).pipe(
-            map((data: AppResponseInterface) =>
+            map((data: IAppResponse) =>
             {
                 data.isCached = isCached;
 

@@ -1,13 +1,13 @@
 import { CriteriaBuilder } from '@shared/criterias';
 import { SelectQueryBuilder } from 'typeorm';
-import { BasePaginator, ConfigPaginator } from './base-paginator';
+import { BasePaginator, IPaginatorConfig } from './base-paginator';
 
 export class Paginator<E = any> extends BasePaginator
 {
     private readonly queryBuilder: SelectQueryBuilder<E>;
 
     constructor(queryBuilder: SelectQueryBuilder<E>, criteria: CriteriaBuilder,
-                { helper = undefined, withRaw = false, useTakeSkip = false, metadata = {} }: ConfigPaginator = {}
+                { helper = undefined, withRaw = false, useTakeSkip = false, metadata = {} }: IPaginatorConfig = {}
     )
     {
         super(criteria, { helper, withRaw, useTakeSkip, metadata });

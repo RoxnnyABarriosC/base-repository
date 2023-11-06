@@ -2,11 +2,11 @@ import {  UseInterceptors, applyDecorators } from '@nestjs/common';
 import { FileFieldsFastifyInterceptor } from 'fastify-file-interceptor';
 import { Field } from 'multer';
 
-interface Props {
+interface IUploadFileFieldsProps {
     fields: ReadonlyArray<Field>;
 }
 
-export function UploadFileFields({ fields }: Props)
+export function UploadFileFields({ fields }: IUploadFileFieldsProps)
 {
     return applyDecorators(
         UseInterceptors(

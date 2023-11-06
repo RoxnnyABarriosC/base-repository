@@ -2,6 +2,12 @@ import { CloneDeepMap } from '@shared/utils/clone-deep-map';
 import { Exclude, Expose, plainToClassFromExist } from 'class-transformer';
 import { v4 as uuidV4 } from 'uuid';
 
+declare interface IPartialBuildOptions
+{
+    allowNull?: boolean;
+    validate?: boolean;
+}
+
 @Exclude()
 export abstract class BaseEntity<T = any>
 {
@@ -31,6 +37,31 @@ export abstract class BaseEntity<T = any>
                 : data
             );
         }
+    }
+
+    partialBuild(data: Partial<T>, { allowNull = false, validate = false }: IPartialBuildOptions)
+    {
+        const valueProperties  = Object.keys(data);
+
+        const propertiesUpdate = valueProperties.reduce((prev, property) =>
+        {
+            return {
+                ...prev,
+                ...(data[property] || allowNull ? { [property]:data[property] } : {})
+            };
+        }, {});
+
+        Object.assign(this, validate
+            ? plainToClassFromExist(
+                this,
+                propertiesUpdate,
+                {
+                    excludeExtraneousValues: true,
+                    enableCircularCheck: true,
+                    exposeDefaultValues: true
+                })
+            : propertiesUpdate
+        );
     }
 
     clone(newId = false): this

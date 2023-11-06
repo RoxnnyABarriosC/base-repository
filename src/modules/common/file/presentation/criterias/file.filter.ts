@@ -1,4 +1,4 @@
-import { User } from '@modules/auth/user/domain/entities';
+import { User } from '@modules/user/domain/entities';
 import { DefaultFilters, Filter } from '@shared/abstractClass';
 import { ParseBoolean } from '@shared/decorators';
 import { Expose } from 'class-transformer';
