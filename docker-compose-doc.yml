@@ -11,7 +11,7 @@ services:
       target: doc
     labels:
       - traefik.enable=true
-      - traefik.docker.network=internal_base_repository_network
+      - traefik.docker.network=internal_network
       - traefik.http.routers.doc.entrypoints=${ENTRYPOINT:-https}
       - traefik.http.routers.doc.tls=${TLS:-true}
       - traefik.http.routers.doc.tls.certresolver=lets-encrypt
@@ -25,5 +25,5 @@ services:
     volumes:
       - ./usersfile:/usersfile
     networks:
-      - internal_base_repository_network
-      - external_base_repository_network
+      - internal_network
+      - external_network

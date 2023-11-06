@@ -78,6 +78,7 @@ Then create a new .env file, copy and paste all the variables from the .env.exam
 
 ```dotenv
 NODE_ENV=development
+PROJECT_NAME=base_repository
 URL_API=http://api.localhost
 URL_WEB=http://app.localhost
 PREFIX=/api
@@ -101,7 +102,7 @@ JWT_REFRESH_EXPIRES=1d
 JWT_ISS=nodebaserepository
 JWT_AUD=nodebaserepository.com
 JWT_ALGORITHM='HS512'
-JWT_CHECK_BLACK_LIST=false
+JWT_CHECK_BLACK_LIST=true
 
 SET_COOKIE_SECURE=false
 SET_COOKIE_SAME_SITE=none
@@ -143,6 +144,15 @@ MINIO_PRIVATE_BUCKET=baserepository
 MINIO_ROOT_PATH=data
 MINIO_REGION=us-east-1
 MINIO_SIGN_EXPIRE=9000
+
+OTP_CODE_EXPIRE=10m
+OTP_LIMIT_ATTEMPTS=20
+OTP_TASK_RESTARTING_ATTEMPTS='0 0 * * *'
+
+TWILIO_ACCOUNT_SID=AC66da7f879ae96c33d644709f98d803fc
+TWILIO_AUTH_TOKEN=f96d8d39dcd35db334ee689d4f8c7c00
+TWILIO_FROM_NUMBER=+56945950470
+
 ```
 
 ## START UP
@@ -163,19 +173,42 @@ STAGE=dev \
 ```
 run the file in the terminal
 
+### Production Server
+Create file `prod-server.sh` in root project
+
 ```shell
- ./local-server.sh
+#!/bin/bash
+
+docker compose down && \
+    sh volume.sh && \
+    STAGE=prod \
+    API_PORT=4000 \
+    TLS=true \
+    ENTRYPOINT=https \
+    API_DOMAIN=<YOUR_DAMIN> \
+    S3_API_DOMAIN=<YOUR_DAMIN> \
+    S3_PANEL_DOMAIN=<YOUR_DAMIN> \
+    LOAD_DOMAIN=<YOUR_DAMIN> \
+    APPLY_REDIRECT=true \
+    PROJECT_NAME=<NAME> \
+    docker compose up --build -d
+
+```
+run the file in the terminal
+
+```shell
+ ./prod-server.sh
 ```
 
-or execute ```make local```
+or execute ```make prod```
 
 **_NOTE:_** If when executing it gives any permissions problem, execute the following command
 
 ```shell
-chmod +x local-server.sh
+chmod +x [local, dev, prod]-server.sh
 ```
 
-Once you have created local-server.sh and run the ```make local``` command, you must run ```make migrate``` to run the project migrations and ```make seed``` to create the first data
+Once you have created local-server.sh and run the ```make local``` or ```make prod``` command, you must run ```make migrate``` to run the project migrations and ```make seed``` to create the first data
 
 ### Main commands:
 ```bash
