@@ -120,7 +120,7 @@ export class AuthController
         )) as typeof AuthUserSerializer;
     }
 
-    @Put('me')
+    @Patch('me')
     @Protected()
     @HttpCode(HttpStatus.OK)
     @SetSerializerGroups(

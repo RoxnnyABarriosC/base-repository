@@ -23,10 +23,17 @@ export class TwilioListener
     async handleSendMessage({ to, message }: SendMessageEvent)
     {
         this.logger.log('Send messages twilio');
-        await this.twilioService.client.messages.create({
-            body: message,
-            from: this.configService.get<string>('twilio.fromNumber'),
-            to
-        });
+        try
+        {
+            await this.twilioService.client.messages.create({
+                body: message,
+                from: this.configService.get<string>('twilio.fromNumber'),
+                to
+            });
+        }
+        catch (error)
+        {
+            this.logger.error(error);
+        }
     }
 }

@@ -11,6 +11,7 @@ import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure
 import { SecurityConfigSchema } from '@modules/securityConfig/infrastructure/schemas';
 import { OTPTask } from '@modules/securityConfig/infrastructure/tasks';
 import { OTPController } from '@modules/securityConfig/presentation/controllers';
+import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -21,6 +22,7 @@ import { TwilioModule } from 'nestjs-twilio';
     imports: [
         TypeOrmModule.forFeature([SecurityConfigSchema]),
         forwardRef(() => AuthModule),
+        forwardRef(() => UserModule),
         HttpModule,
         TwilioModule.forRootAsync({
             inject: [ConfigService],
@@ -30,12 +32,12 @@ import { TwilioModule } from 'nestjs-twilio';
             })
         })
     ],
-    // controllers: [OTPController],
+    controllers: [OTPController],
     providers: [
-        // SendOTPUseCase,
-        // SendPublicOTPUseCase,
-        // EnableOrDisableOTPUseCase,
-        // SetPhoneOTPProvidersUseCase,
+        SendOTPUseCase,
+        SendPublicOTPUseCase,
+        EnableOrDisableOTPUseCase,
+        SetPhoneOTPProvidersUseCase,
         SecurityConfigRepository,
         OTPService,
         TwilioListener,

@@ -13,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ILocalMessage } from '@shared/interfaces';
 import { SendLocalMessage } from '@shared/utils';
+import { IOTPConfig } from '@src/config';
 import { User } from '@src/modules/user/domain/entities';
 
 interface ISendOTPUseCaseProps {
@@ -49,9 +50,12 @@ export class SendOTPUseCase
             throw new OTPLimitExceededException(target, limit - securityConfig.otp[target].attempts);
         }
 
+        const { expirationTime, ...otpConfig } = this.configService.getOrThrow<IOTPConfig>('otp');
+
         const otp = new OTPModel(
-            this.configService.getOrThrow<string>('otp.expirationTime'),
-            this.service.encryption.encrypt
+            expirationTime,
+            this.service.encryption.encrypt,
+            otpConfig as any
         );
 
         await otp.build();

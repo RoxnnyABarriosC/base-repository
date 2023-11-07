@@ -3,10 +3,10 @@ import { LoginDto } from '@modules/auth/presentation/dtos/login.dto';
 import { SCOPE } from '@modules/securityConfig/domain/constants';
 import {
     EnableOrDisableOTPUseCase,
-    SendOTPUseCase,
+    SendOTPUseCase, SendPublicOTPUseCase,
     SetPhoneOTPProvidersUseCase
 } from '@modules/securityConfig/domain/useCases';
-import { SetProvidersDto } from '@modules/securityConfig/presentation/dtos';
+import { SendPublicOtpDto, SetProvidersDto } from '@modules/securityConfig/presentation/dtos';
 import { SecurityConfigSerializerGroupsEnum } from '@modules/securityConfig/presentation/enums';
 import { SecurityConfigSerializer } from '@modules/securityConfig/presentation/serializers';
 import { User } from '@modules/user/domain/entities';
@@ -19,14 +19,15 @@ import {
     Param, ParseEnumPipe, Patch,
     Post
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { SerializerGroupsEnum } from '@shared/abstractClass';
 import { Bool, SetSerializerGroups } from '@shared/decorators';
+import { ThrottleUseUrl } from '@shared/guards';
 import { SetScopeSerializer, SkipCache } from '@shared/interceptors';
 import { Serializer } from '@shared/utils';
 import { OTPSendTypeEnum } from '../../domain/enums';
 
 @Controller({
-    path: 'otp',
     version: '1'
 })
 @SetScopeSerializer(SCOPE)
@@ -35,13 +36,14 @@ export class OTPController
     private readonly logger = new Logger(OTPController.name);
 
     constructor(
-        private readonly saveUseCase: SendOTPUseCase,
+        private readonly sendUseCase: SendOTPUseCase,
+        private readonly sendPublicUseCase: SendPublicOTPUseCase,
         private readonly enableOrDisableUseCase: EnableOrDisableOTPUseCase,
         private readonly setPhoneProvidersUseCase: SetPhoneOTPProvidersUseCase
     )
     {}
 
-    @Get()
+    @Get('security-config')
     @Protected()
     @HttpCode(HttpStatus.OK)
     @SetSerializerGroups(
@@ -53,15 +55,17 @@ export class OTPController
         @AuthUser() authUser: User
     )
     {
-        this.logger.log('Processing get otp request...');
+        this.logger.log('Processing get security config request...');
 
         return (await Serializer(await authUser.securityConfig, SecurityConfigSerializer)) as typeof SecurityConfigSerializer;
     }
 
-    @Post(':target')
+    @Post('security-config/otp/:target')
     @LocalAuth()
+    @Throttle(2, 60)
+    @ThrottleUseUrl()
     @HttpCode(HttpStatus.CREATED)
-    async save(
+    async send(
         @Body() dto: LoginDto,
         @AuthUser() authUser: User,
         @Param('target', new ParseEnumPipe(OTPSendTypeEnum)) target: string
@@ -69,10 +73,10 @@ export class OTPController
     {
         this.logger.log('Processing save otp request...');
 
-        return await this.saveUseCase.handle({ target: target as OTPSendTypeEnum, user: authUser });
+        return await this.sendUseCase.handle({ target: target as OTPSendTypeEnum, user: authUser });
     }
 
-    @Patch('phone/providers')
+    @Patch('security-config/otp/phone/providers')
     @Protected()
     @HttpCode(HttpStatus.OK)
     async setProviders(
@@ -89,7 +93,7 @@ export class OTPController
             });
     }
 
-    @Patch(':target/enable-or-disable/:enable')
+    @Patch('security-config/otp/:target/enable-or-disable/:enable')
     @Protected()
     @HttpCode(HttpStatus.OK)
     async enableOrDisable(
@@ -106,5 +110,23 @@ export class OTPController
                 enable,
                 target: target as OTPSendTypeEnum
             });
+    }
+
+    @Post('otp/:target')
+    @Throttle(2, 60)
+    @ThrottleUseUrl()
+    @HttpCode(HttpStatus.CREATED)
+    async sentPublicOTP(
+      @Body() dto: SendPublicOtpDto,
+      @Param('target', new ParseEnumPipe(OTPSendTypeEnum)) target: string
+    )
+    {
+        this.logger.log('Processing save otp request...');
+
+        return await this.sendPublicUseCase.handle({
+            target: target as OTPSendTypeEnum,
+            dto,
+            checkUniqueTarget: true
+        });
     }
 }

@@ -126,8 +126,10 @@ export interface ITasksConfig
 
 export interface IOTPConfig
 {
-    codeExpire: string;
-    limitAttempts: number
+    expirationTime: string;
+    limitAttempts: number;
+    length: number;
+    isNumeric: boolean;
 }
 
 export interface ITwilioConfig {

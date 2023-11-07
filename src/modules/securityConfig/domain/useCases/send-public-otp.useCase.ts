@@ -4,6 +4,7 @@ import { OTPSendTypeEnum } from '@modules/securityConfig/domain/enums';
 import { SendMessageEvent } from '@modules/securityConfig/domain/events/send-message.event';
 import { OTPUniqueTargetException } from '@modules/securityConfig/domain/exceptions';
 import { TwilioEventEnum } from '@modules/securityConfig/domain/listeners';
+import { OTPModel } from '@modules/securityConfig/domain/models';
 import { OTPService } from '@modules/securityConfig/domain/services';
 import { SendPublicOtpDto } from '@modules/securityConfig/presentation/dtos';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
@@ -11,7 +12,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { GenerateApiKey, GetMilliseconds, OtpGenerator } from '@shared/utils';
+import { IOTPConfig } from '@src/config';
 import { Cache } from 'cache-manager';
 
 interface ISendPublicOTPUseCaseProps {
@@ -48,27 +49,31 @@ export class SendPublicOTPUseCase
             }
         }
 
-        const otpCode = OtpGenerator(6);
+        const { expirationTime, ...otpConfig } = this.configService.getOrThrow<IOTPConfig>('otp');
 
-        const otpKey = GenerateApiKey();
+        const otp = new OTPModel(
+            expirationTime,
+            this.service.encryption.encrypt,
+            otpConfig as any
+        );
 
-        const otpHash = await this.service.encryption.encrypt(otpCode);
+        await otp.build();
 
-        await this.cacheManager.set(otpKey, otpHash, GetMilliseconds(this.configService.getOrThrow<string>('otp.codeExpire')));
+        await this.cacheManager.set(otp.Key, otp.Hash, otp.ExpirationTime('ms') as number);
 
         if (target === OTPSendTypeEnum.PHONE)
         {
-            const message = `Your OTP code is ${otpCode}`;
+            const message = `Your OTP code is ${otp.Code}`;
             this.eventEmitter.emit(TwilioEventEnum.SEND_MESSAGE, new SendMessageEvent(message, value));
         }
 
         if (target === OTPSendTypeEnum.EMAIL)
         {
-            this.eventEmitter.emit(MailEventEnum.SEND_PUBLIC_OTP, new SendPublicOtpEvent(value, otpCode));
+            this.eventEmitter.emit(MailEventEnum.SEND_PUBLIC_OTP, new SendPublicOtpEvent(value, otp.Code));
         }
 
         return {
-            [`${target}OtpKey`]: otpKey
+            [`${target}OtpKey`]: otp.Key
         };
     }
 }

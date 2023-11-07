@@ -43,7 +43,7 @@ export class OTPModel
 
         const options = {
             ms:  GetMilliseconds(expirationTime),
-            date: addTimeToCurrentDate(expirationTime).toDate()
+            date: addTimeToCurrentDate(expirationTime).utc().toDate()
         };
 
         return options[option] ?? expirationTime;

@@ -50,14 +50,14 @@ export class OTPService
 
             if (expire)
             {
-                errors.push(this.createMessage(otp, () => `exceptions.otp.${otpType}.expire`, otherProperties));
+                errors.push(this.createMessage(otp, () => `exceptions.securityConfig.otp.${otpType}.expired`, otherProperties));
             }
 
             const verify = await this.encryption.compare(data[otp], securityConfig.otp[otpType].value ?? '');
 
             if (!(verify) && !expire)
             {
-                errors.push(this.createMessage(otp, () => `exceptions.otp.${otpType}.noMatch`, otherProperties));
+                errors.push(this.createMessage(otp, () => `exceptions.securityConfig.otp.${otpType}.noMatch`, otherProperties));
             }
         });
 
@@ -68,7 +68,11 @@ export class OTPService
             throw new BadRequestCustomException(errors);
         }
 
-        otpProperties.forEach((otp) => (securityConfig.otp[this.getType(otp)].value = null));
+        otpProperties.forEach((otp) =>
+        {
+            securityConfig.otp[this.getType(otp)].value = null;
+            securityConfig.otp[this.getType(otp)].expireTime = null;
+        });
 
         void await this.repository.update(securityConfig);
     }
@@ -88,7 +92,7 @@ export class OTPService
         return otpTypes[otpProperty];
     }
 
-    protected createMessage(attr: string, keyFn = () => 'exceptions.otp.notFound', otherProperties?: object)
+    protected createMessage(attr: string, keyFn = () => 'exceptions.securityConfig.otp.notFound', otherProperties?: object)
     {
         const key = keyFn();
         const message = I18nContext.current().translate(key) as string;

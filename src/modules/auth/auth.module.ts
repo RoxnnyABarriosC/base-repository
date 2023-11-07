@@ -21,7 +21,7 @@ import { CommonModule } from '@modules/common';
 import { RoleModule } from '@modules/role';
 import { SecurityConfigModule } from '@modules/securityConfig';
 import { UserModule } from '@modules/user';
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RouterModule } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
@@ -39,24 +39,10 @@ import { AuthService,  TokenService } from './domain/services';
             })
         }),
         UserModule,
-        RoleModule,
-        SecurityConfigModule,
         CommonModule,
         PassportModule,
+        forwardRef(() => SecurityConfigModule),
         RouterModule.register([
-            {
-                path: 'admin',
-                children: [
-                    {
-                        path: '/',
-                        module: UserModule
-                    },
-                    {
-                        path: '/',
-                        module: RoleModule
-                    }
-                ]
-            },
             {
                 path: 'auth',
                 children: [

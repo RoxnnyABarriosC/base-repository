@@ -23,7 +23,7 @@ export class SecurityConfigSerializer extends SerializerScope(SCOPE)
     public limitAttempts = otp.limitAttempts;
 
     @Expose()
-    public codeExpire = otp.codeExpire;
+    public expirationTime = otp.expirationTime;
 
     @Expose()
     public restartingAttempts = tasks.otp.restartingAttempts;
