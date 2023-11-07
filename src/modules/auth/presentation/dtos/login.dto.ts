@@ -1,4 +1,4 @@
-import { AuthOtpDto } from '@modules/otp/presentation/dtos';
+import { AuthOtpDto } from '@modules/securityConfig/presentation/dtos';
 import { emailOrPhoneRegex } from '@shared/regex';
 import { Transform } from 'class-transformer';
 import { IsString, Length, Matches } from 'class-validator';

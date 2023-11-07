@@ -2,7 +2,7 @@ import { Token } from '@modules/auth/domain/entities';
 import { TokenActionEnum } from '@modules/auth/domain/enums';
 import { InvalidConfirmationTokenException } from '@modules/auth/domain/exceptions';
 import { TokenBlackListedException } from '@modules/auth/domain/exceptions/token-black-listed.exception';
-import { IDecodeToken, JwtModel } from '@modules/auth/domain/models';
+import { IDecodeToken, JWTModel } from '@modules/auth/domain/models';
 import { TokenRepository } from '@modules/auth/infrastructure/repositories';
 import { User } from '@modules/user/domain/entities';
 import { Injectable } from '@nestjs/common';
@@ -23,7 +23,7 @@ export class TokenService
     )
     { }
 
-    async createToken(user: User): Promise<JwtModel>
+    async createToken(user: User): Promise<JWTModel>
     {
         const { iss, aud, refreshExpires } = this.configService.get<IJwtConfig>('jwt');
 
@@ -38,7 +38,7 @@ export class TokenService
         const hash = this.jwtService.sign({ id: uuidV4(), ...basePayload });
         const refreshHash = this.jwtService.sign({ id: uuidV4(), ...basePayload }, { expiresIn: refreshExpires });
 
-        const jWTToken = new JwtModel(
+        const jWTToken = new JWTModel(
             user,
             this.jwtService.decode(hash) as IDecodeToken,
             this.jwtService.decode(refreshHash) as IDecodeToken,

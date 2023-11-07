@@ -32,9 +32,9 @@ import { UploadFile, UploadedFile
 } from '@modules/common/file/presentation/decorators';
 import { FileSerializer } from '@modules/common/file/presentation/serializers';
 import { IMyStore } from '@modules/common/store';
-import { OtpPropertiesEnum } from '@modules/otp/domain/enums';
-import { OtpAuth, RequiredOtpProperties } from '@modules/otp/presentation/decorators';
 import { RoleSerializerGroupsEnum } from '@modules/role/presentation/enums';
+import { OTPPropertiesEnum } from '@modules/securityConfig/domain/enums';
+import { OtpAuth, RequiredOtpProperties } from '@modules/securityConfig/presentation/decorators';
 import { SCOPE } from '@modules/user/domain/constants';
 import { User } from '@modules/user/domain/entities';
 import { PropertyFileEnum } from '@modules/user/domain/enums';
@@ -201,7 +201,7 @@ export class AuthController
     @Body() dto: LoginDto,
     @AuthUser() authUser: User,
     @UserAgent() agent: Agent,
-    @RequiredOtpProperties() otpProperties: OtpPropertiesEnum[]
+    @RequiredOtpProperties() otpProperties: OTPPropertiesEnum[]
     )
     {
         const data = await this.loginUseCase.handle({ user: authUser, dto, otpProperties });
