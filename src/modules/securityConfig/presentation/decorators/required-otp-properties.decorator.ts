@@ -2,7 +2,7 @@ import { REQUIRED_OTP_PROPERTIES } from '@modules/securityConfig/presentation/gu
 import { ExecutionContext, createParamDecorator } from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
 
-export const RequiredOtpProperties = createParamDecorator(
+export const RequiredOTPProperties = createParamDecorator(
     (data: unknown, ctx: ExecutionContext) =>
     {
         const request = ctx.switchToHttp().getRequest<FastifyRequest>();

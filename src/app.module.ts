@@ -10,6 +10,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ValidationGuard } from '@shared/guards';
 import { CacheInterceptor } from '@shared/interceptors';
 import {
     ResponseInterceptorProvider,
@@ -59,6 +60,10 @@ import { redisStore } from 'cache-manager-redis-yet';
         {
             provide: APP_GUARD,
             useClass: ThrottlerGuard
+        },
+        {
+            provide: APP_GUARD,
+            useClass: ValidationGuard
         },
         {
             provide: APP_INTERCEPTOR,

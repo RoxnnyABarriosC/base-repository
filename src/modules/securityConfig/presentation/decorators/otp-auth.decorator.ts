@@ -1,9 +1,9 @@
-import { OtpAuthCheckGuard } from '@modules/securityConfig/presentation/guards';
+import { OTPAuthCheckGuard } from '@modules/securityConfig/presentation/guards';
 import { UseGuards, applyDecorators } from '@nestjs/common';
 
-export const OtpAuth = () =>
+export const OTPAuth = () =>
 {
     return applyDecorators(
-        UseGuards(OtpAuthCheckGuard)
+        UseGuards(OTPAuthCheckGuard)
     );
 };

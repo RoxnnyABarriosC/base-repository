@@ -4,6 +4,7 @@ import { SecurityConfigSchema } from '@modules/securityConfig/infrastructure/sch
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseRepository } from '@shared/abstractClass';
+import { NotFoundCustomException } from '@shared/exceptions';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -28,5 +29,25 @@ export class SecurityConfigRepository extends BaseRepository<SecurityConfig>
         });
 
         await queryBuilder.execute();
+    }
+
+    async getConfigOfEmailOrPhone(emailOrPhone: string): Promise<SecurityConfig>
+    {
+        const queryBuilder = this.repository.createQueryBuilder('sc');
+
+        void queryBuilder.innerJoin('sc.user', 'user');
+
+        void queryBuilder.where('user.email = :emailOrPhone', { emailOrPhone });
+        void queryBuilder.orWhere('user.phone = :emailOrPhone', { emailOrPhone });
+
+
+        const entity = await queryBuilder.getOne();
+
+        if (!entity)
+        {
+            throw new NotFoundCustomException(this.entityClass.name);
+        }
+
+        return entity;
     }
 }

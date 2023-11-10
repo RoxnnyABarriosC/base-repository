@@ -1,9 +1,6 @@
 import configuration from '@config/configuration';
-import {
-    BcryptEncryptionStrategy,
-    IEncryption,
-    Md5EncryptionStrategy
-} from '@modules/auth/domain/strategies';
+import { BcryptEncryptionStrategy, IEncryption, Md5EncryptionStrategy } from '@modules/auth/infrastructure/strategies';
+
 
 export class EncryptionFactory
 {

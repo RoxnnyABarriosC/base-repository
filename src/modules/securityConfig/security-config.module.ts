@@ -1,6 +1,7 @@
 import { AuthModule } from '@modules/auth';
 import { TwilioListener } from '@modules/securityConfig/domain/listeners';
 import { OTPService } from '@modules/securityConfig/domain/services';
+import { OTPStrategy } from '@modules/securityConfig/domain/strategies/otp.strategy';
 import {
     EnableOrDisableOTPUseCase,
     SendOTPUseCase,
@@ -41,7 +42,8 @@ import { TwilioModule } from 'nestjs-twilio';
         SecurityConfigRepository,
         OTPService,
         TwilioListener,
-        OTPTask
+        OTPTask,
+        OTPStrategy
     ],
     exports: [OTPService, SecurityConfigRepository]
 })

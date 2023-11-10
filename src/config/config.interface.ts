@@ -1,6 +1,6 @@
 import { MiddlewareConfigProxy } from '@nestjs/common/interfaces';
-import { ClassSerializerInterceptorOptions } from '@nestjs/common/serializer/class-serializer.interceptor';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
+import { ValidatorOptions } from 'class-validator/types/validation/ValidatorOptions';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
 export interface IUriConfig
@@ -153,7 +153,8 @@ export interface ConfigInterface {
     cache: ICacheConfig;
     smtp: ISMTPConfig;
     s3: IS3Config;
-    serializer: Partial<ClassTransformOptions>
+    serializer: Partial<ClassTransformOptions>;
+    classValidator: ValidatorOptions;
     tasks: ITasksConfig;
     otp: IOTPConfig;
     twilio: ITwilioConfig;

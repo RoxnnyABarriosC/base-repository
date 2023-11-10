@@ -20,6 +20,7 @@ import { RefreshTokenMiddleware } from '@modules/auth/presentation/middlewares';
 import { CommonModule } from '@modules/common';
 import { RoleModule } from '@modules/role';
 import { SecurityConfigModule } from '@modules/securityConfig';
+import { OTPStrategy } from '@modules/securityConfig/domain/strategies/otp.strategy';
 import { UserModule } from '@modules/user';
 import { MiddlewareConsumer, Module, NestModule, RequestMethod, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

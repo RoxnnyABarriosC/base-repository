@@ -21,11 +21,7 @@ import {
     LocalAuth,
     Protected
 } from '@modules/auth/presentation/decorators';
-import { ChangeMyPasswordDto } from '@modules/auth/presentation/dtos/change-my-password.dto';
-import { ForgotPasswordDto } from '@modules/auth/presentation/dtos/forgot-password.dto';
-import { LoginDto } from '@modules/auth/presentation/dtos/login.dto';
-import { MeDto } from '@modules/auth/presentation/dtos/me.dto';
-import { RegisterDto } from '@modules/auth/presentation/dtos/register.dto';
+import { ChangeMyPasswordDto, ForgotPasswordDto, LoginDto, MeDto, RegisterDto, StepperLoginDto } from '@modules/auth/presentation/dtos';
 import { AuthSerializer, AuthUserSerializer } from '@modules/auth/presentation/serializers';
 import { MimeTypeEnum } from '@modules/common/file/domain/enums';
 import { UploadFile, UploadedFile
@@ -33,8 +29,6 @@ import { UploadFile, UploadedFile
 import { FileSerializer } from '@modules/common/file/presentation/serializers';
 import { IMyStore } from '@modules/common/store';
 import { RoleSerializerGroupsEnum } from '@modules/role/presentation/enums';
-import { OTPPropertiesEnum } from '@modules/securityConfig/domain/enums';
-import { OtpAuth, RequiredOtpProperties } from '@modules/securityConfig/presentation/decorators';
 import { SCOPE } from '@modules/user/domain/constants';
 import { User } from '@modules/user/domain/entities';
 import { PropertyFileEnum } from '@modules/user/domain/enums';
@@ -51,11 +45,13 @@ import {
     ParseEnumPipe,
     Patch,
     Post,
-    Put, Query,
-    Res
+    Query,
+    Res, UseGuards, UsePipes, ValidationPipe
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Agent, SetSerializerGroups, UserAgent } from '@shared/decorators';
+import { AuthGuard } from '@nestjs/passport';
+import { Agent, ApplyValidationBody, SetSerializerGroups, UserAgent } from '@shared/decorators';
+import { ValidationGuard } from '@shared/guards';
 import { SetScopeSerializer } from '@shared/interceptors';
 import { SendRefresh, Serializer } from '@shared/utils';
 import dayjs from 'dayjs';
@@ -188,23 +184,52 @@ export class AuthController
     // ======================================================================AUTH======================================================================
 
     @Post('login')
-    @OtpAuth()
-    @LocalAuth()
     @HttpCode(HttpStatus.CREATED)
+    @LocalAuth()
+    @ApplyValidationBody(LoginDto)
     @SetSerializerGroups(
         UserSerializerGroupsEnum.WITH_ROLES,
         UserSerializerGroupsEnum.WITH_PERMISSIONS,
         RoleSerializerGroupsEnum.ONLY_ID
     )
     async login(
-    @Res({ passthrough: true }) res: FastifyReply,
-    @Body() dto: LoginDto,
-    @AuthUser() authUser: User,
-    @UserAgent() agent: Agent,
-    @RequiredOtpProperties() otpProperties: OTPPropertiesEnum[]
+        @Res({ passthrough: true }) res: FastifyReply,
+        @Body(new ValidationPipe()) dto: LoginDto,
+        @AuthUser() authUser: User,
+        @UserAgent() agent: Agent
     )
     {
-        const data = await this.loginUseCase.handle({ user: authUser, dto, otpProperties });
+        const data = await this.loginUseCase.handle({ user: authUser });
+
+        SendRefresh({
+            res,
+            agent,
+            configService: this.configService,
+            store: this.store,
+            refreshHash: data.RefreshHash,
+            expiresRefresh: data.ExpiresRefresh
+        });
+
+        return (await Serializer(data, AuthSerializer)) as typeof AuthSerializer;
+    }
+
+    @Post('stepper-login')
+    @HttpCode(HttpStatus.CREATED)
+    @UseGuards(AuthGuard('otp'))
+    @ApplyValidationBody(StepperLoginDto)
+    @SetSerializerGroups(
+        UserSerializerGroupsEnum.WITH_ROLES,
+        UserSerializerGroupsEnum.WITH_PERMISSIONS,
+        RoleSerializerGroupsEnum.ONLY_ID
+    )
+    async stepperLogin(
+      @Res({ passthrough: true }) res: FastifyReply,
+      @Body() dto: StepperLoginDto,
+      @AuthUser() authUser: User,
+      @UserAgent() agent: Agent
+    )
+    {
+        const data = await this.loginUseCase.handle({ user: authUser });
 
         SendRefresh({
             res,

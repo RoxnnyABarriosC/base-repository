@@ -6,8 +6,11 @@ import {
     SendOTPUseCase, SendPublicOTPUseCase,
     SetPhoneOTPProvidersUseCase
 } from '@modules/securityConfig/domain/useCases';
-import { SendPublicOtpDto, SetProvidersDto } from '@modules/securityConfig/presentation/dtos';
+import { OTPScope } from '@modules/securityConfig/presentation/decorators';
+import { GetOTPScope } from '@modules/securityConfig/presentation/decorators/get-otp-scope.decorator';
+import { SendOTPDto, SetProvidersDto } from '@modules/securityConfig/presentation/dtos';
 import { SecurityConfigSerializerGroupsEnum } from '@modules/securityConfig/presentation/enums';
+import { GetOTPScopeGuard } from '@modules/securityConfig/presentation/guards/get-otp-scope.guard';
 import { SecurityConfigSerializer } from '@modules/securityConfig/presentation/serializers';
 import { User } from '@modules/user/domain/entities';
 import {
@@ -17,7 +20,7 @@ import {
     HttpStatus,
     Logger,
     Param, ParseEnumPipe, Patch,
-    Post
+    Post, UseGuards
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { SerializerGroupsEnum } from '@shared/abstractClass';
@@ -61,12 +64,11 @@ export class OTPController
     }
 
     @Post('security-config/otp/:target')
-    @LocalAuth()
+    @Protected()
     @Throttle(2, 60)
     @ThrottleUseUrl()
     @HttpCode(HttpStatus.CREATED)
     async send(
-        @Body() dto: LoginDto,
         @AuthUser() authUser: User,
         @Param('target', new ParseEnumPipe(OTPSendTypeEnum)) target: string
     )
@@ -113,20 +115,22 @@ export class OTPController
     }
 
     @Post('otp/:target')
-    @Throttle(2, 60)
+    @GetOTPScope()
+    // @Throttle(2, 60)
     @ThrottleUseUrl()
     @HttpCode(HttpStatus.CREATED)
-    async sentPublicOTP(
-      @Body() dto: SendPublicOtpDto,
-      @Param('target', new ParseEnumPipe(OTPSendTypeEnum)) target: string
+    async sendPublic(
+      @Body() dto: SendOTPDto,
+      @Param('target', new ParseEnumPipe(OTPSendTypeEnum)) target: string,
+      @OTPScope() scope: string | any
     )
     {
-        this.logger.log('Processing save otp request...');
+        this.logger.log('Processing send otp request...');
 
         return await this.sendPublicUseCase.handle({
             target: target as OTPSendTypeEnum,
             dto,
-            checkUniqueTarget: true
+            scope
         });
     }
 }

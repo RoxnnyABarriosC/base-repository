@@ -5,7 +5,7 @@ export class OTPUniqueTargetException extends HttpException
 {
     constructor(target: string, value: string)
     {
-        super(HttpStatus.UNPROCESSABLE_ENTITY, 'exceptions.securityConfig.otp.uniqueTargetInUse', {
+        super(HttpStatus.UNPROCESSABLE_ENTITY, 'exceptions.otp.uniqueTargetInUse', {
             target,
             value
         });

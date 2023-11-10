@@ -25,7 +25,7 @@ export class AuthService
     )
     { }
 
-    async validateUser(emailOrPhone: string, password: string, checkSuperAdmin = false): Promise<User>
+    async validateUser(emailOrPhone: string, password: string, checkFn: (user: User) => Promise<unknown> = null, { checkSuperAdmin = false, checkPassword = true } = {}): Promise<User>
     {
         const user = await this.userRepository.findOneByEmailOrPhone({
             emailOrPhone
@@ -36,7 +36,10 @@ export class AuthService
             throw new BadCredentialsException();
         }
 
-        void await this.checkPassword(password, user?.password.toString());
+        if (checkPassword)
+        {
+            void await this.checkPassword(password, user?.password.toString());
+        }
 
         if (!user.enable)
         {
@@ -46,6 +49,11 @@ export class AuthService
         if (checkSuperAdmin && !user.isSuperAdmin)
         {
             throw new UserIsNotSuperAdminException();
+        }
+
+        if (checkFn)
+        {
+            await checkFn(user);
         }
 
         return user;

@@ -8,13 +8,15 @@ import { TwilioEventEnum } from '@modules/securityConfig/domain/listeners';
 import { OTPModel } from '@modules/securityConfig/domain/models';
 import { OTPService } from '@modules/securityConfig/domain/services';
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
-import { Injectable, Logger } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ILocalMessage } from '@shared/interfaces';
 import { SendLocalMessage } from '@shared/utils';
 import { IOTPConfig } from '@src/config';
 import { User } from '@src/modules/user/domain/entities';
+import { Cache } from 'cache-manager';
 
 interface ISendOTPUseCaseProps {
     target: OTPSendTypeEnum;
@@ -27,10 +29,11 @@ export class SendOTPUseCase
     private readonly logger = new Logger(SendOTPUseCase.name);
 
     constructor(
+        private readonly service: OTPService,
+        private readonly eventEmitter: EventEmitter2,
         private readonly configService: ConfigService,
         private readonly repository: SecurityConfigRepository,
-        private readonly service: OTPService,
-        private readonly eventEmitter: EventEmitter2
+        @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
     )
     {}
 
@@ -60,9 +63,9 @@ export class SendOTPUseCase
 
         await otp.build();
 
-        securityConfig.otp[target].value = otp.Hash;
-        securityConfig.otp[target].expireTime = otp.ExpirationTime('date') as Date;
         securityConfig.otp[target].attempts += 1;
+
+        await this.cacheManager.set(otp.Key, { target, hash: otp.Hash }, otp.ExpirationTime('ms') as number);
 
         if (target === OTPSendTypeEnum.PHONE)
         {

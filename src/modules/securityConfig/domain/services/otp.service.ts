@@ -1,13 +1,31 @@
+import { BadCredentialsException } from '@modules/auth/domain/exceptions';
 import { EncryptionFactory } from '@modules/auth/domain/factories';
+import { AuthService } from '@modules/auth/domain/services';
+import { SecurityConfig } from '@modules/securityConfig/domain/entities';
 import { OTPPropertiesEnum, OTPSendTypeEnum } from '@modules/securityConfig/domain/enums';
+import { OTPNotFoundException } from '@modules/securityConfig/domain/exceptions';
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
-import { AuthOtpDto } from '@modules/securityConfig/presentation/dtos';
+import { AuthOTPDto } from '@modules/securityConfig/presentation/dtos';
 import { User } from '@modules/user/domain/entities';
-import { Injectable, Logger } from '@nestjs/common';
-import { BadRequestCustomException } from '@shared/exceptions';
+import { DisabledUserException, UserIsNotSuperAdminException } from '@modules/user/domain/exceptions';
+import { UserRepository } from '@modules/user/infrastructure/repositories';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { BadRequestCustomException, NotFoundCustomException } from '@shared/exceptions';
+import { ErrorModel } from '@shared/models';
 import { EncodeText } from '@shared/utils';
+import { Cache } from 'cache-manager';
 import days from 'dayjs';
 import { I18nContext } from 'nestjs-i18n';
+import { NotFoundError } from 'rxjs';
+
+interface Iinterface {
+    emailOrPhone: string;
+    password?: string;
+    checkSuperAdmin?:  boolean;
+    dataOtp: AuthOTPDto,
+    otpProperties: OTPPropertiesEnum[]
+}
 
 @Injectable()
 export class OTPService
@@ -16,13 +34,15 @@ export class OTPService
     public readonly encryption = EncryptionFactory.create();
 
     constructor(
-        private readonly repository: SecurityConfigRepository
+        private readonly repository: SecurityConfigRepository,
+        private readonly userRepository: UserRepository,
+        private readonly authService: AuthService,
+        @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
     )
     { }
 
-    async getConfigOfUser(user: User)
+    getRequiredProperties(securityConfig: SecurityConfig)
     {
-        const securityConfig = await user.securityConfig;
         const otpData = securityConfig.otp;
 
         return Object.keys(otpData)
@@ -31,51 +51,63 @@ export class OTPService
                 .filter(value => value.includes(otp)));
     }
 
-    async checkOtp(data: AuthOtpDto, otpProperties: OTPPropertiesEnum[], authUser: User)
+    async checkOtp(data: AuthOTPDto, otpProperties: OTPPropertiesEnum[], securityConfig: SecurityConfig, otpKeys: {emailKey: string, phoneKey: string})
     {
-        const errors = [];
-
-        const securityConfig = (await authUser.securityConfig);
-
-        const otpChecks = otpProperties.map(async(otp) =>
+        return async(user: User) =>
         {
-            const otpType = this.getType(otp);
-            const expireTime = days(securityConfig.otp[otpType].expireTime);
-            const currentTime = days();
-            const expire  =  expireTime.isBefore(currentTime);
+            const errors = [];
 
-            const otherProperties = {
-                [otpType]: EncodeText(authUser[otpType], otpType)
-            };
-
-            if (expire)
+            const otpChecks = otpProperties.map(async(otp) =>
             {
-                errors.push(this.createMessage(otp, () => `exceptions.securityConfig.otp.${otpType}.expired`, otherProperties));
-            }
+                const otpType = this.getType(otp);
+                const key = otpKeys[`${otpType}Key`];
 
-            const verify = await this.encryption.compare(data[otp], securityConfig.otp[otpType].value ?? '');
+                const otpHash = await this.cacheManager.get<{ hash: string, target: string }>(key);
 
-            if (!(verify) && !expire)
+                console.log({
+                    [key]: otpHash?.hash
+                });
+
+                const otherProperties = {
+                    [otpType]: EncodeText(user[otpType], otpType)
+                };
+
+                if (!otpHash)
+                {
+                    errors.push(this.createMessage(otp, () => `exceptions.securityConfig.otp.${otpType}.expired`, otherProperties));
+                }
+                else
+                {
+                    if (otpHash.target !== otpType)
+                    {
+                        throw new OTPNotFoundException(otpType);
+                    }
+
+                    const verify = await this.encryption.compare(data[otp], otpHash.hash);
+
+                    if (!verify)
+                    {
+                        errors.push(this.createMessage(otp, () => `exceptions.securityConfig.otp.${otpType}.noMatch`, otherProperties));
+                    }
+                }
+            });
+
+            await Promise.all(otpChecks);
+
+            if (errors.length)
             {
-                errors.push(this.createMessage(otp, () => `exceptions.securityConfig.otp.${otpType}.noMatch`, otherProperties));
+                throw new BadRequestCustomException(errors);
             }
-        });
-
-        await Promise.all(otpChecks);
-
-        if (errors.length)
-        {
-            throw new BadRequestCustomException(errors);
-        }
-
-        otpProperties.forEach((otp) =>
-        {
-            securityConfig.otp[this.getType(otp)].value = null;
-            securityConfig.otp[this.getType(otp)].expireTime = null;
-        });
-
-        void await this.repository.update(securityConfig);
+            Object.keys(otpKeys).map(async(key) =>
+            {
+                if (otpKeys[key])
+                {
+                    await this.cacheManager.del(otpKeys[key]);
+                }
+            });
+        };
     }
+
 
     getType(otpProperty: OTPPropertiesEnum)
     {
@@ -97,11 +129,17 @@ export class OTPService
         const key = keyFn();
         const message = I18nContext.current().translate(key) as string;
 
+        const constrain = key.split('.').pop();
+
         return {
             property: attr,
-            message,
-            errorCode: key,
-            ...otherProperties
-        };
+            ...otherProperties,
+            constraints: {
+                [constrain]: {
+                    message,
+                    errorCode: key
+                }
+            }
+        } as ErrorModel;
     }
 }

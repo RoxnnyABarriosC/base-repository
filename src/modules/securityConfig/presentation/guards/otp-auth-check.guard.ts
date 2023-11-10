@@ -7,9 +7,9 @@ import { EncodeText } from '@shared/utils';
 export const REQUIRED_OTP_PROPERTIES = 'requiredOtpProperties';
 
 @Injectable()
-export class OtpAuthCheckGuard implements CanActivate
+export class OTPAuthCheckGuard implements CanActivate
 {
-    private readonly logger = new Logger(OtpAuthCheckGuard.name);
+    private readonly logger = new Logger(OTPAuthCheckGuard.name);
 
     constructor(private readonly service: OTPService)
     {
@@ -24,7 +24,7 @@ export class OtpAuthCheckGuard implements CanActivate
 
         const bodyProperties = Object.keys(body);
 
-        const requiredOtpProperties = await this.service.getConfigOfUser(user);
+        const requiredOtpProperties = this.service.getRequiredProperties(await user.securityConfig);
 
         request[REQUIRED_OTP_PROPERTIES] = requiredOtpProperties;
 

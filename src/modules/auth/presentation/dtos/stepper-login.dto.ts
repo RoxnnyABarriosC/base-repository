@@ -1,9 +1,11 @@
+import { AuthOTPDto } from '@modules/securityConfig/presentation/dtos';
+import { ValidateIfPropertyExists } from '@shared/decorators';
 import { emailOrPhoneRegex } from '@shared/regex';
 import { Transform } from 'class-transformer';
-import { IsString, Length, Matches } from 'class-validator';
+import { IsDefined, IsString, Length, Matches } from 'class-validator';
 
 // TODO: agregar estas configuraciones a las variables de entorno
-export class LoginDto
+export class StepperLoginDto extends AuthOTPDto
 {
     @IsString()
     @Matches(emailOrPhoneRegex,
@@ -13,5 +15,6 @@ export class LoginDto
 
     @IsString()
     @Length(5, 20)
+    @ValidateIfPropertyExists()
     public password: string;
 }

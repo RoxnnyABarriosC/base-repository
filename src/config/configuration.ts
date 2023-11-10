@@ -99,6 +99,11 @@ export default (): ConfigInterface => ({
         excludeExtraneousValues: true,
         exposeDefaultValues: true
     },
+    classValidator: {
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        forbidUnknownValues: true
+    },
     tasks: {
         logger: {
             deleteTraceLog: process.env.LOGGER_TASK_DELETE_TRACE_LOG
