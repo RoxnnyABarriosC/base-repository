@@ -1,5 +1,6 @@
 import { GenderEnum } from '@modules/user/domain/enums';
-import { IsDateString, IsEmail, IsEnum, IsPhoneNumber, IsString, Length } from 'class-validator';
+import { ValidateIfPropertyExists } from '@shared/decorators';
+import { IsDateString, IsEmail, IsEnum, IsPhoneNumber, IsString, Length, NotEquals, ValidateIf } from 'class-validator';
 import { PasswordDto } from './password.dto';
 
 export class UserDto extends PasswordDto

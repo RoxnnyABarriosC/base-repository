@@ -1,4 +1,4 @@
-import { JwtStrategy, LocalStrategy } from '@modules/auth/domain/strategies';
+import { JWTStrategy, LocalStrategy } from '@modules/auth/domain/strategies';
 import {
     ActivateAccountUseCase,
     ChangeForgotPasswordUseCase,
@@ -18,10 +18,11 @@ import { TokenRepository } from '@modules/auth/infrastructure/repositories';
 import { AuthController } from '@modules/auth/presentation/controllers';
 import { RefreshTokenMiddleware } from '@modules/auth/presentation/middlewares';
 import { CommonModule } from '@modules/common';
-import { OTPModule } from '@modules/otp';
 import { RoleModule } from '@modules/role';
+import { SecurityConfigModule } from '@modules/securityConfig';
+import { OTPStrategy } from '@modules/securityConfig/domain/strategies/otp.strategy';
 import { UserModule } from '@modules/user';
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RouterModule } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
@@ -39,30 +40,16 @@ import { AuthService,  TokenService } from './domain/services';
             })
         }),
         UserModule,
-        RoleModule,
-        OTPModule,
         CommonModule,
         PassportModule,
+        forwardRef(() => SecurityConfigModule),
         RouterModule.register([
-            {
-                path: 'admin',
-                children: [
-                    {
-                        path: '/',
-                        module: UserModule
-                    },
-                    {
-                        path: '/',
-                        module: RoleModule
-                    }
-                ]
-            },
             {
                 path: 'auth',
                 children: [
                     {
                         path: '/',
-                        module: OTPModule
+                        module: SecurityConfigModule
                     }
                 ]
             }
@@ -93,7 +80,7 @@ import { AuthService,  TokenService } from './domain/services';
         TokenRepository,
         // STRATEGIES
         LocalStrategy,
-        JwtStrategy
+        JWTStrategy
     ],
     exports: [
         TokenService,

@@ -1,6 +1,6 @@
 import { File } from '@modules/common/file/domain/entities';
-import { OTP } from '@modules/otp/domain/entities';
 import { Role } from '@modules/role/domain/entities';
+import { SecurityConfig } from '@modules/securityConfig/domain/entities';
 import { User } from '@modules/user/domain/entities';
 import { GenderEnum } from '@modules/user/domain/enums';
 import { BaseColumnsSchema } from '@shared/schemas';
@@ -104,9 +104,9 @@ export const UserSchema = new EntitySchema<User>({
             nullable: true,
             eager: true
         },
-        otp: {
+        securityConfig: {
             type: 'one-to-one',
-            target: OTP.name,
+            target: SecurityConfig.name,
             inverseSide: 'user',
             lazy: true
         }

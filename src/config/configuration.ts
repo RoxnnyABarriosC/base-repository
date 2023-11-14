@@ -99,6 +99,11 @@ export default (): ConfigInterface => ({
         excludeExtraneousValues: true,
         exposeDefaultValues: true
     },
+    classValidator: {
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        forbidUnknownValues: true
+    },
     tasks: {
         logger: {
             deleteTraceLog: process.env.LOGGER_TASK_DELETE_TRACE_LOG
@@ -108,8 +113,10 @@ export default (): ConfigInterface => ({
         }
     },
     otp: {
-        codeExpire: process.env.OTP_CODE_EXPIRE,
-        limitAttempts: process.env.OTP_LIMIT_ATTEMPTS
+        expirationTime: process.env.OTP_EXPIRATION_TIME,
+        limitAttempts: process.env.OTP_LIMIT_ATTEMPTS,
+        length: 6,
+        isNumeric: true
     },
     twilio: {
         accountSid: process.env.TWILIO_ACCOUNT_SID,

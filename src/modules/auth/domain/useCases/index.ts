@@ -11,4 +11,3 @@ export * from './set-main-picture-or-banner.useCase';
 export * from './unset-main-picture-or-banner.useCase';
 export * from './update-first-login.useCase';
 export * from './update-me.useCase';
-

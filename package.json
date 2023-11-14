@@ -89,6 +89,8 @@
     "nestjs-pino": "^3.3.0",
     "nestjs-twilio": "^4.1.1",
     "passport": "^0.6.0",
+    "passport-2fa-totp": "^0.0.1",
+    "passport-custom": "^1.1.1",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "password-generator": "^2.3.2",

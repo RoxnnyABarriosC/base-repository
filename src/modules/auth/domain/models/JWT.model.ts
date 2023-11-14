@@ -1,29 +1,19 @@
 import { User } from '@src/modules/user/domain/entities';
 import { IDecodeToken } from './decode-token.interface';
 
-export class JwtModel
+export class JWTModel
 {
-    private readonly user: User;
-    private readonly hash: string;
-    private readonly refreshHash: string;
-    private readonly payload: IDecodeToken;
-    private readonly refreshPayload: IDecodeToken;
     private readonly expires: number;
     private readonly refreshExpires: number;
 
     constructor(
-        user: User,
-        payload:  IDecodeToken,
-        refreshPayload:  IDecodeToken,
-        hash: string,
-        refreshHash: string
+        private readonly user: User,
+        private readonly payload:  IDecodeToken,
+        private readonly refreshPayload:  IDecodeToken,
+        private readonly hash: string,
+        private readonly refreshHash: string
     )
     {
-        this.user = user;
-        this.payload = payload;
-        this.refreshPayload = refreshPayload;
-        this.hash = hash;
-        this.refreshHash = refreshHash;
         this.expires = payload.exp;
         this.refreshExpires = refreshPayload.exp;
     }

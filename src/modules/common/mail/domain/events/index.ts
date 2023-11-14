@@ -4,3 +4,4 @@ export * from './change-forgot-password.event';
 export * from './forgot-password.event';
 export * from './reset-password.event';
 export * from './send-otp.event';
+export * from './send-public-otp.event';

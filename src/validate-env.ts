@@ -79,7 +79,7 @@ export function validateEnv(config: Record<string, any>): Record<string, any>
         MINIO_ROOT_PATH: str(),
         MINIO_SIGN_EXPIRE: num(),
 
-        OTP_CODE_EXPIRE: str(),
+        OTP_EXPIRATION_TIME: str(),
         OTP_LIMIT_ATTEMPTS: num(),
         OTP_TASK_RESTARTING_ATTEMPTS: str(),
 

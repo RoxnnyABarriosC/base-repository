@@ -66,7 +66,7 @@ declare namespace NodeJS {
         MINIO_EXPOSE_HTTPS: boolean;
         MINIO_EXPOSE_HOST: string;
 
-        OTP_CODE_EXPIRE: string;
+        OTP_EXPIRATION_TIME: string;
         OTP_LIMIT_ATTEMPTS: number;
         OTP_TASK_RESTARTING_ATTEMPTS: string;
 

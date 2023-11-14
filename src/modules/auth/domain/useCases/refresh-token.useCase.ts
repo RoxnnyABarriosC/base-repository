@@ -1,4 +1,4 @@
-import { IDecodeToken, JwtModel } from '@modules/auth/domain/models';
+import { IDecodeToken, JWTModel } from '@modules/auth/domain/models';
 import { TokenService } from '@modules/auth/domain/services';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
@@ -18,7 +18,7 @@ export class RefreshTokenUseCase
     )
     { }
 
-    async handle({ decodeRefreshToken }: IRefreshTokenUseCaseProps): Promise<JwtModel>
+    async handle({ decodeRefreshToken }: IRefreshTokenUseCaseProps): Promise<JWTModel>
     {
         const tokenId = decodeRefreshToken.id;
         const email = decodeRefreshToken.email;

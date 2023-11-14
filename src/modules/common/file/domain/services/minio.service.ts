@@ -42,8 +42,7 @@ export class MinioService
         }
         catch (error)
         {
-            // eslint-disable-next-line no-console
-            console.log('File Error ======> ', error);
+            this.logger.error(error);
             throw new MinioUploadException();
         }
     }
@@ -57,7 +56,7 @@ export class MinioService
         catch (error)
         {
             // eslint-disable-next-line no-console
-            console.log('File Error ======> ', error);
+            this.logger.error(error);
             throw new MinioRemoveException();
         }
     }
@@ -70,8 +69,7 @@ export class MinioService
         }
         catch (error)
         {
-            // eslint-disable-next-line no-console
-            console.log('File Error ======> ', error);
+            this.logger.error(error);
             throw new MinioRemoveException();
         }
     }

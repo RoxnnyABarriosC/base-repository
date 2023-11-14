@@ -22,7 +22,7 @@ export class UpdateMeUseCase
 
     async handle({ dto, authUser }: IUpdateMeUseCaseProps): Promise<User>
     {
-        authUser.build(dto);
+        authUser.partialBuild(dto);
 
         void await this.service.validate(authUser);
 

@@ -97,6 +97,21 @@ export class UserRepository extends BaseRepository<User>
         return user;
     }
 
+    async findOneByEmailOrPhoneAndSelect({ emailOrPhone, initThrow = false }: GetOneByEmailOrPhoneParamsInterface): Promise<User>
+    {
+        const user = await this.repository.findOne({ where: [{ email: emailOrPhone }, { phone: emailOrPhone }], select: {
+            phone: true,
+            email: true
+        } });
+
+        if (initThrow && !user)
+        {
+            throw new NotFoundCustomException(this.entityClass.name);
+        }
+
+        return user;
+    }
+
     async setFalseFirstLogin(id: string)
     {
         await this.repository.update({ _id: id } as any, { firstLogin: false });

@@ -16,9 +16,9 @@ export declare interface IAuthData {
 export type RequestAuth = Request & { user: IAuthData }
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy)
+export class JWTStrategy extends PassportStrategy(Strategy)
 {
-    private readonly logger = new Logger(JwtStrategy.name);
+    private readonly logger = new Logger(JWTStrategy.name);
 
     constructor(
         private readonly configService: ConfigService,

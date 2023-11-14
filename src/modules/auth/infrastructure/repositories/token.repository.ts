@@ -14,7 +14,7 @@ export class TokenRepository
 
     constructor(
         private readonly configService: ConfigService,
-        @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
+        @Inject(CACHE_MANAGER) public readonly cacheManager: Cache
     )
     {
         this.expire = GetMilliseconds(this.configService.getOrThrow<string>('jwt.expires'));

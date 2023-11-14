@@ -2,12 +2,13 @@ import { Token } from '@modules/auth/domain/entities';
 import { TokenActionEnum } from '@modules/auth/domain/enums';
 import { InvalidConfirmationTokenException } from '@modules/auth/domain/exceptions';
 import { TokenBlackListedException } from '@modules/auth/domain/exceptions/token-black-listed.exception';
-import { IDecodeToken, JwtModel } from '@modules/auth/domain/models';
+import { IDecodeToken, JWTModel } from '@modules/auth/domain/models';
 import { TokenRepository } from '@modules/auth/infrastructure/repositories';
 import { User } from '@modules/user/domain/entities';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { GetMilliseconds } from '@shared/utils';
 import { IJwtConfig } from '@src/config';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -23,7 +24,7 @@ export class TokenService
     )
     { }
 
-    async createToken(user: User): Promise<JwtModel>
+    async createToken(user: User): Promise<JWTModel>
     {
         const { iss, aud, refreshExpires } = this.configService.get<IJwtConfig>('jwt');
 
@@ -38,7 +39,7 @@ export class TokenService
         const hash = this.jwtService.sign({ id: uuidV4(), ...basePayload });
         const refreshHash = this.jwtService.sign({ id: uuidV4(), ...basePayload }, { expiresIn: refreshExpires });
 
-        const jWTToken = new JwtModel(
+        const jWTToken = new JWTModel(
             user,
             this.jwtService.decode(hash) as IDecodeToken,
             this.jwtService.decode(refreshHash) as IDecodeToken,
@@ -82,6 +83,11 @@ export class TokenService
         await this.tokenRepository.save(token);
     }
 
+    async setConfirmationTokenBlackListed(id: string, confirmationToken: string): Promise<void>
+    {
+        await this.tokenRepository.cacheManager.set(id,  confirmationToken, GetMilliseconds(this.configService.getOrThrow<string>('jwt.confirmationExpires')));
+    }
+
     decodeToken(token: string): IDecodeToken
     {
         return this.jwtService.decode(token) as IDecodeToken;
@@ -102,6 +108,16 @@ export class TokenService
         }
     }
 
+    async checkConfirmationTokenInBlackList(id: string)
+    {
+        const token = await this.tokenRepository.cacheManager.get(id);
+
+        if (token)
+        {
+            throw new TokenBlackListedException();
+        }
+    }
+
     createConfirmationToken(email: string, action: TokenActionEnum): string
     {
         dayjs.extend(utc);
@@ -112,7 +128,8 @@ export class TokenService
             aud,
             sub: email,
             action,
-            email
+            email,
+            id: uuidV4()
         };
 
         return this.jwtService.sign(payload, { expiresIn: confirmationExpires });

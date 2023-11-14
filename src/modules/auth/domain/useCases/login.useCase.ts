@@ -1,15 +1,11 @@
-import { LoginDto } from '@modules/auth/presentation/dtos/login.dto';
-import { OtpPropertiesEnum } from '@modules/otp/domain/enums';
-import { OTPService } from '@modules/otp/domain/services';
+import { OTPService } from '@modules/securityConfig/domain/services';
 import { Injectable, Logger } from '@nestjs/common';
 import { User } from '@src/modules/user/domain/entities';
-import { JwtModel } from '../models/JWT.model';
+import { JWTModel } from '../models/JWT.model';
 import { TokenService } from '../services/token.service';
 
 declare interface ILoginUseCaseProps {
     user: User;
-    dto: LoginDto;
-    otpProperties: OtpPropertiesEnum[];
 }
 
 @Injectable()
@@ -23,9 +19,8 @@ export class LoginUseCase
     )
     {}
 
-    async handle({ user, dto, otpProperties }: ILoginUseCaseProps): Promise<JwtModel>
+    async handle({ user }: ILoginUseCaseProps): Promise<JWTModel>
     {
-        await this.otpService.checkOtp(dto, otpProperties, user);
         return await this.tokenService.createToken(user);
     }
 }

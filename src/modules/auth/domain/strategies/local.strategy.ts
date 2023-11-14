@@ -18,6 +18,6 @@ export class LocalStrategy extends PassportStrategy(Strategy)
 
     async validate(emailOrPhone: string, password: string): Promise<User | void>
     {
-        return await this.authService.validateUser(emailOrPhone.toLowerCase(), password);
+        return await this.authService.validateUser(emailOrPhone.toLowerCase(), password, null);
     }
 }

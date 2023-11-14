@@ -39,7 +39,7 @@ export abstract class BaseEntity<T = any>
         }
     }
 
-    partialBuild(data: Partial<T>, { allowNull = false, validate = false }: IPartialBuildOptions)
+    partialBuild(data: Partial<T>, { allowNull = false, validate = false }: IPartialBuildOptions = {})
     {
         const valueProperties  = Object.keys(data);
 

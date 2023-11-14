@@ -1,10 +1,9 @@
-import { AuthOtpDto } from '@modules/otp/presentation/dtos';
 import { emailOrPhoneRegex } from '@shared/regex';
 import { Transform } from 'class-transformer';
 import { IsString, Length, Matches } from 'class-validator';
 
 // TODO: agregar estas configuraciones a las variables de entorno
-export class LoginDto extends AuthOtpDto
+export class LoginDto
 {
     @IsString()
     @Matches(emailOrPhoneRegex,

@@ -1,7 +1,7 @@
 import { PasswordValueObject } from '@modules/auth/domain/valueObjects';
 import { File } from '@modules/common/file/domain/entities';
-import { OTP } from '@modules/otp/domain/entities';
 import { Role } from '@modules/role/domain/entities';
+import { SecurityConfig } from '@modules/securityConfig/domain/entities';
 import { GenderEnum } from '@modules/user/domain/enums';
 import { BaseEntity } from '@shared/entities/base.entity';
 import { Exclude, Expose } from 'class-transformer';
@@ -26,7 +26,7 @@ export class User extends BaseEntity
     @Expose() public roles: Role[];
     @Expose() public mainPicture?: File;
     @Expose() public banner?: File;
-    @Expose() public otp: Promise<OTP>;
+    @Expose() public securityConfig: Promise<SecurityConfig>;
 
     constructor(data?: Partial<User>, validate?: boolean)
     {

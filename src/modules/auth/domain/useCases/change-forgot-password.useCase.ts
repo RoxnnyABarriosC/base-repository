@@ -2,6 +2,7 @@ import { TokenActionEnum } from '@modules/auth/domain/enums';
 import { TokenService } from '@modules/auth/domain/services';
 import { ChangeForgotPasswordEvent } from '@modules/common/mail/domain/events';
 import { MailEventEnum } from '@modules/common/mail/domain/listeners';
+import { SecurityConfigService } from '@modules/securityConfig/domain/services';
 import { UserService } from '@modules/user/domain/services';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { PasswordDto } from '@modules/user/presentation/dtos';
@@ -27,13 +28,21 @@ export class ChangeForgotPasswordUseCase
         private readonly userRepository: UserRepository,
         private readonly eventEmitter: EventEmitter2,
         private readonly configService: ConfigService,
-        private readonly userService: UserService
+        private readonly userService: UserService,
+        private readonly securityConfigService: SecurityConfigService
     )
     { }
 
     async handle({ dto: { password }, confirmationToken }: IChangeForgotPasswordUseCaseProps): Promise<ILocalMessage>
     {
-        const { email, action } = await this.tokenService.verifyToken(confirmationToken);
+        const { email, action, id } = await this.tokenService.verifyToken(confirmationToken);
+
+        const checkBlackList = this.configService.getOrThrow<boolean>('jwt.checkBlackList');
+
+        if (checkBlackList)
+        {
+            void await this.tokenService.checkConfirmationTokenInBlackList(id);
+        }
 
         void this.tokenService.validateConfirmationTokenAction(action as any, TokenActionEnum.CHANGE_FORGOT_PASSWORD);
 
@@ -44,9 +53,13 @@ export class ChangeForgotPasswordUseCase
 
         user.passwordRequestedAt = null;
 
+        await this.securityConfigService.checkOldPassword(user, password);
+
         user.password = await this.userService.preparePassword(password);
 
         void await this.userRepository.update(user);
+
+        await this.tokenService.setConfirmationTokenBlackListed(id, confirmationToken);
 
         const { url: { web } } = this.configService.get<IServerConfig>('server');
 
