@@ -50,4 +50,31 @@ export class SecurityConfigRepository extends BaseRepository<SecurityConfig>
 
         return entity;
     }
+
+    async getConfigOfEmailOrPhoneV2(emailOrPhone: string): Promise<SecurityConfig>
+    {
+        const entity = await this.repository.findOne({
+            where: {
+                user: [{ email: emailOrPhone }, { phone: emailOrPhone }]
+            },
+            select: {
+                _id: true,
+                otp: true,
+                requiredPassword: true,
+                user: {
+                    _id: true
+                }
+            } as any,
+            relations: {
+                user: true
+            }
+        });
+
+        if (!entity)
+        {
+            throw new NotFoundCustomException(this.entityClass.name);
+        }
+
+        return entity;
+    }
 }

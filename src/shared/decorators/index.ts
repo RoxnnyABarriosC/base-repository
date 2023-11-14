@@ -25,3 +25,4 @@ export * from './set-serializer-groups.decorator';
 export * from './cache-no-auth.decorator';
 export * from './validate-if-property-exists.decorator';
 export * from './apply-validation-body.decorator';
+export * from './no-match.decorator';

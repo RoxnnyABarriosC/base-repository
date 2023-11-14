@@ -20,7 +20,6 @@ import { Cache } from 'cache-manager';
 interface  ISendPublicOTPUseCaseProps {
     target: OTPSendTypeEnum;
     dto: SendOTPDto;
-    scope: 'private' | 'public';
 }
 
 @Injectable()
@@ -33,30 +32,19 @@ export class SendPublicOTPUseCase
         private readonly eventEmitter: EventEmitter2,
         private readonly configService: ConfigService,
         private readonly userRepository: UserRepository,
-        private readonly repository: SecurityConfigRepository,
         @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
     )
     {}
 
-    async handle({ target, dto, scope }: ISendPublicOTPUseCaseProps): Promise<any>
+    async handle({ target, dto }: ISendPublicOTPUseCaseProps)
     {
         const { value } = dto;
 
-        let user: User;
+        const exist  = await this.userRepository.exist({ condition: { [target]: value }, select: ['_id'] });
 
-        if (scope === 'public')
+        if (exist)
         {
-            const exist  = await this.userRepository.exist({ condition: { [target]: value }, select: ['_id'] });
-
-            if (exist)
-            {
-                throw new OTPUniqueTargetException(target, value);
-            }
-        }
-
-        if (scope === 'private')
-        {
-            user = await this.userRepository.findOneByEmailOrPhone({ emailOrPhone: value, initThrow: true });
+            throw new OTPUniqueTargetException(target, value);
         }
 
         const { expirationTime, ...otpConfig } = this.configService.getOrThrow<IOTPConfig>('otp');
@@ -68,22 +56,6 @@ export class SendPublicOTPUseCase
         );
 
         await otp.build();
-
-        if (user)
-        {
-            const securityConfig = await user.securityConfig;
-
-            const limit = this.configService.get<number>('otp.limitAttempts');
-
-            if (securityConfig.otp[target].attempts >= limit)
-            {
-                throw new OTPLimitExceededException(target, limit - securityConfig.otp[target].attempts);
-            }
-
-            securityConfig.otp[target].attempts += 1;
-
-            await this.repository.update(securityConfig);
-        }
 
         await this.cacheManager.set(otp.Key, { target, hash: otp.Hash }, otp.ExpirationTime('ms') as number);
 

@@ -29,6 +29,7 @@ import { UploadFile, UploadedFile
 import { FileSerializer } from '@modules/common/file/presentation/serializers';
 import { IMyStore } from '@modules/common/store';
 import { RoleSerializerGroupsEnum } from '@modules/role/presentation/enums';
+import { OTPAuth } from '@modules/securityConfig/presentation/decorators';
 import { SCOPE } from '@modules/user/domain/constants';
 import { User } from '@modules/user/domain/entities';
 import { PropertyFileEnum } from '@modules/user/domain/enums';
@@ -215,7 +216,7 @@ export class AuthController
 
     @Post('stepper-login')
     @HttpCode(HttpStatus.CREATED)
-    @UseGuards(AuthGuard('otp'))
+    @OTPAuth()
     @ApplyValidationBody(StepperLoginDto)
     @SetSerializerGroups(
         UserSerializerGroupsEnum.WITH_ROLES,
@@ -345,8 +346,7 @@ export class AuthController
         return await this.changeForgotPasswordUseCase.handle({
             dto,
             confirmationToken
-        }
-        );
+        });
     }
 
     @Patch('reset-password')

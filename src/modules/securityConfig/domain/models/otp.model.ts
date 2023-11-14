@@ -1,8 +1,15 @@
+import { OTPSendTypeEnum } from '@modules/securityConfig/domain/enums';
 import { GenerateApiKey, GetMilliseconds, OtpGenerator, addTimeToCurrentDate } from '@shared/utils';
 
 declare interface IOTPModelPros {
     length?: number;
     isNumeric?: false;
+}
+
+export declare interface IOTPRedis {
+    target: OTPSendTypeEnum;
+    hash: string;
+    userId?: string;
 }
 
 export class OTPModel

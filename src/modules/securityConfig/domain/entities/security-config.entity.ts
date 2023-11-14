@@ -23,6 +23,8 @@ export class SecurityConfig extends BaseEntity
 
     @Expose() public readonly user: Promise<User>;
 
+    public readonly __user__: User;
+
     constructor(data?: Partial<SecurityConfig>, validate?: boolean)
     {
         super();

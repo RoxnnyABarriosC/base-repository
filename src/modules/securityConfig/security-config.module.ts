@@ -1,9 +1,9 @@
 import { AuthModule } from '@modules/auth';
 import { TwilioListener } from '@modules/securityConfig/domain/listeners';
-import { OTPService } from '@modules/securityConfig/domain/services';
+import { OTPService, SecurityConfigService } from '@modules/securityConfig/domain/services';
 import { OTPStrategy } from '@modules/securityConfig/domain/strategies/otp.strategy';
 import {
-    EnableOrDisableOTPUseCase,
+    EnableOrDisableOTPUseCase, EnableOrDisableRequiredPasswordUseCase, GetFormConfigUseCase,
     SendOTPUseCase,
     SendPublicOTPUseCase,
     SetPhoneOTPProvidersUseCase
@@ -11,7 +11,7 @@ import {
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { SecurityConfigSchema } from '@modules/securityConfig/infrastructure/schemas';
 import { OTPTask } from '@modules/securityConfig/infrastructure/tasks';
-import { OTPController } from '@modules/securityConfig/presentation/controllers';
+import { OTPController, SecurityController } from '@modules/securityConfig/presentation/controllers';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module, forwardRef } from '@nestjs/common';
@@ -33,19 +33,22 @@ import { TwilioModule } from 'nestjs-twilio';
             })
         })
     ],
-    controllers: [OTPController],
+    controllers: [OTPController, SecurityController],
     providers: [
         SendOTPUseCase,
         SendPublicOTPUseCase,
         EnableOrDisableOTPUseCase,
         SetPhoneOTPProvidersUseCase,
+        GetFormConfigUseCase,
+        EnableOrDisableRequiredPasswordUseCase,
         SecurityConfigRepository,
         OTPService,
         TwilioListener,
         OTPTask,
-        OTPStrategy
+        OTPStrategy,
+        SecurityConfigService
     ],
-    exports: [OTPService, SecurityConfigRepository]
+    exports: [OTPService, SecurityConfigRepository, SecurityConfigService]
 })
 export class SecurityConfigModule
 {}

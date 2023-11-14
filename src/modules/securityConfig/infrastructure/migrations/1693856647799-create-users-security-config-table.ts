@@ -1,6 +1,6 @@
 import { basicPropertiesMigration } from '@config/db';
 import { Logger } from '@nestjs/common';
-import { MigrationInterface, QueryRunner, Table, TableColumn, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableCheck, TableColumn, TableForeignKey } from 'typeorm';
 
 export class CreateUsersSecurityConfigTable1693856647799 implements MigrationInterface
 {
@@ -40,6 +40,13 @@ export class CreateUsersSecurityConfigTable1693856647799 implements MigrationInt
                         referencedColumnNames: ['_id'],
                         referencedTableName: 'users',
                         onDelete: 'CASCADE'
+                    })
+                ],
+                checks: [
+                    new TableCheck({
+                        name: 'REQUIRED_PASSWORD_CHECK',
+                        columnNames: ['requiredPassword', 'otp'],
+                        expression: '"requiredPassword" = true OR (otp->\'phone\'->>\'enable\' = \'true\' OR otp->\'email\'->>\'enable\' = \'true\')'
                     })
                 ]
             })

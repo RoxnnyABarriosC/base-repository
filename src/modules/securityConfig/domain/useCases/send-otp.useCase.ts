@@ -5,22 +5,20 @@ import { SendMessageEvent } from '@modules/securityConfig/domain/events/send-mes
 import { OTPLimitExceededException } from '@modules/securityConfig/domain/exceptions';
 import { OTPDisabledException } from '@modules/securityConfig/domain/exceptions/otp-disabled.exception';
 import { TwilioEventEnum } from '@modules/securityConfig/domain/listeners';
-import { OTPModel } from '@modules/securityConfig/domain/models';
+import { IOTPRedis, OTPModel } from '@modules/securityConfig/domain/models';
 import { OTPService } from '@modules/securityConfig/domain/services';
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
+import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { ILocalMessage } from '@shared/interfaces';
-import { SendLocalMessage } from '@shared/utils';
 import { IOTPConfig } from '@src/config';
-import { User } from '@src/modules/user/domain/entities';
 import { Cache } from 'cache-manager';
 
 interface ISendOTPUseCaseProps {
     target: OTPSendTypeEnum;
-    user: User;
+    userId: string;
 }
 
 @Injectable()
@@ -33,12 +31,15 @@ export class SendOTPUseCase
         private readonly eventEmitter: EventEmitter2,
         private readonly configService: ConfigService,
         private readonly repository: SecurityConfigRepository,
+        private readonly userRepository: UserRepository,
         @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
     )
     {}
 
-    async handle({ target, user }: ISendOTPUseCaseProps): Promise<ILocalMessage>
+    async handle({ target, userId }: ISendOTPUseCaseProps)
     {
+        const user = await this.userRepository.getOne({ id: userId });
+
         const securityConfig = await user.securityConfig;
 
         if (!securityConfig.otp[target].enable)
@@ -65,7 +66,7 @@ export class SendOTPUseCase
 
         securityConfig.otp[target].attempts += 1;
 
-        await this.cacheManager.set(otp.Key, { target, hash: otp.Hash }, otp.ExpirationTime('ms') as number);
+        await this.cacheManager.set(otp.Key, { target, hash: otp.Hash, userId } as IOTPRedis, otp.ExpirationTime('ms') as number);
 
         if (target === OTPSendTypeEnum.PHONE)
         {
@@ -80,6 +81,8 @@ export class SendOTPUseCase
 
         await this.repository.update(securityConfig);
 
-        return SendLocalMessage(() => `messages.securityConfig.otp.${target}.send`);
+        return {
+            [`${target}OtpKey`]: otp.Key
+        };
     }
 }

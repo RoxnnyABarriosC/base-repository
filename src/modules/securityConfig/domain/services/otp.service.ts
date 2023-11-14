@@ -4,6 +4,7 @@ import { AuthService } from '@modules/auth/domain/services';
 import { SecurityConfig } from '@modules/securityConfig/domain/entities';
 import { OTPPropertiesEnum, OTPSendTypeEnum } from '@modules/securityConfig/domain/enums';
 import { OTPNotFoundException } from '@modules/securityConfig/domain/exceptions';
+import { IOTPRedis } from '@modules/securityConfig/domain/models';
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { AuthOTPDto } from '@modules/securityConfig/presentation/dtos';
 import { User } from '@modules/user/domain/entities';
@@ -62,11 +63,7 @@ export class OTPService
                 const otpType = this.getType(otp);
                 const key = otpKeys[`${otpType}Key`];
 
-                const otpHash = await this.cacheManager.get<{ hash: string, target: string }>(key);
-
-                console.log({
-                    [key]: otpHash?.hash
-                });
+                const otpHash = await this.cacheManager.get<IOTPRedis>(key);
 
                 const otherProperties = {
                     [otpType]: EncodeText(user[otpType], otpType)
@@ -78,7 +75,7 @@ export class OTPService
                 }
                 else
                 {
-                    if (otpHash.target !== otpType)
+                    if (otpHash?.userId !== user._id || otpHash.target !== otpType)
                     {
                         throw new OTPNotFoundException(otpType);
                     }

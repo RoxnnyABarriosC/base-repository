@@ -30,5 +30,11 @@ export const SecurityConfigSchema = new EntitySchema<SecurityConfig>({
             onDelete: 'CASCADE',
             lazy: true
         }
-    }
+    },
+    checks: [
+        {
+            name: 'REQUIRED_PASSWORD_CHECK',
+            expression: '"requiredPassword" = true OR (otp->\'phone\'->>\'enable\' = \'true\' OR otp->\'email\'->>\'enable\' = \'true\')'
+        }
+    ]
 });

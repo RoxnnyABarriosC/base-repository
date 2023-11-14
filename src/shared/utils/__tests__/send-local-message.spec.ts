@@ -11,7 +11,7 @@ describe('SendLocalMessage', () =>
         });
         const message = SendLocalMessage(() => 'error.key');
 
-        expect(Object.keys(message).length).toBe(2);
+        expect(Object.keys(message).length).toBe(3);
         expect(message.message).toBe('translate_message');
         expect(message.messageCode).toBe('error.key');
     });

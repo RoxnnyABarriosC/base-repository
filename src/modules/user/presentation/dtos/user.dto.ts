@@ -7,34 +7,25 @@ export class UserDto extends PasswordDto
 {
     @IsString()
     @Length(5, 20)
-    @ValidateIfPropertyExists({ groups: ['OPTIONAL'] })
-    @IsString()
-    @Length(5, 20)
     public readonly userName: string;
 
     @IsString()
     @Length(3, 20)
-    @ValidateIfPropertyExists({ groups: ['OPTIONAL'] })
     public readonly firstName: string;
 
     @IsString()
     @Length(3, 20)
-    @ValidateIfPropertyExists({ groups: ['OPTIONAL'] })
     public readonly lastName: string;
 
     @IsEmail()
-    @ValidateIfPropertyExists({ groups: ['OPTIONAL'] })
     public readonly email: string;
 
     @IsPhoneNumber()
-    @ValidateIfPropertyExists({ groups: ['OPTIONAL'] })
     public readonly phone: string;
 
     @IsEnum(GenderEnum)
-    @ValidateIfPropertyExists({ groups: ['OPTIONAL'] })
     public readonly gender: GenderEnum;
 
     @IsDateString()
-    @ValidateIfPropertyExists({ groups: ['OPTIONAL'] })
     public readonly birthday: Date;
 }

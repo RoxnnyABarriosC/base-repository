@@ -10,7 +10,6 @@ import { PassportStrategy } from '@nestjs/passport';
 import { BadRequestCustomException } from '@shared/exceptions';
 import { ErrorModel } from '@shared/models';
 import { EncodeText } from '@shared/utils';
-import { IsDefined } from 'class-validator';
 import { FastifyRequest } from 'fastify';
 import { Strategy } from 'passport-custom';
 
@@ -26,7 +25,6 @@ export class OTPStrategy extends PassportStrategy(Strategy, 'otp')
         private readonly userRepository: UserRepository
     )
     {
-        // super({ usernameField: 'emailOrPhone', passReqToCallback: true });
         super();
     }
 
