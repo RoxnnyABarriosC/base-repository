@@ -59,12 +59,13 @@ export class UserRepository extends BaseRepository<User>
             partialMatch: true,
             attributesDB: [
                 { name: 'userName', setWeight: 'A' },
+                { name: 'userNameId', setWeight: 'A' },
                 { name: 'email', setWeight: 'A' },
-                { name: 'phone', setWeight: 'A' },
                 { name: 'firstName', setWeight: 'B' },
                 { name: 'lastName', setWeight: 'B' },
-                { name: 'birthday', setWeight: 'B' },
-                { name: 'gender', setWeight: 'C' }
+                { name: 'phone', setWeight: 'A', coalesce: true },
+                { name: 'birthday', setWeight: 'B', coalesce: true },
+                { name: 'gender', setWeight: 'C', coalesce:true }
             ]
         }, 'andWhere');
 
@@ -75,7 +76,9 @@ export class UserRepository extends BaseRepository<User>
 
     async getOneByUserName({ userName, withDeleted = false, initThrow = false }: GetOneByUserNameParamsInterface): Promise<User>
     {
-        const user = await this.repository.findOne({ withDeleted, where: { userName } as any });
+        const [username, userNameId] = userName.split('#');
+
+        const user = await this.repository.findOne({ withDeleted, where: { userName: username, userNameId } as any });
 
         if (initThrow && !user)
         {
@@ -114,6 +117,6 @@ export class UserRepository extends BaseRepository<User>
 
     async setFalseFirstLogin(id: string)
     {
-        await this.repository.update({ _id: id } as any, { firstLogin: false });
+        await this.repository.update({ _id: id } as any, { onBoarding: false });
     }
 }

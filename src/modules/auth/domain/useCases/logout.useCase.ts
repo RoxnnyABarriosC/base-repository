@@ -35,7 +35,7 @@ export class LogoutUseCase
             await this.tokenService.setTokenBlackListed(decodeRefreshTokenId);
         }
 
-        if (authUser.firstLogin)
+        if (authUser.onBoarding)
         {
             void (await this.repository.setFalseFirstLogin(authUser._id));
         }

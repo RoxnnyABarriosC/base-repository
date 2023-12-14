@@ -1,4 +1,4 @@
-export enum OTPSendTypeEnum {
+export enum OTPTargetConfigEnum {
     PHONE = 'phone',
     EMAIL = 'email'
 }

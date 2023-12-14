@@ -11,6 +11,7 @@ export function IsPermissionValid(...enums: any[])
     {
         registerDecorator({
             target: object.constructor,
+            name: 'isPermissionValid',
             propertyName,
             validator: {
                 validate(value: string[], args: ValidationArguments)

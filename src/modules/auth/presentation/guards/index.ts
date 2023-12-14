@@ -4,3 +4,6 @@ export * from './local-admin-auth.guard';
 export * from './local-auth.guard';
 export * from './protected.guard';
 export * from './refresh-token.guard';
+export * from './apple-auth.guard';
+export * from './facebook-auth.guard';
+export * from './google-auth.guard';

@@ -14,7 +14,12 @@ export const UserSchema = new EntitySchema<User>({
         ...BaseColumnsSchema,
         userName: {
             type: String,
-            unique: true
+            default: 'user'
+        },
+        userNameId: {
+            type: Number,
+            unique: true,
+            generated: 'increment'
         },
         firstName: {
             type: String
@@ -41,7 +46,7 @@ export const UserSchema = new EntitySchema<User>({
             type: Boolean,
             default: false
         },
-        firstLogin: {
+        onBoarding: {
             type: Boolean,
             default: true
         },
@@ -73,8 +78,39 @@ export const UserSchema = new EntitySchema<User>({
         permissions: {
             type: 'simple-array',
             nullable: true
+        },
+        facebookAccountId: {
+            type: String,
+            unique: true,
+            nullable: true
+        },
+        googleAccountId: {
+            type: String,
+            unique: true,
+            nullable: true
+        },
+        appleAccountId: {
+            type: String,
+            unique: true,
+            nullable: true
         }
     },
+    indices: [
+        {
+            name: 'IDX_USER_NAME',
+            columns: ['userName', 'userNameId'],
+            unique: true
+        }
+    ],
+    checks: [
+        {
+            name: 'ON_BOARDING_CHECK',
+            expression: `
+              ("onBoarding" = true) OR
+              ("onBoarding" = false AND phone IS NOT NULL AND gender IS NOT NULL AND birthday IS NOT NULL)
+            `
+        }
+    ],
     relations: {
         roles: {
             type: 'many-to-many',

@@ -1,9 +1,9 @@
 import { RequestMethod } from '@nestjs/common';
 import dotenv from 'dotenv';
 dotenv.config();
-import { ConfigInterface } from './config.interface';
+import { IConfig } from './config.interface';
 
-export default (): ConfigInterface => ({
+export default (): IConfig => ({
     environment: process.env.NODE_ENV,
     server: {
         url: {
@@ -100,7 +100,9 @@ export default (): ConfigInterface => ({
         exposeDefaultValues: true
     },
     classValidator: {
+        always: true,
         whitelist: true,
+        strictGroups: true,
         forbidNonWhitelisted: true,
         forbidUnknownValues: true
     },
@@ -113,14 +115,57 @@ export default (): ConfigInterface => ({
         }
     },
     otp: {
-        expirationTime: process.env.OTP_EXPIRATION_TIME,
         limitAttempts: process.env.OTP_LIMIT_ATTEMPTS,
-        length: 6,
-        isNumeric: true
+        codeLength: process.env.OTP_CODE_LENGTH
     },
     twilio: {
         accountSid: process.env.TWILIO_ACCOUNT_SID,
         authToken: process.env.TWILIO_AUTH_TOKEN,
-        fromNumber: process.env.TWILIO_FROM_NUMBER
+        fromNumber: process.env.TWILIO_FROM_NUMBER,
+        otpServiceSid: process.env.TWILIO_OTP_SERVICE_SID
+    },
+    facebookStrategy: {
+        clientID: process.env.FB_OAUTH_ID,
+        clientSecret: process.env.FB_OAUTH_SECRET,
+        callbackURL: process.env.FB_OAUTH_CALLBACK
+    },
+    googleStrategy: {
+        clientID: process.env.GO_OAUTH_ID,
+        clientSecret: process.env.GO_OAUTH_SECRET,
+        callbackURL: process.env.GO_OAUTH_CALLBACK
+    },
+    appleStrategy: {
+        clientID: process.env.GO_OAUTH_ID,
+        keyID: process.env.GO_OAUTH_SECRET,
+        callbackURL: process.env.GO_OAUTH_CALLBACK,
+        teamID: null,
+        privateKeyLocation: null
+    },
+    validatorProperties: {
+        password: {
+            min: 8,
+            max: 24
+        },
+        firstName: {
+            min: 3,
+            max: 100
+        },
+        lastName: {
+            min: 3,
+            max: 100
+        },
+        birthday: {
+            min: 18,
+            max: 110
+        },
+        emailDomainLength: 3
+    },
+    emailsDomain: {
+        admin: process.env.DOMAINS_ALLOWED_FOR_ADMINISTRATOR_EMAILS,
+        app: process.env.DOMAINS_ALLOWED_FOR_APP_EMAILS
+    },
+    sendgridTemplates: {
+        otp: process.env.SENDGRID_TEMPLATE_OTP_ID,
+        publicOTP: process.env.SENDGRID_TEMPLATE_PUBLIC_OTP_ID
     }
 });

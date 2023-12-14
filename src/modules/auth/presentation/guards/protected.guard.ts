@@ -1,7 +1,13 @@
 import { RequiredPermissionsException } from '@modules/auth/domain/exceptions';
 import { AuthService } from '@modules/auth/domain/services';
 import { RequestAuth } from '@modules/auth/domain/strategies';
-import { CHECK_POLICIES_KEY, MANAGE_PERMISSIONS_KEY, PERMISSIONS_KEY, PERMISSION_ACTION_METHOD_KEY, PermissionActions } from '@modules/auth/presentation/decorators';
+import {
+    CHECK_POLICIES_KEY,
+    FORCE_CHECK_POLICY_KEY,
+    MANAGE_PERMISSIONS_KEY,
+    PERMISSIONS_KEY,
+    PERMISSION_ACTION_METHOD_KEY, PermissionActions
+} from '@modules/auth/presentation/decorators';
 import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { ModuleRef, Reflector } from '@nestjs/core';
 import { checkIsPublic } from '../decorators/public.decorator';
@@ -60,6 +66,11 @@ export class ProtectedGuard implements CanActivate
             context.getClass()
         ]) ?? [];
 
+        const forceCheckPolicy = this.reflector.getAllAndOverride(FORCE_CHECK_POLICY_KEY, [
+            context.getHandler(),
+            context.getClass()
+        ]) ?? false;
+
         if (permissions.length)
         {
             allow = await this.authService.authorize(data, permissions, permissionActions);
@@ -72,7 +83,7 @@ export class ProtectedGuard implements CanActivate
             throw new RequiredPermissionsException(permissionActions === 'every', ...permissions);
         }
 
-        if (!isSuperAdmin && !manage && policies.length)
+        if (!isSuperAdmin && !manage && policies.length || ((isSuperAdmin || manage) && forceCheckPolicy && policies.length))
         {
             await this.execPolicyHandler(policies, request);
         }

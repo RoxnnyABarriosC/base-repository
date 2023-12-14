@@ -1,7 +1,7 @@
 import { PasswordValueObject } from '@modules/auth/domain/valueObjects';
 import { UniqueService } from '@modules/common/index/infrastructure/services';
 import { User } from '@modules/user/domain/entities';
-import { SuperAdminCanNotBeModifiedException } from '@modules/user/domain/exceptions';
+import { DontDeleteYourselfException, SuperAdminCanNotBeModifiedException } from '@modules/user/domain/exceptions';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable } from '@nestjs/common';
 
@@ -21,7 +21,6 @@ export class UserService
             validate: {
                 only: {
                     email: entity.email,
-                    userName: entity.userName,
                     phone: entity.phone
                 }
             },
@@ -34,11 +33,31 @@ export class UserService
         return  await (new PasswordValueObject(password, 5, 30)).ready();
     }
 
-    checkSuperAdmin(user: User): void
+    async checkSuperAdminPolicy(id: string, withDeleted = false): Promise<void>
     {
+        const user = await this.repository.exist({ condition: { _id: id }, initThrow: true, select: ['isSuperAdmin', '_id'], withDeleted }) as User;
+
         if (user.isSuperAdmin)
         {
             throw new SuperAdminCanNotBeModifiedException();
         }
+    }
+
+    async checkYourselfPolicy(authUserId: string, id: string, withDeleted = false): Promise<void>
+    {
+        const user = await this.repository.exist({ condition: { _id: id }, initThrow: true, select: ['_id'], withDeleted }) as User;
+
+        if (user._id === authUserId)
+        {
+            throw new DontDeleteYourselfException();
+        }
+    }
+
+    async getEmailAndPhone(emailOrPhone: string)
+    {
+        return await this.repository.exist({
+            condition: [{ email: emailOrPhone }, { phone: emailOrPhone }],
+            select: ['phone', 'email']
+        });
     }
 }

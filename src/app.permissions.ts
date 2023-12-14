@@ -1,21 +1,39 @@
 import { OtherPermissions, OtherPermissionsEnum } from '@modules/common/index/other.permissions';
 import { RolePermissions, RolePermissionsEnum } from '@modules/role/role.permissions';
+import { SecurityConfigPermissions, SecurityConfigPermissionsEnum } from '@modules/securityConfig/security-config.permissions';
 import { UserPermissions, UserPermissionsEnum } from '@modules/user/user.permissions';
 import { ALL_MANAGE_PERMISSION, GroupPermissions } from '@shared/factories';
 
 export const allPermissionsEnums = [
-    [ALL_MANAGE_PERMISSION],
+    {
+        ALL_MANAGE: ALL_MANAGE_PERMISSION
+    },
     OtherPermissionsEnum,
     UserPermissionsEnum,
-    RolePermissionsEnum
+    RolePermissionsEnum,
+    SecurityConfigPermissionsEnum
 ];
 
 export class AppPermissionsFactory
 {
     private static permissionsInstance = [
+        {
+            Group(): GroupPermissions<any>
+            {
+                return {
+                    group: 'APP',
+                    permissions: [ALL_MANAGE_PERMISSION]
+                };
+            },
+            Get(original?: boolean): string[]
+            {
+                return [ALL_MANAGE_PERMISSION];
+            }
+        },
         OtherPermissions.I,
         UserPermissions.I,
-        RolePermissions.I
+        RolePermissions.I,
+        SecurityConfigPermissions.I
     ];
 
     static groupPermissions(): GroupPermissions<any>[]

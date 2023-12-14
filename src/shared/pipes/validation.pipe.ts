@@ -30,11 +30,14 @@ export const mapperErrorModels = (errors: ValidationError[], initTrow = false) =
     }
 };
 
-export const ValidationPipe = () =>
+export const ValidationPipe = (...groups: string[]) =>
 {
     return new DTOValidation({
         ...classValidator,
+        ...(groups.length ? { groups } : {}),
+        transformOptions: {
+            ...(groups.length ? { groups } : {})
+        },
         exceptionFactory: mapperErrorModels
     });
 };
-

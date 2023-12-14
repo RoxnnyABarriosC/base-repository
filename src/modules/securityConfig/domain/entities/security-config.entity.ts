@@ -9,15 +9,14 @@ export class SecurityConfig extends BaseEntity
     @Expose() public otp: OTPConfigType = {
         phone: {
             enable: false,
-            providers: [],
-            attempts: 0
+            providers: []
         },
         email: {
-            enable: false,
-            attempts: 0
+            enable: false
         }
     };
 
+    @Expose() public otpAttempts  = 0;
     @Expose() public requiredPassword: boolean;
     @Expose() public oldPassword: string;
 

@@ -22,3 +22,19 @@ export const Settle = (promises: Promise<any>[]) =>
         return results.map(result => result.value);
     });
 };
+
+
+export const SettleV2 = async(promises: Promise<any>[]): Promise<any[]> =>
+{
+    const results = await Promise.allSettled(promises);
+
+    const rejected = results.find(result => result.status === 'rejected');
+
+    if (rejected)
+    {
+        return Promise.reject(rejected['reason']);
+    }
+
+    return results.map(result => result['value']);
+};
+

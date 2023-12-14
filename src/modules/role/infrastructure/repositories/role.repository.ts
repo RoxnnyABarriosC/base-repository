@@ -81,46 +81,6 @@ export class RoleRepository extends BaseRepository<Role>
         return new Paginator(queryBuilder, criteria);
     }
 
-    override async delete({
-        id,
-        softDelete = true,
-        withDeleted = false
-    }: IDeleteParams): Promise<Role>
-    {
-        const isOfSystem = !!(await this.exist({
-            condition: { _id: id, ofSystem: true },
-            select: ['_id'],
-            initThrow: false,
-            withDeleted: true
-        }));
-
-        if (isOfSystem)
-        {
-            throw new NotAllowedRemoveASystemRolException();
-        }
-
-        const role = await this.repository.findOne({
-            withDeleted,
-            where: { _id: id } as any
-        });
-
-        if (!role)
-        {
-            throw new NotFoundCustomException(this.entityClass.name);
-        }
-
-        if (softDelete)
-        {
-            await this.repository.softDelete(id);
-        }
-        else
-        {
-            await this.repository.delete(id);
-        }
-
-        return role;
-    }
-
     async getOneBySlug({
         slug,
         withDeleted = false,

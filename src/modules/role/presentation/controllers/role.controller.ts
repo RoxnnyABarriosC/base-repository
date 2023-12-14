@@ -1,6 +1,7 @@
-import { ManagePermissions, Protected, RequirePermissions } from '@modules/auth/presentation/decorators';
+import { CheckPolicies, ForceCheckPolicy, ManagePermissions, Protected, RequirePermissions } from '@modules/auth/presentation/decorators';
 import { CheckSuperAdmin } from '@modules/auth/presentation/guards';
 import { SCOPE } from '@modules/role/domain/constants';
+import { NotAllowedRemoveASystemRolPolicy, SystemRolCanNotBeModifiedPolicy } from '@modules/role/domain/policies';
 import {
     DeleteRoleUseCase,
     EnableOrDisableRoleUseCase, GetPermissionsUseCase,
@@ -156,6 +157,8 @@ export class RoleController
     @Delete(':id')
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(RolePermissionsEnum.DELETE)
+    @CheckPolicies(NotAllowedRemoveASystemRolPolicy)
+    @ForceCheckPolicy()
     async delete(
         @UUID() id: string,
         @DeletePermanently() deletePermanently?: boolean
@@ -189,6 +192,8 @@ export class RoleController
     @SetSerializerGroups(
         RoleSerializerGroupsEnum.ALL
     )
+    @CheckPolicies(SystemRolCanNotBeModifiedPolicy)
+    @ForceCheckPolicy()
     async update(
         @UUID() id: string,
         @Body() dto: UpdateRoleDto
@@ -204,6 +209,8 @@ export class RoleController
     @Patch(':id/enable-or-disable/:enable')
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(RolePermissionsEnum.UPDATE_ENABLE)
+    @CheckPolicies(SystemRolCanNotBeModifiedPolicy)
+    @ForceCheckPolicy()
     async enableOrDisable(
         @UUID() id: string,
         @Bool() enable: boolean
@@ -216,6 +223,8 @@ export class RoleController
     @Patch(':id/permissions')
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(RolePermissionsEnum.UPDATE_PERMISSIONS)
+    @CheckPolicies(SystemRolCanNotBeModifiedPolicy)
+    @ForceCheckPolicy()
     async updatePermissions(
         @UUID() id: string,
         @Body() dto: PermissionsDto
@@ -228,6 +237,8 @@ export class RoleController
     @Patch(':id/allowed-views')
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(RolePermissionsEnum.UPDATE_ALLOWED_VIEWS)
+    @CheckPolicies(SystemRolCanNotBeModifiedPolicy)
+    @ForceCheckPolicy()
     async updateAllowedViews(
         @UUID() id: string,
         @Body() dto: AllowedViewsDto
@@ -240,6 +251,8 @@ export class RoleController
     @Patch(':id/scope-config')
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(RolePermissionsEnum.UPDATE_SCOPE_CONFIG)
+    @CheckPolicies(SystemRolCanNotBeModifiedPolicy)
+    @ForceCheckPolicy()
     async updateScopeConfig(
         @UUID() id: string,
         @Body() dto: ScopeConfigDto

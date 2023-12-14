@@ -11,8 +11,8 @@ import {
     ResetPasswordWithTokenUseCase,
     SetMainPictureOrBannerUseCase,
     UnsetMainPictureOrBannerUseCase,
-    UpdateFirstLoginUseCase,
-    UpdateMeUseCase
+    UpdateMeUseCase,
+    UpdateOnBoardingUseCase
 } from '@modules/auth/domain/useCases';
 import {
     AuthUser,
@@ -86,18 +86,18 @@ export class AuthController
         private readonly resetPasswordUseCase: ResetPasswordWithTokenUseCase,
         private readonly setMainPictureOrBannerUseCase: SetMainPictureOrBannerUseCase,
         private readonly unsetMainPictureOrBannerUseCase: UnsetMainPictureOrBannerUseCase,
-        private readonly updateFirstLoginUseCase: UpdateFirstLoginUseCase
+        private readonly updateOnBoardingUseCase: UpdateOnBoardingUseCase
     )
     {}
 
-    @Patch('me/first-login')
+    @Patch('me/on-boarding')
     @HttpCode(HttpStatus.OK)
     @Protected()
-    async setFirstLogin(@AuthUser() authUser: User)
+    async setOnBoarding(@AuthUser() authUser: User)
     {
-        return await this.updateFirstLoginUseCase.handle({
+        return await this.updateOnBoardingUseCase.handle({
             authUser,
-            firstLogin: true
+            onBoarding: true
         });
     }
 

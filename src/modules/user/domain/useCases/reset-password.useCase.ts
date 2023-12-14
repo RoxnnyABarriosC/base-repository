@@ -34,7 +34,6 @@ export class ResetPasswordUseCase
     async handle({ id }: IResetPasswordUseCaseProps): Promise<ILocalMessage>
     {
         const user = await this.repository.getOne({ id });
-        void this.service.checkSuperAdmin(user);
 
         const newPassword = passwordGenerator(15, true, /[\w\d]/);
 

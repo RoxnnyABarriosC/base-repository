@@ -9,11 +9,13 @@ import {
 } from '@nestjs/platform-fastify';
 import { LoggerContext } from '@shared/constants';
 import { CustomExceptionsFilter } from '@shared/filters';
+import { onRequestHook } from '@shared/hooks';
 import { UserAgentMiddleware } from '@shared/middlewares';
 import { ValidationPipe } from '@shared/pipes';
 import { handlebars } from '@shared/utils';
 import { IServerConfig } from '@src/config';
 import cookieParser from 'cookie-parser';
+import { fastify } from 'fastify';
 import { contentParser } from 'fastify-file-interceptor';
 import qs from 'fastify-qs';
 import hpropagate from 'hpropagate';
@@ -29,9 +31,13 @@ void (async(): Promise<void> =>
         propagateInResponses: true
     });
 
+    const fastifyInstance =  fastify();
+
+    fastifyInstance.addHook('onRequest', onRequestHook);
+
     const app = await NestFactory.create<NestFastifyApplication>(
         AppModule,
-        new FastifyAdapter(),
+        new FastifyAdapter(fastifyInstance),
         {
             cors: false,
             bufferLogs: true,

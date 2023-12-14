@@ -66,12 +66,31 @@ declare namespace NodeJS {
         MINIO_EXPOSE_HTTPS: boolean;
         MINIO_EXPOSE_HOST: string;
 
-        OTP_EXPIRATION_TIME: string;
         OTP_LIMIT_ATTEMPTS: number;
         OTP_TASK_RESTARTING_ATTEMPTS: string;
+        OTP_CODE_LENGTH: number;
 
         TWILIO_ACCOUNT_SID: string;
         TWILIO_AUTH_TOKEN: string;
         TWILIO_FROM_NUMBER: string;
+        TWILIO_OTP_SERVICE_SID: string;
+
+        SENDGRID_TEMPLATE_PUBLIC_OTP_ID: string;
+        SENDGRID_TEMPLATE_OTP_ID: string;
+
+        FB_OAUTH_ID: string;
+        FB_OAUTH_SECRET: string;
+        FB_OAUTH_CALLBACK: string;
+
+        GO_OAUTH_ID: string;
+        GO_OAUTH_SECRET: string;
+        GO_OAUTH_CALLBACK: string;
+
+        AP_OAUTH_ID: string;
+        AP_OAUTH_SECRET: string;
+        AP_OAUTH_CALLBACK: string;
+
+        DOMAINS_ALLOWED_FOR_ADMINISTRATOR_EMAILS: string;
+        DOMAINS_ALLOWED_FOR_APP_EMAILS: string;
     }
 }

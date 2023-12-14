@@ -1,5 +1,4 @@
 import { User } from '@modules/user/domain/entities';
-import { SuperAdminCanNotBeModifiedException } from '@modules/user/domain/exceptions';
 import { UserService } from '@modules/user/domain/services';
 import { EnableOrDisableUserUseCase } from '@modules/user/domain/useCases';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
@@ -57,7 +56,6 @@ describe('EnableOrDisableUserUseCase', () =>
         expect(repository.getOne).toBeDefined();
 
         expect(service).toBeDefined();
-        expect(service.checkSuperAdmin).toBeDefined();
     });
 
     describe('handle()', () =>
@@ -128,37 +126,6 @@ describe('EnableOrDisableUserUseCase', () =>
                 {
                     // Assert
                     expect(error).toBe(getOneError);
-                }
-            });
-
-            it('should give an error if the user is superadmin', async() =>
-            {
-                // Arrange
-                const id = 'user-id';
-                const enable = true;
-
-                vi.spyOn(I18nContext, 'current').mockReturnValue(<any>{
-                    translate: vi.fn((key: string) => 'translate_message')
-                });
-
-                const checkSuperAdminError =  new SuperAdminCanNotBeModifiedException();
-
-                vi.spyOn(service, 'checkSuperAdmin').mockImplementation(() =>
-                {
-                    throw checkSuperAdminError;
-                });
-
-                try
-                {
-                    // Act
-                    await useCase.handle({ id, enable });
-                    // Assert
-                    throw new Error('Expected an error to be thrown.');
-                }
-                catch (error)
-                {
-                    // Assert
-                    expect(error).toBe(checkSuperAdminError);
                 }
             });
         });

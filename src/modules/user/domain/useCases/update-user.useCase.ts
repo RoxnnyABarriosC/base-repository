@@ -32,8 +32,6 @@ export class UpdateUserUseCase
 
         let user = await this.repository.getOne({ id, withDeleted: true });
 
-        void this.service.checkSuperAdmin(user);
-
         user.build(dto);
 
         void await this.service.validate(user);

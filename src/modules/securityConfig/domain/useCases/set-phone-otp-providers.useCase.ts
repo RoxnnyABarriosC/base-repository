@@ -1,4 +1,4 @@
-import { OTPSendTypeEnum } from '@modules/securityConfig/domain/enums';
+import { OTPTargetConfigEnum } from '@modules/securityConfig/domain/enums';
 import { OTPDisabledException } from '@modules/securityConfig/domain/exceptions';
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { SetProvidersDto } from '@modules/securityConfig/presentation/dtos';
@@ -27,7 +27,7 @@ export class SetPhoneOTPProvidersUseCase
 
         if (!securityConfig?.otp?.phone?.enable)
         {
-            throw new OTPDisabledException(OTPSendTypeEnum.PHONE);
+            throw new OTPDisabledException(OTPTargetConfigEnum.PHONE);
         }
 
         securityConfig.otp.phone.providers = dto.providers;

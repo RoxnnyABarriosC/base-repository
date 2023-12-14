@@ -18,3 +18,4 @@ export * from './string-to-array';
 export * from './otp-generator';
 export * from './encode-text';
 export * from './generate-api-key';
+export * from './generate-random-number';

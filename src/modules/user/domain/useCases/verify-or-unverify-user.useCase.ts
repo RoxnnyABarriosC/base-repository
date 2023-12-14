@@ -26,9 +26,6 @@ export class VerifyOrUnverifyUserUseCase
 
         const user = await this.repository.getOne({ id });
 
-        this.logger.log('Checking if user is super admin...');
-        void this.service.checkSuperAdmin(user);
-
         this.logger.log(`Setting user verify: ${verify} ...`);
 
         user.verify = verify;

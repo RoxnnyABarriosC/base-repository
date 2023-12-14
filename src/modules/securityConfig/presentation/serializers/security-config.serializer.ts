@@ -1,7 +1,7 @@
 import configuration from '@config/configuration';
 import { SCOPE } from '@modules/securityConfig/domain/constants';
 import { SecurityConfig } from '@modules/securityConfig/domain/entities';
-import { OtpConfigSerializer } from '@modules/securityConfig/presentation/serializers/otp-config.serializer';
+import { OTPConfigSerializer } from '@modules/securityConfig/presentation/serializers/otp-config.serializer';
 import { SerializerScope } from '@shared/abstractClass';
 import { Serializer } from '@shared/utils';
 import { Expose } from 'class-transformer';
@@ -11,10 +11,13 @@ const { otp, tasks } = configuration();
 export class SecurityConfigSerializer extends SerializerScope(SCOPE)
 {
     @Expose()
-    public email: OtpConfigSerializer;
+    public email: OTPConfigSerializer;
 
     @Expose()
-    public phone: OtpConfigSerializer;
+    public phone: OTPConfigSerializer;
+
+    @Expose()
+    public otpAttempts: number;
 
     @Expose()
     public requiredPassword: boolean;
@@ -23,15 +26,12 @@ export class SecurityConfigSerializer extends SerializerScope(SCOPE)
     public limitAttempts = otp.limitAttempts;
 
     @Expose()
-    public expirationTime = otp.expirationTime;
-
-    @Expose()
     public restartingAttempts = tasks.otp.restartingAttempts;
 
     override async build(data: SecurityConfig): Promise<void>
     {
         super.build(data);
-        this.email = (await Serializer(data.otp.email, OtpConfigSerializer)) as unknown as OtpConfigSerializer;
-        this.phone = (await Serializer(data.otp.phone, OtpConfigSerializer)) as unknown as OtpConfigSerializer;
+        this.email = (await Serializer(data.otp.email, OTPConfigSerializer)) as unknown as OTPConfigSerializer;
+        this.phone = (await Serializer(data.otp.phone, OTPConfigSerializer)) as unknown as OTPConfigSerializer;
     }
 }

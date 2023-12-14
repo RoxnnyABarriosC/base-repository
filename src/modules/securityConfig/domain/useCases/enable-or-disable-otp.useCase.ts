@@ -1,4 +1,4 @@
-import { OTPSendTypeEnum } from '@modules/securityConfig/domain/enums';
+import { OTPTargetConfigEnum } from '@modules/securityConfig/domain/enums';
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
 import {  SendLocalMessage  } from '@shared/utils';
@@ -6,7 +6,7 @@ import { User } from '@src/modules/user/domain/entities';
 
 interface IEnableOrDisableOTPUseCaseProps {
     authUser: User;
-    target: OTPSendTypeEnum;
+    target: OTPTargetConfigEnum;
     enable: boolean;
 }
 

@@ -15,8 +15,7 @@ export class EnableOrDisableUserUseCase
     private readonly logger = new Logger(EnableOrDisableUserUseCase.name);
 
     constructor(
-        private readonly repository: UserRepository,
-        private readonly service: UserService
+        private readonly repository: UserRepository
     )
     {}
 
@@ -26,16 +25,13 @@ export class EnableOrDisableUserUseCase
 
         const user = await this.repository.getOne({ id });
 
-        this.logger.log('Checking if user is super admin...');
-        void this.service.checkSuperAdmin(user);
-
         this.logger.log(`Setting user enable: ${enable} ...`);
 
         user.enable = enable;
 
         this.logger.log('Updating user...');
-        void this.repository.update(user);
 
+        void this.repository.update(user);
         return SendLocalMessage(() =>
         {
             const key = 'messages.user';

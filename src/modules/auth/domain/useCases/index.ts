@@ -9,5 +9,6 @@ export * from './register.useCase';
 export * from './reset-password-with-token.useCase';
 export * from './set-main-picture-or-banner.useCase';
 export * from './unset-main-picture-or-banner.useCase';
-export * from './update-first-login.useCase';
+export * from './update-on-boarding.useCase';
 export * from './update-me.useCase';
+export * from './oauth-login.useCase';

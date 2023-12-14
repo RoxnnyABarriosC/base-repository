@@ -1,6 +1,6 @@
 import { SecurityConfig } from '@modules/securityConfig/domain/entities';
-import { OTPSendTypeEnum } from '@modules/securityConfig/domain/enums/otp-send-type.enum';
 import { SecurityConfigSchema } from '@modules/securityConfig/infrastructure/schemas';
+import { User } from '@modules/user/domain/entities';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseRepository } from '@shared/abstractClass';
@@ -21,12 +21,7 @@ export class SecurityConfigRepository extends BaseRepository<SecurityConfig>
     {
         const queryBuilder = this.repository.createQueryBuilder().update();
 
-        Object.keys(OTPSendTypeEnum).forEach((key) =>
-        {
-            queryBuilder.set({
-                otp: () => `jsonb_set(config::jsonb, '{${OTPSendTypeEnum[key]}, attempts}','0')`
-            });
-        });
+        queryBuilder.set({ otpAttempts: 0 });
 
         await queryBuilder.execute();
     }
@@ -39,7 +34,6 @@ export class SecurityConfigRepository extends BaseRepository<SecurityConfig>
 
         void queryBuilder.where('user.email = :emailOrPhone', { emailOrPhone });
         void queryBuilder.orWhere('user.phone = :emailOrPhone', { emailOrPhone });
-
 
         const entity = await queryBuilder.getOne();
 
@@ -60,9 +54,12 @@ export class SecurityConfigRepository extends BaseRepository<SecurityConfig>
             select: {
                 _id: true,
                 otp: true,
+                otpAttempts: true,
                 requiredPassword: true,
                 user: {
-                    _id: true
+                    _id: true,
+                    email: true,
+                    phone: true
                 }
             } as any,
             relations: {
@@ -72,7 +69,7 @@ export class SecurityConfigRepository extends BaseRepository<SecurityConfig>
 
         if (!entity)
         {
-            throw new NotFoundCustomException(this.entityClass.name);
+            throw new NotFoundCustomException(User.name);
         }
 
         return entity;

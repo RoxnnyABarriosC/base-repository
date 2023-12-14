@@ -2,6 +2,8 @@ version: '3.9'
 
 services:
   api:
+    ports:
+      - "${API_PORT:-4000}:${API_PORT:-4000}"
     volumes:
       - .:/app:cached
 

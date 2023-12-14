@@ -3,7 +3,7 @@ import { CommonModule } from '@modules/common';
 import { RoleModule } from '@modules/role';
 import { UserService } from '@modules/user/domain/services';
 import {
-    DeleteUserUseCase, EnableOrDisableUserUseCase,
+    DeleteUserUseCase, EnableOrDisableUserUseCase, GetUserByUserNameUseCase,
     GetUserUseCase,
     ListUsersUseCase, ResetPasswordUseCase, RestoreUserUseCase,
     SaveUserUseCase, SetRolesUserUseCase, UpdatePermissionsUserUseCase, UpdateUserUseCase, VerifyOrUnverifyUserUseCase
@@ -31,6 +31,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         UpdateUserUseCase,
         EnableOrDisableUserUseCase,
         VerifyOrUnverifyUserUseCase,
+        GetUserByUserNameUseCase,
         ResetPasswordUseCase,
         UpdatePermissionsUserUseCase,
         SetRolesUserUseCase,

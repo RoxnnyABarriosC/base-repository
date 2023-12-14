@@ -1,26 +1,24 @@
-import { JWTStrategy, LocalStrategy } from '@modules/auth/domain/strategies';
+import { AppleStrategy, FacebookStrategy, GoogleStrategy, JWTStrategy, LocalStrategy } from '@modules/auth/domain/strategies';
 import {
     ActivateAccountUseCase,
     ChangeForgotPasswordUseCase,
     ChangeMyPasswordUseCase,
     ForgotPasswordUseCase,
     LoginUseCase,
-    LogoutUseCase,
+    LogoutUseCase, OAuthLoginUseCase,
     RefreshTokenUseCase,
     RegisterUseCase,
     ResetPasswordWithTokenUseCase,
     SetMainPictureOrBannerUseCase,
     UnsetMainPictureOrBannerUseCase,
-    UpdateFirstLoginUseCase,
-    UpdateMeUseCase
+    UpdateMeUseCase,
+    UpdateOnBoardingUseCase
 } from '@modules/auth/domain/useCases';
 import { TokenRepository } from '@modules/auth/infrastructure/repositories';
-import { AuthController } from '@modules/auth/presentation/controllers';
+import { AuthController, SocialAuthController } from '@modules/auth/presentation/controllers';
 import { RefreshTokenMiddleware } from '@modules/auth/presentation/middlewares';
 import { CommonModule } from '@modules/common';
-import { RoleModule } from '@modules/role';
 import { SecurityConfigModule } from '@modules/securityConfig';
-import { OTPStrategy } from '@modules/securityConfig/domain/strategies/otp.strategy';
 import { UserModule } from '@modules/user';
 import { MiddlewareConsumer, Module, NestModule, RequestMethod, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -56,7 +54,8 @@ import { AuthService,  TokenService } from './domain/services';
         ])
     ],
     controllers: [
-        AuthController
+        AuthController,
+        SocialAuthController
     ],
     providers:[
         // USE CASES
@@ -72,7 +71,8 @@ import { AuthService,  TokenService } from './domain/services';
         ResetPasswordWithTokenUseCase,
         SetMainPictureOrBannerUseCase,
         UnsetMainPictureOrBannerUseCase,
-        UpdateFirstLoginUseCase,
+        UpdateOnBoardingUseCase,
+        OAuthLoginUseCase,
         // SERVICES
         TokenService,
         AuthService,
@@ -80,7 +80,10 @@ import { AuthService,  TokenService } from './domain/services';
         TokenRepository,
         // STRATEGIES
         LocalStrategy,
-        JWTStrategy
+        JWTStrategy,
+        FacebookStrategy,
+        GoogleStrategy,
+        AppleStrategy
     ],
     exports: [
         TokenService,

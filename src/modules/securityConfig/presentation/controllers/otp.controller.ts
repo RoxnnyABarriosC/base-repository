@@ -16,7 +16,7 @@ import { Throttle } from '@nestjs/throttler';
 import {  UUID } from '@shared/decorators';
 import { ThrottleUseUrl } from '@shared/guards';
 import { SetScopeSerializer } from '@shared/interceptors';
-import { OTPSendTypeEnum } from '../../domain/enums';
+import { OTPSendChannelEnum } from '../../domain/enums';
 
 @Controller({
     version: '1'
@@ -32,34 +32,30 @@ export class OTPController
     )
     {}
 
-    @Post(':userId/otp/:target')
-    @Throttle(2, 60)
+    @Post(':userId/otp/:channel')
+    @Throttle(5, 60)
     @ThrottleUseUrl()
     @HttpCode(HttpStatus.CREATED)
     async send(
       @UUID('userId') userId: string,
-      @Param('target', new ParseEnumPipe(OTPSendTypeEnum)) target: string
+      @Param('channel', new ParseEnumPipe(OTPSendChannelEnum)) channel: string
     )
     {
         this.logger.log('Processing send otp request...');
 
-        return await this.sendUseCase.handle({ target: target as OTPSendTypeEnum, userId });
+        return await this.sendUseCase.handle({ channel: channel as OTPSendChannelEnum, userId, countAttempts: true });
     }
 
-    @Post('public/otp/:target')
-    @Throttle(2, 60)
+    @Post('public/otp')
+    @Throttle(5, 60)
     @ThrottleUseUrl()
     @HttpCode(HttpStatus.CREATED)
     async sendPublic(
-      @Body() dto: SendOTPDto,
-      @Param('target', new ParseEnumPipe(OTPSendTypeEnum)) target: string
+      @Body() dto: SendOTPDto
     )
     {
         this.logger.log('Processing send otp request...');
 
-        return await this.sendPublicUseCase.handle({
-            target: target as OTPSendTypeEnum,
-            dto
-        });
+        return await this.sendPublicUseCase.handle({ dto });
     }
 }

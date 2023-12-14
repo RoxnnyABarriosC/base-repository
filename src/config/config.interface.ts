@@ -126,19 +126,53 @@ export interface ITasksConfig
 
 export interface IOTPConfig
 {
-    expirationTime: string;
     limitAttempts: number;
-    length: number;
-    isNumeric: boolean;
+    codeLength: number
 }
 
 export interface ITwilioConfig {
     accountSid: string;
     authToken: string;
     fromNumber: string;
+    otpServiceSid: string;
 }
 
-export interface ConfigInterface {
+export interface IOAuthStrategyConfig {
+    clientID: string;
+    callbackURL: string;
+    clientSecret: string;
+}
+
+export interface IAppleStrategyConfig extends Omit<IOAuthStrategyConfig, 'clientSecret'> {
+    teamID: string;
+    keyID: string;
+    privateKeyLocation: string;
+}
+
+export interface ILengthConfig {
+    min: number;
+    max: number;
+}
+
+export interface IPropertiesConfig {
+    password: ILengthConfig;
+    firstName: ILengthConfig;
+    lastName: ILengthConfig;
+    birthday: ILengthConfig;
+    emailDomainLength: number;
+}
+
+export interface IEmailsDomainConfig {
+    admin: string
+    app: string
+}
+
+export interface ISendgridTemplates {
+    otp: string;
+    publicOTP: string;
+}
+
+export interface IConfig {
     environment: string;
     server: IServerConfig;
     logger: ILoggerConfig;
@@ -158,4 +192,10 @@ export interface ConfigInterface {
     tasks: ITasksConfig;
     otp: IOTPConfig;
     twilio: ITwilioConfig;
+    facebookStrategy: IOAuthStrategyConfig;
+    googleStrategy: IOAuthStrategyConfig;
+    appleStrategy: IAppleStrategyConfig;
+    validatorProperties: IPropertiesConfig;
+    emailsDomain: IEmailsDomainConfig;
+    sendgridTemplates: ISendgridTemplates;
 }

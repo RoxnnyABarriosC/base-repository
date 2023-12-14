@@ -10,3 +10,7 @@ export * from './permissions-action-method.decorator';
 export * from './protected.decorator';
 export * from './public.decorator';
 export * from './require-permissions.decorator';
+export * from './apple-auth.decorator';
+export * from './facebook-auth.decorator';
+export * from './google-auth.decorator';
+export * from './oauth-payload.decorator';

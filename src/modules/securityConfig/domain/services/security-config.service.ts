@@ -1,4 +1,5 @@
 import { EncryptionFactory } from '@modules/auth/domain/factories';
+import { SecurityConfig } from '@modules/securityConfig/domain/entities';
 import { CannotUseYourOldPasswordException } from '@modules/securityConfig/domain/exceptions';
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { User } from '@modules/user/domain/entities';
@@ -30,5 +31,10 @@ export class SecurityConfigService
         securityConfig.oldPassword = user.password.toString();
 
         void await this.repository.update(securityConfig);
+    }
+
+    async getConfigOfEmailOrPhone(emailOrPhone: string): Promise<SecurityConfig>
+    {
+        return await this.repository.getConfigOfEmailOrPhone(emailOrPhone);
     }
 }

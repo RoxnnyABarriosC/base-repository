@@ -5,6 +5,6 @@ export class SuperAdminCanNotBeModifiedException extends HttpException
 {
     constructor()
     {
-        super(HttpStatus.FORBIDDEN, 'exceptions.user.superAdminCanNotBeModifiedException');
+        super(HttpStatus.FORBIDDEN, 'exceptions.user.superAdminCanNotBeModified');
     }
 }

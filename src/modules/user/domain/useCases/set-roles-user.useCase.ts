@@ -17,16 +17,13 @@ export class SetRolesUserUseCase
 
     constructor(
         private readonly repository: UserRepository,
-        private readonly roleRepository: RoleRepository,
-        private readonly service: UserService
+        private readonly roleRepository: RoleRepository
     )
     {}
 
     async handle({ id, dto: { rolesIds } }: ISetRolesUserUseCaseProps): Promise<User>
     {
         const user = await this.repository.getOne({ id });
-
-        void this.service.checkSuperAdmin(user);
 
         user.Role = await this.roleRepository.getEnableRolesByIds(user.verifyRolesIds(rolesIds));
 

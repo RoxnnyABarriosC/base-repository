@@ -1,3 +1,5 @@
+import { OAuthAccountPropertiesDictionary } from '@modules/auth/domain/dictionaries';
+import { OAuthProviderEnum } from '@modules/auth/domain/enums';
 import { BadCredentialsException } from '@modules/auth/domain/exceptions';
 import { EncryptionFactory } from '@modules/auth/domain/factories';
 import { PermissionActions } from '@modules/auth/presentation/decorators';
@@ -82,6 +84,20 @@ export class AuthService
             isSuperAdmin: authUser?.isSuperAdmin,
             manage: userPermissions.some(p => managePermissions.includes(p))
         };
+    }
+
+    async getOauthUser(provider: OAuthProviderEnum, accountId: string)
+    {
+        const condition  = {
+            [OAuthAccountPropertiesDictionary.get(provider)]: accountId
+        };
+
+        return await this.userRepository.getOneBy({
+            condition,
+            options: {
+                initThrow: false
+            }
+        });
     }
 }
 

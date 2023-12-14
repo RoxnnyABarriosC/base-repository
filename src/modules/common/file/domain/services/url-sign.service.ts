@@ -1,6 +1,6 @@
 import configuration from '@config/configuration';
 import { Logger } from '@nestjs/common';
-import { ConfigInterface } from '@src/config';
+import { IConfig } from '@src/config';
 import { Client } from 'minio';
 import { File } from '../entities/file.entity';
 
@@ -10,7 +10,7 @@ export class UrlSignService
 
     private readonly client: Client;
     private readonly bucket: string;
-    private readonly configService: ConfigInterface;
+    private readonly configService: IConfig;
     private readonly expire: number;
 
     constructor()

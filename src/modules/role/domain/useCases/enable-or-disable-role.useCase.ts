@@ -23,12 +23,6 @@ export class EnableOrDisableRoleUseCase
 
         const role = await this.repository.getOne({ id });
 
-        this.logger.log('Checking if role is system...');
-        if (role.ofSystem)
-        {
-            throw new NotAllowedRemoveASystemRolException();
-        }
-
         this.logger.log(`Setting role enable: ${enable} ...`);
 
         role.enable = enable;

@@ -1,7 +1,9 @@
 import { UniqueService } from '@modules/common/index/infrastructure/services';
 import { Role } from '@modules/role/domain/entities';
-import { WrongPermissionsException } from '@modules/role/domain/exceptions';
+import { NotAllowedRemoveASystemRolException, WrongPermissionsException } from '@modules/role/domain/exceptions';
+import { SystemRolCanNotBeModifiedException } from '@modules/role/domain/exceptions/system-rol-can-not-be-modified.exception';
 import { RoleRepository } from '@modules/role/infrastructure/repositories';
+import { SuperAdminCanNotBeModifiedException } from '@modules/user/domain/exceptions';
 import { Injectable, Logger } from '@nestjs/common';
 import { AppPermissionsFactory } from '@src/app.permissions';
 import { isEmpty } from 'class-validator';
@@ -47,5 +49,25 @@ export class RoleService
         // {
         //     throw new WrongViewsException();
         // }
+    }
+
+    async checkSystemRolPolicy(id: string, withDeleted = false): Promise<void>
+    {
+        const role = await this.repository.exist({ condition: { _id: id }, initThrow: true, select: ['ofSystem', '_id'], withDeleted }) as Role;
+
+        if (role.ofSystem)
+        {
+            throw new SystemRolCanNotBeModifiedException();
+        }
+    }
+
+    async checkNotAllowedRemoveASystemRolPolicy(id: string, withDeleted = false): Promise<void>
+    {
+        const role = await this.repository.exist({ condition: { _id: id }, initThrow: true, select: ['ofSystem', '_id'], withDeleted }) as Role;
+
+        if (role.ofSystem)
+        {
+            throw new NotAllowedRemoveASystemRolException();
+        }
     }
 }

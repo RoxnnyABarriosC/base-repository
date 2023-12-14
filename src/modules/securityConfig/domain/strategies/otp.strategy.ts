@@ -1,10 +1,11 @@
 import { AuthService } from '@modules/auth/domain/services';
 import { StepperLoginDto } from '@modules/auth/presentation/dtos';
+import { OTPPropertiesToTargetDictionary } from '@modules/securityConfig/domain/dictionaries/otp-properties-to-target.dictionary';
 import { OTPConfigException } from '@modules/securityConfig/domain/exceptions';
-import { OTPService } from '@modules/securityConfig/domain/services';
-import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
+import { OTPService, SecurityConfigService } from '@modules/securityConfig/domain/services';
+import { AuthOTPDto } from '@modules/securityConfig/presentation/dtos';
 import { User } from '@modules/user/domain/entities';
-import { UserRepository } from '@modules/user/infrastructure/repositories';
+import { UserService } from '@modules/user/domain/services';
 import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { BadRequestCustomException } from '@shared/exceptions';
@@ -21,8 +22,8 @@ export class OTPStrategy extends PassportStrategy(Strategy, 'otp')
     constructor(
         private readonly authService: AuthService,
         private readonly otpService: OTPService,
-        private readonly repository: SecurityConfigRepository,
-        private readonly userRepository: UserRepository
+        private readonly userService: UserService,
+        private readonly service: SecurityConfigService
     )
     {
         super();
@@ -34,12 +35,9 @@ export class OTPStrategy extends PassportStrategy(Strategy, 'otp')
 
         const bodyProperties = Object.keys(req.body);
 
-        const user = await this.userRepository.exist({
-            condition: [{ email: emailOrPhone }, { phone: emailOrPhone }],
-            select: ['phone', 'email']
-        });
+        const user = await this.userService.getEmailAndPhone(emailOrPhone);
 
-        const securityConfig = await this.repository.getConfigOfEmailOrPhone(emailOrPhone);
+        const securityConfig = await this.service.getConfigOfEmailOrPhone(emailOrPhone);
 
         const requiredOTPProperties = this.otpService.getRequiredProperties(securityConfig);
 
@@ -53,11 +51,11 @@ export class OTPStrategy extends PassportStrategy(Strategy, 'otp')
 
         const values  = requiredOTPProperties.reduce((prev, otp) =>
         {
-            const otpType = this.otpService.getType(otp);
+            const target = OTPPropertiesToTargetDictionary.get(otp);
 
             return {
                 ...prev,
-                [otpType]: EncodeText(user[otpType], otpType)
+                [target]: EncodeText(user[target], target)
             };
         }, {});
 
@@ -75,13 +73,8 @@ export class OTPStrategy extends PassportStrategy(Strategy, 'otp')
             emailOrPhone?.toLowerCase(),
             password,
             await this.otpService.checkOtp(
-                req.body as any,
-                requiredOTPProperties,
-                securityConfig,
-                {
-                    emailKey: req.headers['email-otp-key'] as string,
-                    phoneKey: req.headers['phone-otp-key'] as string
-                }
+                req.body as AuthOTPDto,
+                requiredOTPProperties
             ),
             {
                 checkSuperAdmin: false,

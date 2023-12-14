@@ -28,10 +28,10 @@ export class RefreshTokenUseCase
             options: { initThrow: true }
         });
 
-        if (user.firstLogin)
+        if (user.onBoarding)
         {
             void await this.userRepository.setFalseFirstLogin(user._id);
-            user.firstLogin = false;
+            user.onBoarding = false;
         }
 
         const token = await this.tokenService.getToken(tokenId);

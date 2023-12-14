@@ -4,30 +4,30 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ILocalMessage } from '@shared/interfaces';
 import { SendLocalMessage } from '@shared/utils';
 
-declare interface IUpdateFirstLoginUseCaseProps {
-    firstLogin: boolean;
+declare interface IUpdateOnBoardingUseCaseProps {
+    onBoarding: boolean;
     authUser: User;
 }
 
 @Injectable()
-export class UpdateFirstLoginUseCase
+export class UpdateOnBoardingUseCase
 {
-    private readonly logger = new Logger(UpdateFirstLoginUseCase.name);
+    private readonly logger = new Logger(UpdateOnBoardingUseCase.name);
 
     constructor(
         private readonly userRepository: UserRepository
     )
     { }
 
-    async handle({ firstLogin, authUser }: IUpdateFirstLoginUseCaseProps): Promise<ILocalMessage>
+    async handle({ onBoarding, authUser }: IUpdateOnBoardingUseCaseProps): Promise<ILocalMessage>
     {
-        if (authUser.firstLogin)
+        if (authUser.onBoarding)
         {
-            authUser.firstLogin = firstLogin;
+            authUser.onBoarding = onBoarding;
 
             void await this.userRepository.update(authUser);
         }
 
-        return SendLocalMessage(() => 'messages.auth.firstLoginUpdated');
+        return SendLocalMessage(() => 'messages.auth.onBoardingUpdated');
     }
 }

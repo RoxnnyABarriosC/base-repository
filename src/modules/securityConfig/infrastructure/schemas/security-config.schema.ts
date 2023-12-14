@@ -12,12 +12,16 @@ export const SecurityConfigSchema = new EntitySchema<SecurityConfig>({
         otp: {
             type: 'jsonb'
         },
+        otpAttempts: {
+            type: Number,
+            default: 0
+        },
         oldPassword: {
-            type: 'varchar',
+            type: String,
             nullable: true
         },
         requiredPassword: {
-            type: 'boolean',
+            type: Boolean,
             default: true
         }
     },

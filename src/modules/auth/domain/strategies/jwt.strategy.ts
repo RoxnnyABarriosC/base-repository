@@ -6,6 +6,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ForbiddenCustomException } from '@shared/exceptions';
+import { FastifyRequest } from 'fastify';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 export declare interface IAuthData {
@@ -13,7 +14,7 @@ export declare interface IAuthData {
     data: User;
 }
 
-export type RequestAuth = Request & { user: IAuthData }
+export type RequestAuth = FastifyRequest & { user: IAuthData }
 
 @Injectable()
 export class JWTStrategy extends PassportStrategy(Strategy)

@@ -1,24 +1,17 @@
-import { SendOtpEvent, SendPublicOtpEvent } from '@modules/common/mail/domain/events';
-import { MailEventEnum } from '@modules/common/mail/domain/listeners';
-import { OTPSendTypeEnum } from '@modules/securityConfig/domain/enums';
-import { SendMessageEvent } from '@modules/securityConfig/domain/events/send-message.event';
-import { OTPLimitExceededException, OTPUniqueTargetException } from '@modules/securityConfig/domain/exceptions';
+import { OTPChannelToTargetDictionary } from '@modules/securityConfig/domain/dictionaries';
+import { OTPSendChannelEnum } from '@modules/securityConfig/domain/enums';
+import { SendOTPEmailEvent, SendOTPPhoneEvent } from '@modules/securityConfig/domain/events';
+import { OTPUniqueTargetException } from '@modules/securityConfig/domain/exceptions';
 import { TwilioEventEnum } from '@modules/securityConfig/domain/listeners';
-import { OTPModel } from '@modules/securityConfig/domain/models';
-import { OTPService } from '@modules/securityConfig/domain/services';
-import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { SendOTPDto } from '@modules/securityConfig/presentation/dtos';
-import { User } from '@modules/user/domain/entities';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { IOTPConfig } from '@src/config';
+import { SendLocalMessage } from '@shared/utils';
 import { Cache } from 'cache-manager';
 
 interface  ISendPublicOTPUseCaseProps {
-    target: OTPSendTypeEnum;
     dto: SendOTPDto;
 }
 
@@ -28,50 +21,33 @@ export class SendPublicOTPUseCase
     private readonly logger = new Logger(SendPublicOTPUseCase.name);
 
     constructor(
-        private readonly service: OTPService,
         private readonly eventEmitter: EventEmitter2,
-        private readonly configService: ConfigService,
         private readonly userRepository: UserRepository,
         @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
     )
     {}
 
-    async handle({ target, dto }: ISendPublicOTPUseCaseProps)
+    async handle({ dto: { channel, to } }: ISendPublicOTPUseCaseProps)
     {
-        const { value } = dto;
+        const target = OTPChannelToTargetDictionary.get(channel);
 
-        const exist  = await this.userRepository.exist({ condition: { [target]: value }, select: ['_id'] });
+        const exist  = await this.userRepository.exist({ condition: { [target]: to }, select: ['_id'] });
 
         if (exist)
         {
-            throw new OTPUniqueTargetException(target, value);
+            throw new OTPUniqueTargetException(target, to);
         }
 
-        const { expirationTime, ...otpConfig } = this.configService.getOrThrow<IOTPConfig>('otp');
-
-        const otp = new OTPModel(
-            expirationTime,
-            this.service.encryption.encrypt,
-            otpConfig as any
-        );
-
-        await otp.build();
-
-        await this.cacheManager.set(otp.Key, { target, hash: otp.Hash }, otp.ExpirationTime('ms') as number);
-
-        if (target === OTPSendTypeEnum.PHONE)
+        if (channel === OTPSendChannelEnum.SMS)
         {
-            const message = `Your OTP code is ${otp.Code}`;
-            this.eventEmitter.emit(TwilioEventEnum.SEND_MESSAGE, new SendMessageEvent(message, value));
+            this.eventEmitter.emit(TwilioEventEnum.SEND_OTP_PHONE, new SendOTPPhoneEvent(to, channel));
         }
 
-        if (target === OTPSendTypeEnum.EMAIL)
+        if (channel === OTPSendChannelEnum.EMAIL)
         {
-            this.eventEmitter.emit(MailEventEnum.SEND_PUBLIC_OTP, new SendPublicOtpEvent(value, otp.Code));
+            this.eventEmitter.emit(TwilioEventEnum.SEND_PUBLIC_OTP_EMAIL, new SendOTPEmailEvent(to, channel));
         }
 
-        return {
-            [`${target}OtpKey`]: otp.Key
-        };
+        return SendLocalMessage(() =>  'messages.otp.sent');
     }
 }
