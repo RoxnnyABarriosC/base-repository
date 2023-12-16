@@ -1,4 +1,4 @@
-import { OAuthProviderEnum } from '@modules/auth/domain/enums';
+import { OAuthProviderEnum } from '../enums';
 
 export const OAuthAccountPropertiesDictionary = new Map([
     [OAuthProviderEnum.FACEBOOK, 'facebookAccountId'],

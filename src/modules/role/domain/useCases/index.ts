@@ -10,3 +10,21 @@ export * from './update-allowed-views-role.useCase';
 export * from './update-permissions-role.useCase';
 export * from './update-role.useCase';
 export * from './update-scope-config-role.useCase';
+import * as _useCases  from './index';
+
+
+export const useCases = [
+    _useCases.DeleteRoleUseCase,
+    _useCases.EnableOrDisableRoleUseCase,
+    _useCases.GetPermissionsUseCase,
+    _useCases.GetRoleUseCase,
+    _useCases.ListRolesUseCase,
+    _useCases.RestoreRoleUseCase,
+    _useCases.SaveRoleUseCase,
+    _useCases.SyncRolesPermissionsUseCase,
+    _useCases.UpdateAllowedViewsRoleUseCase,
+    _useCases.UpdatePermissionsRoleUseCase,
+    _useCases.UpdateRoleUseCase,
+    _useCases.UpdateScopeConfigRoleUseCase
+];
+

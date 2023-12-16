@@ -1,7 +1,7 @@
 import configuration from '@config/configuration';
-import { File } from '@modules/common/file/domain/entities';
-import { UrlSignService } from '@modules/common/file/domain/services/url-sign.service';
 import { Logger } from '@nestjs/common';
+import { File } from '../entities';
+import { UrlSignService } from '../services';
 
 export interface UrlFileInterface {
     id: string;

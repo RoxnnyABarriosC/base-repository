@@ -1,18 +1,27 @@
 import { ManagePermissions, Protected, RequirePermissions } from '@modules/auth/presentation/decorators';
 import { MimeTypeEnum } from '@modules/common/file/domain/enums';
-import { DeleteFileUseCase, GetFileUseCase, ListFilesUseCase, RestoreFileUseCase, SaveFileUseCase, SaveFilesUseCase } from '@modules/common/file/domain/useCases';
+import {
+    DeleteFileUseCase,
+    GetFileUseCase,
+    ListFilesUseCase,
+    RestoreFileUseCase,
+    SaveFileUseCase,
+    SaveFilesUseCase
+} from '@modules/common/file/domain/useCases';
 import { FilePermissionsEnum } from '@modules/common/file/file.permissions';
-import { UploadFile, UploadFileFields, UploadFiles, UploadedFile, UploadedFiles } from '@modules/common/file/presentation/decorators';
-import { UploadedFileFields } from '@modules/common/file/presentation/decorators/uploaded-file-fields.decorator';
-import { SaveFileDto } from '@modules/common/file/presentation/dtos/save-file.dto';
-import { FileSerializer } from '@modules/common/file/presentation/serializers';
 import { UserFilter, UserSort } from '@modules/user/presentation/criterias';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Logger, Patch, Post } from '@nestjs/common';
-import { CriteriaBuilder, IUris, PaginationFilter } from '@shared/criterias';
-import { Criteria, DeletePermanently, Filter, Pagination, PartialRemoved, Sort, UUID, Uris } from '@shared/decorators';
-import { ALL_MANAGE_PERMISSION } from '@shared/factories';
-import { Serializer } from '@shared/utils';
+import { ALL_MANAGE_PERMISSION } from '@shared/app/constants';
+import { Serializer } from '@shared/classValidator/utils';
+import { CriteriaBuilder, IUris } from '@shared/criteria';
+import { Criteria, Filter, Pagination, Sort, Uris } from '@shared/criteria/decorators';
+import { PaginationFilter } from '@shared/criteria/filters';
+import { DeletePermanently, PartialRemoved, UUID } from '@shared/decorators';
 import { MulterFile } from 'fastify-file-interceptor';
+import { UploadFile, UploadFileFields, UploadFiles, UploadedFile, UploadedFiles } from '../decorators';
+import { UploadedFileFields } from '../decorators/uploaded-file-fields.decorator';
+import { SaveFileDto } from '../dtos/save-file.dto';
+import { FileSerializer } from '../serializers';
 
 @Controller({
     path: 'files',

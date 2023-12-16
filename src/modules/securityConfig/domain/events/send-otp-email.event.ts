@@ -1,5 +1,5 @@
 
-import { OTPSendChannelEnum } from '@modules/securityConfig/domain/enums';
+import { OTPSendChannelEnum } from '../enums';
 
 export class SendOTPEmailEvent
 {

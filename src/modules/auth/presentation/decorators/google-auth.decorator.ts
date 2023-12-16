@@ -1,5 +1,5 @@
-import { GoogleAuthGuard } from '@modules/auth/presentation/guards';
 import { UseGuards, applyDecorators } from '@nestjs/common';
+import { GoogleAuthGuard } from '../guards';
 
 export const GoogleAuth = () =>
 {

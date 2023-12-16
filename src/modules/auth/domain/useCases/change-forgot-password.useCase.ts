@@ -1,5 +1,3 @@
-import { TokenActionEnum } from '@modules/auth/domain/enums';
-import { TokenService } from '@modules/auth/domain/services';
 import { ChangeForgotPasswordEvent } from '@modules/common/mail/domain/events';
 import { MailEventEnum } from '@modules/common/mail/domain/listeners';
 import { SecurityConfigService } from '@modules/securityConfig/domain/services';
@@ -9,9 +7,10 @@ import { PasswordDto } from '@modules/user/presentation/dtos';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { ILocalMessage } from '@shared/interfaces';
-import { SendLocalMessage } from '@shared/utils';
+import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
 import { IServerConfig } from '@src/config';
+import { TokenActionEnum } from '../enums';
+import { TokenService } from '../services';
 
 declare interface IChangeForgotPasswordUseCaseProps {
     dto: PasswordDto,

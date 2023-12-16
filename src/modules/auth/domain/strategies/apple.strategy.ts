@@ -1,10 +1,10 @@
-import { OAuthProviderDictionary } from '@modules/auth/domain/dictionaries';
-import { IOAuthPayload } from '@modules/auth/domain/strategies/oauth-payload.interface';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { IAppleStrategyConfig } from '@src/config';
 import Strategy from 'passport-apple';
+import { IOAuthPayload } from './index';
+import { OAuthProviderDictionary } from '../dictionaries';
 
 @Injectable()
 export class AppleStrategy extends PassportStrategy(Strategy, 'apple')

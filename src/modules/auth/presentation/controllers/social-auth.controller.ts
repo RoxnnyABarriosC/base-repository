@@ -1,11 +1,5 @@
-import { IOAuthPayload } from '@modules/auth/domain/strategies/oauth-payload.interface';
+import { IOAuthPayload } from '@modules/auth/domain/strategies';
 import { OAuthLoginUseCase } from '@modules/auth/domain/useCases';
-import {
-    AppleAuth,
-    FacebookAuth, GoogleAuth,
-    OauthPayload
-} from '@modules/auth/presentation/decorators';
-import { AuthSerializer } from '@modules/auth/presentation/serializers';
 import { IMyStore } from '@modules/common/store';
 import { RoleSerializerGroupsEnum } from '@modules/role/presentation/enums';
 import { SCOPE } from '@modules/user/domain/constants';
@@ -20,13 +14,20 @@ import {
     Res
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Agent, SetSerializerGroups, UserAgent } from '@shared/decorators';
-import { SetScopeSerializer } from '@shared/interceptors';
-import { SendLocalMessage, SendRefresh, Serializer } from '@shared/utils';
+import { Agent, UserAgent } from '@shared/app/decorators';
+import { SendLocalMessage, SendRefresh } from '@shared/app/utils';
+import { SetScopeSerializer, SetSerializerGroups } from '@shared/classValidator/decorators';
+import { Serializer } from '@shared/classValidator/utils';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { ClsService } from 'nestjs-cls';
+import {
+    AppleAuth,
+    FacebookAuth, GoogleAuth,
+    OauthPayload
+} from '../decorators';
+import { AuthSerializer } from '../serializers';
 dayjs.extend(utc);
 
 @Controller({

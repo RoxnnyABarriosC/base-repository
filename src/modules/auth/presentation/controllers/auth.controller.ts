@@ -2,64 +2,48 @@ import { IDecodeToken } from '@modules/auth/domain/models';
 import {
     ActivateAccountUseCase,
     ChangeForgotPasswordUseCase,
-    ChangeMyPasswordUseCase,
     ForgotPasswordUseCase,
     LoginUseCase,
     LogoutUseCase,
     RefreshTokenUseCase,
-    RegisterUseCase,
-    ResetPasswordWithTokenUseCase,
-    SetMainPictureOrBannerUseCase,
-    UnsetMainPictureOrBannerUseCase,
-    UpdateMeUseCase,
-    UpdateOnBoardingUseCase
+    RegisterUseCase
 } from '@modules/auth/domain/useCases';
-import {
-    AuthUser,
-    CheckRefreshToken, DecodeRefreshToken,
-    DecodeToken,
-    LocalAuth,
-    Protected
-} from '@modules/auth/presentation/decorators';
-import { ChangeMyPasswordDto, ForgotPasswordDto, LoginDto, MeDto, RegisterDto, StepperLoginDto } from '@modules/auth/presentation/dtos';
-import { AuthSerializer, AuthUserSerializer } from '@modules/auth/presentation/serializers';
-import { MimeTypeEnum } from '@modules/common/file/domain/enums';
-import { UploadFile, UploadedFile
-} from '@modules/common/file/presentation/decorators';
-import { FileSerializer } from '@modules/common/file/presentation/serializers';
 import { IMyStore } from '@modules/common/store';
 import { RoleSerializerGroupsEnum } from '@modules/role/presentation/enums';
 import { OTPAuth } from '@modules/securityConfig/presentation/decorators';
 import { SCOPE } from '@modules/user/domain/constants';
 import { User } from '@modules/user/domain/entities';
-import { PropertyFileEnum } from '@modules/user/domain/enums';
 import { PasswordDto } from '@modules/user/presentation/dtos';
 import { UserSerializerGroupsEnum } from '@modules/user/presentation/enums';
 import {
     Body,
     Controller,
-    Get,
     HttpCode,
     HttpStatus,
     Logger,
-    Param,
-    ParseEnumPipe,
     Patch,
     Post,
     Query,
-    Res, UseGuards, UsePipes, ValidationPipe
+    Res
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AuthGuard } from '@nestjs/passport';
-import { Agent, ApplyValidationBody, SetSerializerGroups, UserAgent } from '@shared/decorators';
-import { ValidationGuard } from '@shared/guards';
-import { SetScopeSerializer } from '@shared/interceptors';
-import { SendRefresh, Serializer } from '@shared/utils';
+import { Agent, UserAgent } from '@shared/app/decorators';
+import { SendRefresh } from '@shared/app/utils';
+import { ApplyValidationBody, SetPipeGroups, SetScopeSerializer, SetSerializerGroups } from '@shared/classValidator/decorators';
+import { ContextGroupsEnum } from '@shared/classValidator/enums';
+import { Serializer } from '@shared/classValidator/utils';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { FastifyReply } from 'fastify';
-import { MulterFile } from 'fastify-file-interceptor';
 import { ClsService } from 'nestjs-cls';
+import {
+    AuthUser,
+    CheckRefreshToken, DecodeRefreshToken,
+    DecodeToken, LocalAuth,
+    Protected
+} from '../decorators';
+import { ForgotPasswordDto, LoginDto, OTPLoginDto, RegisterDto } from '../dtos';
+import { AuthSerializer } from '../serializers';
 dayjs.extend(utc);
 
 @Controller({
@@ -76,115 +60,15 @@ export class AuthController
         private readonly configService: ConfigService,
         private readonly loginUseCase: LoginUseCase,
         private readonly registerUseCase: RegisterUseCase,
-        private readonly updateMeUseCase: UpdateMeUseCase,
         private readonly logoutUseCase: LogoutUseCase,
         private readonly refreshTokenUseCase: RefreshTokenUseCase,
-        private readonly changeMyPasswordUseCase: ChangeMyPasswordUseCase,
         private readonly activateAccountUseCase: ActivateAccountUseCase,
         private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
-        private readonly changeForgotPasswordUseCase: ChangeForgotPasswordUseCase,
-        private readonly resetPasswordUseCase: ResetPasswordWithTokenUseCase,
-        private readonly setMainPictureOrBannerUseCase: SetMainPictureOrBannerUseCase,
-        private readonly unsetMainPictureOrBannerUseCase: UnsetMainPictureOrBannerUseCase,
-        private readonly updateOnBoardingUseCase: UpdateOnBoardingUseCase
+        private readonly changeForgotPasswordUseCase: ChangeForgotPasswordUseCase
     )
     {}
 
-    @Patch('me/on-boarding')
-    @HttpCode(HttpStatus.OK)
-    @Protected()
-    async setOnBoarding(@AuthUser() authUser: User)
-    {
-        return await this.updateOnBoardingUseCase.handle({
-            authUser,
-            onBoarding: true
-        });
-    }
-
-    @Get('me')
-    @HttpCode(HttpStatus.OK)
-    @Protected()
-    @SetSerializerGroups(
-        UserSerializerGroupsEnum.WITH_ROLES,
-        UserSerializerGroupsEnum.WITH_PERMISSIONS,
-        RoleSerializerGroupsEnum.ONLY_ID
-    )
-    async me(@AuthUser() authUser: User)
-    {
-        return (await Serializer(
-            authUser,
-            AuthUserSerializer
-        )) as typeof AuthUserSerializer;
-    }
-
-    @Patch('me')
-    @Protected()
-    @HttpCode(HttpStatus.OK)
-    @SetSerializerGroups(
-        UserSerializerGroupsEnum.WITH_ROLES,
-        UserSerializerGroupsEnum.WITH_PERMISSIONS,
-        RoleSerializerGroupsEnum.ONLY_ID
-    )
-    async updateMe(
-    @Res({ passthrough: true }) res: FastifyReply,
-    @Body() dto: MeDto,
-    @AuthUser() authUser: User,
-    @UserAgent() agent: any
-    )
-    {
-        return (await Serializer(
-            await this.updateMeUseCase.handle({
-                dto,
-                authUser
-            }),
-            AuthUserSerializer
-        )) as typeof AuthUserSerializer;
-    }
-
-    @Patch('me/set/:property')
-    @HttpCode(HttpStatus.OK)
-    @Protected()
-    @UploadFile()
-    async setMainPicture(
-        @UploadedFile({
-            fileType: [MimeTypeEnum.WEBP, MimeTypeEnum.PNG]
-        }) rawFile: MulterFile,
-        @Param('property',
-            new ParseEnumPipe(PropertyFileEnum)
-        ) property: unknown,
-        @AuthUser() authUser: User
-    )
-    {
-        return (await Serializer(
-            await this.setMainPictureOrBannerUseCase.handle({
-                rawFile,
-                authUser,
-                property: property as PropertyFileEnum
-            }),
-            FileSerializer
-        )) as typeof FileSerializer;
-    }
-
-    @Patch('me/unset/:property')
-    @Protected()
-    @HttpCode(HttpStatus.OK)
-    // TODO: proximamente agregar query param para condicionar si el unset solo quitara la imagen o tambien la borrara
-    async unsetMainPicture(
-        @Param('property',
-            new ParseEnumPipe(PropertyFileEnum)
-        ) property: unknown,
-        @AuthUser() authUser: User
-    )
-    {
-        return  await this.unsetMainPictureOrBannerUseCase.handle({
-            authUser,
-            property: property as PropertyFileEnum
-        });
-    }
-
-    // ======================================================================AUTH======================================================================
-
-    @Post('login')
+    @Post('basic-login')
     @HttpCode(HttpStatus.CREATED)
     @LocalAuth()
     @ApplyValidationBody(LoginDto)
@@ -193,9 +77,9 @@ export class AuthController
         UserSerializerGroupsEnum.WITH_PERMISSIONS,
         RoleSerializerGroupsEnum.ONLY_ID
     )
-    async login(
+    async basicLogin(
         @Res({ passthrough: true }) res: FastifyReply,
-        @Body(new ValidationPipe()) dto: LoginDto,
+        @Body() dto: LoginDto,
         @AuthUser() authUser: User,
         @UserAgent() agent: Agent
     )
@@ -214,18 +98,19 @@ export class AuthController
         return (await Serializer(data, AuthSerializer)) as typeof AuthSerializer;
     }
 
-    @Post('stepper-login')
+    @Post('login')
     @HttpCode(HttpStatus.CREATED)
     @OTPAuth()
-    @ApplyValidationBody(StepperLoginDto)
+    @ApplyValidationBody(OTPLoginDto)
     @SetSerializerGroups(
         UserSerializerGroupsEnum.WITH_ROLES,
         UserSerializerGroupsEnum.WITH_PERMISSIONS,
         RoleSerializerGroupsEnum.ONLY_ID
     )
-    async stepperLogin(
+    @SetPipeGroups(ContextGroupsEnum.APP)
+    async login(
       @Res({ passthrough: true }) res: FastifyReply,
-      @Body() dto: StepperLoginDto,
+      @Body() dto: OTPLoginDto,
       @AuthUser() authUser: User,
       @UserAgent() agent: Agent
     )
@@ -244,8 +129,41 @@ export class AuthController
         return (await Serializer(data, AuthSerializer)) as typeof AuthSerializer;
     }
 
+
+    @Post('login-admin')
+    @HttpCode(HttpStatus.CREATED)
+    @OTPAuth()
+    @ApplyValidationBody(OTPLoginDto)
+    @SetSerializerGroups(
+        UserSerializerGroupsEnum.WITH_ROLES,
+        UserSerializerGroupsEnum.WITH_PERMISSIONS,
+        RoleSerializerGroupsEnum.ONLY_ID
+    )
+    @SetPipeGroups(ContextGroupsEnum.ADMIN)
+    async loginAdmin(
+        @Res({ passthrough: true }) res: FastifyReply,
+        @Body() dto: OTPLoginDto,
+        @AuthUser() authUser: User,
+        @UserAgent() agent: Agent
+    )
+    {
+        const data = await this.loginUseCase.handle({ user: authUser });
+
+        SendRefresh({
+            res,
+            agent,
+            configService: this.configService,
+            store: this.store,
+            refreshHash: data.RefreshHash,
+            expiresRefresh: data.ExpiresRefresh
+        });
+
+        return (await Serializer(data, AuthSerializer)) as typeof AuthSerializer;
+    }
+
     @Post('register')
     @HttpCode(HttpStatus.CREATED)
+    @SetPipeGroups(ContextGroupsEnum.APP)
     async register(@Body() dto: RegisterDto)
     {
         return await this.registerUseCase.handle({ dto });
@@ -256,11 +174,11 @@ export class AuthController
     @CheckRefreshToken()
     @HttpCode(HttpStatus.OK)
     async logout(
-    @Res({ passthrough: true }) res: FastifyReply,
-    @DecodeToken() decodeToken: IDecodeToken,
-    @DecodeRefreshToken() decodeRefreshToken: IDecodeToken,
-    @AuthUser() authUser: User,
-    @UserAgent() agent: Agent
+        @Res({ passthrough: true }) res: FastifyReply,
+        @DecodeToken() decodeToken: IDecodeToken,
+        @DecodeRefreshToken() decodeRefreshToken: IDecodeToken,
+        @AuthUser() authUser: User,
+        @UserAgent() agent: Agent
     )
     {
         const data = await this.logoutUseCase.handle({
@@ -288,9 +206,9 @@ export class AuthController
         RoleSerializerGroupsEnum.ONLY_ID
     )
     async refreshToken(
-    @Res({ passthrough: true }) res: FastifyReply,
-    @DecodeRefreshToken() decodeRefreshToken: IDecodeToken,
-    @UserAgent() agent: Agent
+        @Res({ passthrough: true }) res: FastifyReply,
+        @DecodeRefreshToken() decodeRefreshToken: IDecodeToken,
+        @UserAgent() agent: Agent
     )
     {
         const data = await this.refreshTokenUseCase.handle({
@@ -309,18 +227,7 @@ export class AuthController
         return (await Serializer(data, AuthSerializer)) as typeof AuthSerializer;
     }
 
-    @Patch('change-my-password')
-    @Protected()
-    @HttpCode(HttpStatus.CREATED)
-    async changeMyPassword(
-    @Body() dto: ChangeMyPasswordDto,
-    @AuthUser() authUser: User
-    )
-    {
-        return await this.changeMyPasswordUseCase.handle({ dto, authUser });
-    }
-
-    @Patch('activate-your-account')
+    @Patch('activate-account')
     @HttpCode(HttpStatus.CREATED)
     async activateAccount(@Query('token') confirmationToken: string)
     {
@@ -331,32 +238,20 @@ export class AuthController
 
     @Post('forgot-password')
     @HttpCode(HttpStatus.CREATED)
+    @SetPipeGroups(ContextGroupsEnum.APP)
     async forgotPassword(@Body() dto: ForgotPasswordDto)
     {
         return await this.forgotPasswordUseCase.handle({ dto });
     }
 
-    @Patch('change-forgot-password')
+    @Patch('change-password')
     @HttpCode(HttpStatus.CREATED)
-    async changeForgotPassword(
-    @Body() dto: PasswordDto,
-    @Query('token') confirmationToken: string
+    async changePassword(
+        @Body() dto: PasswordDto,
+        @Query('token') confirmationToken: string
     )
     {
         return await this.changeForgotPasswordUseCase.handle({
-            dto,
-            confirmationToken
-        });
-    }
-
-    @Patch('reset-password')
-    @HttpCode(HttpStatus.CREATED)
-    async resetPassword(
-    @Body() dto: ChangeMyPasswordDto,
-    @Query('token') confirmationToken: string
-    )
-    {
-        return await this.resetPasswordUseCase.handle({
             dto,
             confirmationToken
         });

@@ -1,6 +1,6 @@
 import configuration from '@config/configuration';
 import { OTPPropertiesEnum } from '@modules/securityConfig/domain/enums';
-import { ValidateIfPropertyExists } from '@shared/decorators';
+import { ValidateIfPropertyExists } from '@shared/classValidator/decorators';
 import { IsString, Length } from 'class-validator';
 
 const { codeLength }  = configuration().otp;

@@ -1,8 +1,8 @@
 import { JWTModel } from '@modules/auth/domain/models';
-import { AuthUserSerializer } from '@modules/auth/presentation/serializers/auth-user.serializer';
-import { BaseSerializer } from '@shared/abstractClass';
-import { Serializer as SerializerMap } from '@shared/utils';
+import { BaseSerializer } from '@shared/classValidator/abstractClass';
+import { Serializer } from '@shared/classValidator/utils';
 import { Expose } from 'class-transformer';
+import { AuthUserSerializer } from './index';
 
 export class AuthSerializer extends BaseSerializer
 {
@@ -12,7 +12,7 @@ export class AuthSerializer extends BaseSerializer
 
     override async build(data: JWTModel)
     {
-        this.user = (await SerializerMap(
+        this.user = (await Serializer(
             data.User,
             AuthUserSerializer
         )) as unknown as AuthUserSerializer;

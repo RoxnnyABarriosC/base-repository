@@ -1,8 +1,8 @@
 import { SCOPE } from '@modules/securityConfig/domain/constants';
+import { OTPSendChannelEnum } from '@modules/securityConfig/domain/enums';
 import {
     SendOTPUseCase, SendPublicOTPUseCase
 } from '@modules/securityConfig/domain/useCases';
-import { SendOTPDto } from '@modules/securityConfig/presentation/dtos';
 import {
     Body,
     Controller,
@@ -13,10 +13,10 @@ import {
     Post
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
+import { ThrottleUseUrl } from '@shared/app/decorators';
+import { SetScopeSerializer } from '@shared/classValidator/decorators';
 import {  UUID } from '@shared/decorators';
-import { ThrottleUseUrl } from '@shared/guards';
-import { SetScopeSerializer } from '@shared/interceptors';
-import { OTPSendChannelEnum } from '../../domain/enums';
+import { SendOTPDto } from '../dtos';
 
 @Controller({
     version: '1'

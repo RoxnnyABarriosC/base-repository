@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { HttpException } from '@shared/exceptions/http.exception';
+import { HttpException } from '@shared/app/exceptions';
 
 export class CannotUseYourOldPasswordException extends HttpException
 {

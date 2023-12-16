@@ -1,5 +1,5 @@
-import { AppleAuthGuard } from '@modules/auth/presentation/guards/apple-auth.guard';
 import { UseGuards, applyDecorators } from '@nestjs/common';
+import { AppleAuthGuard } from '../guards';
 
 export const AppleAuth = () =>
 {

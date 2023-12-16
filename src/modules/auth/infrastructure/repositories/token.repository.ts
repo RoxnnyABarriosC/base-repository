@@ -2,7 +2,7 @@ import { Token } from '@modules/auth/domain/entities';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NotFoundCustomException } from '@shared/exceptions';
+import { NotFoundCustomException } from '@shared/app/exceptions';
 import { GetMilliseconds } from '@shared/utils';
 import { Cache } from 'cache-manager';
 

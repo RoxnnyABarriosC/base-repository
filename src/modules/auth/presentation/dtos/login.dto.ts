@@ -1,8 +1,12 @@
+import configuration from '@config/configuration';
 import { emailOrPhoneRegex } from '@shared/regex';
 import { Transform } from 'class-transformer';
 import { IsString, Length, Matches } from 'class-validator';
 
-// TODO: agregar estas configuraciones a las variables de entorno
+const {
+    password
+} = configuration().validatorProperties;
+
 export class LoginDto
 {
     @IsString()
@@ -12,6 +16,6 @@ export class LoginDto
     public readonly emailOrPhone: string;
 
     @IsString()
-    @Length(5, 20)
+    @Length(password.min, password.max)
     public password: string;
 }

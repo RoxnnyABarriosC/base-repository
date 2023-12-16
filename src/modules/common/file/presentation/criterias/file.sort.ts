@@ -1,7 +1,7 @@
 import { User } from '@modules/user/domain/entities';
-import { DefaultSorts, Sort } from '@shared/abstractClass';
-import { IsSort } from '@shared/decorators';
-import { SortEnum } from '@shared/enums';
+import { DefaultSorts, Sort } from '@shared/criteria/abstractClass';
+import { IsSort } from '@shared/criteria/decorators';
+import { SortEnum } from '@shared/criteria/enums';
 import { Expose } from 'class-transformer';
 
 export class FileSort extends Sort

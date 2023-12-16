@@ -1,10 +1,10 @@
-import { OTPTargetConfigEnum } from '@modules/securityConfig/domain/enums';
-import { OTPDisabledException } from '@modules/securityConfig/domain/exceptions';
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { SetProvidersDto } from '@modules/securityConfig/presentation/dtos';
 import { Injectable, Logger } from '@nestjs/common';
-import {  SendLocalMessage  } from '@shared/utils';
+import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
 import { User } from '@src/modules/user/domain/entities';
+import { OTPTargetConfigEnum } from '../enums';
+import { OTPDisabledException } from '../exceptions';
 
 interface ISetPhoneOTPProvidersUseCaseProps {
     authUser: User;
@@ -21,7 +21,7 @@ export class SetPhoneOTPProvidersUseCase
     )
     {}
 
-    async handle({ authUser, dto }: ISetPhoneOTPProvidersUseCaseProps)
+    async handle({ authUser, dto }: ISetPhoneOTPProvidersUseCaseProps): Promise<ILocalMessage>
     {
         const securityConfig = await authUser.securityConfig;
 

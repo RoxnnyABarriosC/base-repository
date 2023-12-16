@@ -1,7 +1,7 @@
-import { File } from '@modules/common/file/domain/entities';
-import { MinioService } from '@modules/common/file/domain/services';
 import { FileRepository } from '@modules/common/file/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
+import { File } from '../entities';
+import { MinioService } from '../services';
 
 interface IDeleteFileUseCaseProps {
     id: string;

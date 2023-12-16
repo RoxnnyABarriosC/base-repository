@@ -1,16 +1,17 @@
 import { RequiredPermissionsException } from '@modules/auth/domain/exceptions';
 import { AuthService } from '@modules/auth/domain/services';
 import { RequestAuth } from '@modules/auth/domain/strategies';
+import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
+import { ModuleRef, Reflector } from '@nestjs/core';
 import {
     CHECK_POLICIES_KEY,
     FORCE_CHECK_POLICY_KEY,
     MANAGE_PERMISSIONS_KEY,
     PERMISSIONS_KEY,
-    PERMISSION_ACTION_METHOD_KEY, PermissionActions
-} from '@modules/auth/presentation/decorators';
-import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
-import { ModuleRef, Reflector } from '@nestjs/core';
-import { checkIsPublic } from '../decorators/public.decorator';
+    PERMISSION_ACTION_METHOD_KEY,
+    PermissionActions,
+    checkIsPublic
+} from '../decorators';
 
 export abstract class Policy
 {
@@ -30,6 +31,7 @@ export class ProtectedGuard implements CanActivate
         private readonly moduleRef: ModuleRef
     )
     {
+        // TODO: Validar por que no puedo inyectar AuthService directamente en el constructor
         this.authService = this.moduleRef.get(AuthService, { strict: false });
     }
 

@@ -1,18 +1,18 @@
 import { AuthService } from '@modules/auth/domain/services';
-import { StepperLoginDto } from '@modules/auth/presentation/dtos';
-import { OTPPropertiesToTargetDictionary } from '@modules/securityConfig/domain/dictionaries/otp-properties-to-target.dictionary';
-import { OTPConfigException } from '@modules/securityConfig/domain/exceptions';
-import { OTPService, SecurityConfigService } from '@modules/securityConfig/domain/services';
+import { OTPLoginDto } from '@modules/auth/presentation/dtos';
 import { AuthOTPDto } from '@modules/securityConfig/presentation/dtos';
 import { User } from '@modules/user/domain/entities';
 import { UserService } from '@modules/user/domain/services';
 import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { BadRequestCustomException } from '@shared/exceptions';
-import { ErrorModel } from '@shared/models';
+import { BadRequestCustomException } from '@shared/app/exceptions';
+import { ErrorModel } from '@shared/classValidator/models';
 import { EncodeText } from '@shared/utils';
 import { FastifyRequest } from 'fastify';
 import { Strategy } from 'passport-custom';
+import { OTPPropertiesToTargetDictionary } from '../dictionaries';
+import { OTPConfigException } from '../exceptions';
+import { OTPService, SecurityConfigService } from '../services';
 
 @Injectable()
 export class OTPStrategy extends PassportStrategy(Strategy, 'otp')
@@ -31,7 +31,7 @@ export class OTPStrategy extends PassportStrategy(Strategy, 'otp')
 
     async validate(req: FastifyRequest): Promise<User | any>
     {
-        const { emailOrPhone, password, emailOTPCode, phoneOTPCode } = req.body as StepperLoginDto;
+        const { emailOrPhone, password } = req.body as OTPLoginDto;
 
         const bodyProperties = Object.keys(req.body);
 

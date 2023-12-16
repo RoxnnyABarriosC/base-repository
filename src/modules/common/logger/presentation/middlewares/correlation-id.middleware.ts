@@ -1,8 +1,7 @@
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
+import { CORRELATION_ID_HEADER, REAL_IP } from '@shared/app/constants';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
-export const CORRELATION_ID_HEADER = 'x-correlation-id';
-export const REAL_IP = 'realIp';
 
 @Injectable()
 export class CorrelationIdMiddleware implements NestMiddleware

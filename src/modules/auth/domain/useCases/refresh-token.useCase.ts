@@ -1,7 +1,7 @@
-import { IDecodeToken, JWTModel } from '@modules/auth/domain/models';
-import { TokenService } from '@modules/auth/domain/services';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
+import { IDecodeToken, JWTModel } from '../models';
+import { TokenService } from '../services';
 
 declare interface IRefreshTokenUseCaseProps {
     decodeRefreshToken: IDecodeToken

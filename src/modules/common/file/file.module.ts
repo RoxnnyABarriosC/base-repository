@@ -1,15 +1,15 @@
-import { MinioService } from '@modules/common/file/domain/services';
+import { Global, Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { MinioService } from './domain/services';
 import {
     DeleteFileUseCase,
     GetFileUseCase,
     ListFilesUseCase,
     RestoreFileUseCase, SaveFileUseCase, SaveFilesUseCase
-} from '@modules/common/file/domain/useCases';
-import { FileRepository } from '@modules/common/file/infrastructure/repositories';
-import { FileSchema } from '@modules/common/file/infrastructure/schemas';
-import { FileController } from '@modules/common/file/presentation/controllers';
-import { Global, Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+} from './domain/useCases';
+import { FileRepository } from './infrastructure/repositories';
+import { FileSchema } from './infrastructure/schemas';
+import { FileController } from './presentation/controllers';
 
 
 @Global()

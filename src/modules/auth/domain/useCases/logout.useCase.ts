@@ -1,9 +1,8 @@
-import { TokenService } from '@modules/auth/domain/services';
 import { User } from '@modules/user/domain/entities';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
-import { ILocalMessage } from '@shared/interfaces';
-import { SendLocalMessage } from '@shared/utils';
+import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
+import { TokenService } from '../services';
 
 declare interface ILogoutUseCaseProps {
     decodeTokenId: string;

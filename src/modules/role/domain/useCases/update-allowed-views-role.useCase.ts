@@ -1,9 +1,8 @@
-import { RoleService } from '@modules/role/domain/services';
 import { RoleRepository } from '@modules/role/infrastructure/repositories';
 import { AllowedViewsDto } from '@modules/role/presentation/dtos';
 import { Injectable, Logger } from '@nestjs/common';
-import { ILocalMessage } from '@shared/interfaces';
-import { SendLocalMessage } from '@shared/utils';
+import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
+import { RoleService } from '../services';
 
 declare interface IUpdateAllowedViewsRoleUseCaseProps {
     id: string;

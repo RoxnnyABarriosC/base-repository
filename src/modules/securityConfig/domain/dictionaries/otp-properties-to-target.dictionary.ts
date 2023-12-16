@@ -1,4 +1,4 @@
-import { OTPPropertiesEnum, OTPTargetConfigEnum } from '@modules/securityConfig/domain/enums';
+import { OTPPropertiesEnum, OTPTargetConfigEnum } from '../enums';
 
 export const OTPPropertiesToTargetDictionary = new Map([
     [OTPPropertiesEnum.PHONE_OTP_CODE, OTPTargetConfigEnum.PHONE],

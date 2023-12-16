@@ -1,4 +1,4 @@
-import { MeDto } from '@modules/auth/presentation/dtos/me.dto';
+import { MeDto } from '@modules/auth/presentation/dtos';
 import { User } from '@modules/user/domain/entities';
 import { UserService } from '@modules/user/domain/services';
 import { UserRepository } from '@modules/user/infrastructure/repositories';

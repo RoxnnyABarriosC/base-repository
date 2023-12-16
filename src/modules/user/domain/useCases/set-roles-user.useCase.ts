@@ -1,9 +1,8 @@
 import { RoleRepository } from '@modules/role/infrastructure/repositories';
-import { User } from '@modules/user/domain/entities';
-import { UserService } from '@modules/user/domain/services';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { SetRolesUserDto } from '@modules/user/presentation/dtos';
 import { Injectable, Logger } from '@nestjs/common';
+import { User } from '../entities';
 
 declare interface ISetRolesUserUseCaseProps {
     id: string;

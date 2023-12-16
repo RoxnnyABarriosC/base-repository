@@ -1,4 +1,4 @@
-import { OTPSendChannelEnum, OTPTargetConfigEnum } from '@modules/securityConfig/domain/enums';
+import { OTPSendChannelEnum, OTPTargetConfigEnum } from '../enums';
 
 export const OTPChannelToTargetDictionary = new Map([
     [OTPSendChannelEnum.SMS, OTPTargetConfigEnum.PHONE],

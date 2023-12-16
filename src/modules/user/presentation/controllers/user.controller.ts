@@ -1,45 +1,38 @@
-import { CheckPolicies, ForceCheckPolicy, ManagePermissions, Protected, RequirePermissions } from '@modules/auth/presentation/decorators';
+import { CheckEmailDomain, CheckPolicies, ForceCheckPolicy, ManagePermissions, Protected, RequirePermissions } from '@modules/auth/presentation/decorators';
 import { PermissionsDto } from '@modules/role/presentation/dtos';
 import { RoleSerializerGroupsEnum } from '@modules/role/presentation/enums';
 import { SCOPE } from '@modules/user/domain/constants';
-import { DontDeleteYourselfPolicy, SuperAdminCanNotBeModifiedPolicy } from '@modules/user/domain/policies';
+import { EmailDomainTypeEnum } from '@modules/user/domain/enums';
+import { AdminUsersOnlyPolicy, CheckDomainEmailUpdatePolicy, DontDeleteYourselfPolicy, SuperAdminCanNotBeModifiedPolicy } from '@modules/user/domain/policies';
 import {
-    DeleteUserUseCase, EnableOrDisableUserUseCase, GetUserByUserNameUseCase,
+    DeleteUserUseCase,
+    EnableOrDisableUserUseCase,
+    GetUserByUserNameUseCase,
     GetUserUseCase,
-    ListUsersUseCase, ResetPasswordUseCase, RestoreUserUseCase,
-    SaveUserUseCase, SetRolesUserUseCase, UpdatePermissionsUserUseCase, UpdateUserUseCase, VerifyOrUnverifyUserUseCase
+    ListUsersUseCase,
+    ResetPasswordUseCase,
+    RestoreUserUseCase,
+    SaveUserUseCase,
+    SetRolesUserUseCase,
+    UpdatePermissionsUserUseCase,
+    UpdateUserUseCase,
+    VerifyOrUnverifyUserUseCase
 } from '@modules/user/domain/useCases';
-import { UserFilter, UserSort } from '@modules/user/presentation/criterias';
-import { UserName } from '@modules/user/presentation/decorators';
-import { SaveUserDto, SetRolesUserDto, UpdateUserDto } from '@modules/user/presentation/dtos';
-import { UserSerializerGroupsEnum } from '@modules/user/presentation/enums';
-import { UserSerializer } from '@modules/user/presentation/serializers';
 import { UserPermissionsEnum } from '@modules/user/user.permissions';
-import {
-    Body,
-    Controller, Delete,
-    Get,
-    HttpCode,
-    HttpStatus,
-    Logger,
-    Param, Patch,
-    Post, Put
-} from '@nestjs/common';
-import { CriteriaBuilder, IUris, PaginationFilter } from '@shared/criterias';
-import {
-    Bool,
-    Criteria,
-    DeletePermanently,
-    Filter,
-    Pagination,
-    PartialRemoved,
-    SetPipeGroups,
-    SetSerializerGroups, Sort, UUID, Uris
-} from '@shared/decorators';
-import { ContextGroupsEnum } from '@shared/enums';
-import { ALL_MANAGE_PERMISSION } from '@shared/factories';
-import { SetScopeSerializer } from '@shared/interceptors';
-import { Serializer } from '@shared/utils';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Logger, Patch, Post, Put } from '@nestjs/common';
+import { ALL_MANAGE_PERMISSION } from '@shared/app/constants';
+import { SetPipeGroups, SetScopeSerializer, SetSerializerGroups } from '@shared/classValidator/decorators';
+import { ContextGroupsEnum } from '@shared/classValidator/enums';
+import { Serializer } from '@shared/classValidator/utils';
+import { CriteriaBuilder, IUris } from '@shared/criteria';
+import { Criteria, Filter, Pagination, Sort, Uris } from '@shared/criteria/decorators';
+import { PaginationFilter } from '@shared/criteria/filters';
+import { Bool, DeletePermanently, PartialRemoved, UUID } from '@shared/decorators';
+import { UserFilter, UserSort } from '../criterias';
+import { UserName } from '../decorators';
+import { SaveUserDto, SetRolesUserDto, UpdateUserDto } from '../dtos';
+import { UserSerializerGroupsEnum } from '../enums';
+import { UserSerializer } from '../serializers';
 
 @Controller({
     path: 'users',
@@ -47,6 +40,7 @@ import { Serializer } from '@shared/utils';
 })
 @Protected()
 @SetScopeSerializer(SCOPE)
+@CheckEmailDomain(EmailDomainTypeEnum.ADMIN)
 @ManagePermissions(ALL_MANAGE_PERMISSION, UserPermissionsEnum.MANAGE)
 export class UserController
 {
@@ -84,6 +78,28 @@ export class UserController
         return (await Serializer(await this.saveUseCase.handle({ dto }), UserSerializer)) as typeof UserSerializer;
     }
 
+    @Put(':id')
+    @HttpCode(HttpStatus.OK)
+    @SetSerializerGroups(
+        UserSerializerGroupsEnum.ALL,
+        RoleSerializerGroupsEnum.ONLY_ID
+    )
+    @RequirePermissions(UserPermissionsEnum.UPDATE)
+    @SetPipeGroups(ContextGroupsEnum.APP)
+    @CheckPolicies(SuperAdminCanNotBeModifiedPolicy, CheckDomainEmailUpdatePolicy)
+    @ForceCheckPolicy()
+    async update(
+      @UUID() id: string,
+      @Body() dto: UpdateUserDto
+    )
+    {
+        this.logger.log('Processing update user request...');
+
+        return (await Serializer(await this.updateUseCase.handle({
+            id, dto
+        }), UserSerializer)) as typeof UserSerializer;
+    }
+
     @Post('admin')
     @HttpCode(HttpStatus.CREATED)
     @SetSerializerGroups(
@@ -98,6 +114,29 @@ export class UserController
         this.logger.log('Processing save user admin request...');
 
         return (await Serializer(await this.saveUseCase.handle({ dto }), UserSerializer)) as typeof UserSerializer;
+    }
+
+    @Put('admin/:id')
+    @HttpCode(HttpStatus.OK)
+    @SetSerializerGroups(
+        UserSerializerGroupsEnum.ALL,
+        RoleSerializerGroupsEnum.ONLY_ID
+    )
+    @RequirePermissions(UserPermissionsEnum.UPDATE)
+    @SetPipeGroups(ContextGroupsEnum.ADMIN)
+    @CheckPolicies(SuperAdminCanNotBeModifiedPolicy, CheckDomainEmailUpdatePolicy)
+    @ForceCheckPolicy()
+    async updateAdmin(
+      @UUID() id: string,
+      @Body() dto: UpdateUserDto
+    )
+    {
+        this.logger.log('Processing update user request...');
+
+        return (await Serializer(await this.updateUseCase.handle({
+            id,
+            dto
+        }), UserSerializer)) as typeof UserSerializer;
     }
 
     @Get()
@@ -180,7 +219,7 @@ export class UserController
         RoleSerializerGroupsEnum.ONLY_ID
     )
     @RequirePermissions(UserPermissionsEnum.DELETE)
-    @CheckPolicies(SuperAdminCanNotBeModifiedPolicy, DontDeleteYourselfPolicy)
+    @CheckPolicies(DontDeleteYourselfPolicy, SuperAdminCanNotBeModifiedPolicy)
     @ForceCheckPolicy()
     async delete(
         @UUID() id: string,
@@ -213,28 +252,7 @@ export class UserController
         }), UserSerializer)) as typeof UserSerializer;
     }
 
-    @Put(':id')
-    @HttpCode(HttpStatus.OK)
-    @SetSerializerGroups(
-        UserSerializerGroupsEnum.ALL,
-        RoleSerializerGroupsEnum.ONLY_ID
-    )
-    @RequirePermissions(UserPermissionsEnum.UPDATE)
-    @CheckPolicies(SuperAdminCanNotBeModifiedPolicy)
-    @ForceCheckPolicy()
-    async update(
-        @UUID() id: string,
-        @Body() dto: UpdateUserDto
-    )
-    {
-        this.logger.log('Processing update user request...');
-
-        return (await Serializer(await this.updateUseCase.handle({
-            id, dto
-        }), UserSerializer)) as typeof UserSerializer;
-    }
-
-    @Patch(':id/enable-or-disable/:enable')
+    @Patch(':id/enable/:enable')
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(UserPermissionsEnum.UPDATE_ENABLE)
     @CheckPolicies(SuperAdminCanNotBeModifiedPolicy)
@@ -247,7 +265,7 @@ export class UserController
         return await this.enableOrDisableUseCase.handle({ id, enable });
     }
 
-    @Patch(':id/verify-or-unverify/:verify')
+    @Patch(':id/verify/:verify')
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(UserPermissionsEnum.UPDATE_VERIFY)
     @CheckPolicies(SuperAdminCanNotBeModifiedPolicy)
@@ -277,7 +295,7 @@ export class UserController
         RoleSerializerGroupsEnum.ONLY_ID
     )
     @RequirePermissions(UserPermissionsEnum.UPDATE_PERMISSIONS)
-    @CheckPolicies(SuperAdminCanNotBeModifiedPolicy)
+    @CheckPolicies(SuperAdminCanNotBeModifiedPolicy, AdminUsersOnlyPolicy)
     @ForceCheckPolicy()
     async updatePermissions(
         @UUID() id: string,
@@ -296,7 +314,7 @@ export class UserController
         RoleSerializerGroupsEnum.ONLY_ID
     )
     @RequirePermissions(UserPermissionsEnum.UPDATE)
-    @CheckPolicies(SuperAdminCanNotBeModifiedPolicy)
+    @CheckPolicies(SuperAdminCanNotBeModifiedPolicy, AdminUsersOnlyPolicy)
     @ForceCheckPolicy()
     async setRoles(
         @UUID() id: string,

@@ -1,8 +1,8 @@
 import { SCOPE } from '@modules/role/domain/constants';
 import { Role } from '@modules/role/domain/entities';
-import { RoleSerializerGroupsEnum } from '@modules/role/presentation/enums';
-import { SerializerScope } from '@shared/abstractClass';
+import { SerializerScope } from '@shared/classValidator/abstractClass';
 import { Expose } from 'class-transformer';
+import { RoleSerializerGroupsEnum } from '../enums';
 
 export class RoleSerializer extends SerializerScope(SCOPE)
 {

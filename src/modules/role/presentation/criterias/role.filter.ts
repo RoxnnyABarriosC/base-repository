@@ -1,6 +1,6 @@
 import { Role } from '@modules/role/domain/entities';
-import { DefaultFilters, Filter } from '@shared/abstractClass';
-import { ParseBoolean } from '@shared/decorators';
+import { Parse } from '@shared/classValidator/transforms';
+import { DefaultFilters, Filter } from '@shared/criteria/abstractClass';
 import { Expose } from 'class-transformer';
 import { IsOptional, IsString } from 'class-validator';
 
@@ -21,11 +21,11 @@ export class RoleFilter extends Filter
     public readonly search: string;
 
     @IsOptional()
-    @ParseBoolean()
+    @Parse()
     public readonly enable: boolean;
 
     @IsOptional()
-    @ParseBoolean()
+    @Parse()
     public readonly ofSystem: boolean;
 
     @IsOptional()
@@ -37,11 +37,11 @@ export class RoleFilter extends Filter
     public readonly allowedViews: string;
 
     @IsOptional()
-    @ParseBoolean()
+    @Parse()
     public readonly withPartialRemoved: boolean;
 
     @IsOptional()
-    @ParseBoolean()
+    @Parse()
     public readonly partialRemoved: boolean;
 
     @Expose()

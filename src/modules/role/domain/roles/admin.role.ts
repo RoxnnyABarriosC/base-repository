@@ -1,4 +1,4 @@
-import { Role } from '@shared/factories';
+import { Role } from '@shared/app/factories';
 
 export class AdminRole extends Role('admin')
 { }

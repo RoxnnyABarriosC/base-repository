@@ -1,6 +1,3 @@
-import { OAuthAccountPropertiesDictionary } from '@modules/auth/domain/dictionaries';
-import { OAuthProviderEnum } from '@modules/auth/domain/enums';
-import { AuthService } from '@modules/auth/domain/services';
 import { RegisterDto } from '@modules/auth/presentation/dtos';
 import { User } from '@modules/user/domain/entities';
 import { UserService } from '@modules/user/domain/services';
@@ -11,8 +8,10 @@ import { passwordGeneratorRegex } from '@shared/regex';
 import { generateRandomNumber } from '@shared/utils';
 import { ILengthConfig } from '@src/config';
 import passwordGenerator from 'password-generator';
-import { JWTModel } from '../models/JWT.model';
-import { TokenService } from '../services/token.service';
+import { OAuthAccountPropertiesDictionary } from '../dictionaries';
+import { OAuthProviderEnum } from '../enums';
+import { JWTModel } from '../models';
+import { AuthService, TokenService } from '../services';
 
 declare interface IOAuthLoginUseCaseProps {
     dto: Partial<RegisterDto>;

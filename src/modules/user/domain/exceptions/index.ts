@@ -3,3 +3,7 @@ export * from './super-admin-can-not-be-modified.exception';
 export * from './unverified-user.exception';
 export * from './user-is-not-super-admin.exception';
 export * from './dont-delete-yourself.exception';
+export * from './user-is-not-admin.exception';
+export * from './user-new-email-domain-is-not-allowed.exception';
+export * from './only-super-admin-can-update-email.exception';
+export * from './only-super-admin-can-update-user-name.exception';

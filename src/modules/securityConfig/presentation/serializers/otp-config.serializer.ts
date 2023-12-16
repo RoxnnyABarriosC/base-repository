@@ -1,6 +1,6 @@
 import { SecurityConfig } from '@modules/securityConfig/domain/entities';
 import { OTPPropertiesEnum } from '@modules/securityConfig/domain/enums';
-import { Serializer } from '@shared/abstractClass';
+import { Serializer } from '@shared/classValidator/abstractClass';
 import { EncodeText } from '@shared/utils';
 import { Expose } from 'class-transformer';
 

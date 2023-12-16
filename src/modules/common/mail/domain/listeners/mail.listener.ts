@@ -2,7 +2,7 @@ import {
     ActivateAccountEvent,
     ActivatedAccountEvent,
     ChangeForgotPasswordEvent,
-    ForgotPasswordEvent, ResetPasswordEvent
+    ForgotPasswordEvent
 } from '@modules/common/mail/domain/events';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -15,7 +15,6 @@ export enum MailEventEnum {
     ACTIVATED_ACCOUNT ='mail.activated.account',
     FORGOT_PASSWORD ='mail.forgot.password',
     CHANGE_FORGOT_PASSWORD ='mail.change.forgot.password',
-    RESET_PASSWORD ='mail.reset.password',
 }
 
 @Injectable()
@@ -111,31 +110,6 @@ export class MailListener
                 template: './mail/auth/updated-password', // `.hbs` extension is appended automatically
                 context: { // ✏️ filling curly brackets with content
                     fullName: user.FullName,
-                    urlWeb: this.configService.getOrThrow('server.url.web'),
-                    urlApi: this.configService.getOrThrow('server.url.api'),
-                    emailSupport: this.configService.getOrThrow('smtp.emails.default')
-                }
-            });
-        }
-        catch (error)
-        {
-            this.logger.error(error);
-        }
-    }
-
-    @OnEvent(MailEventEnum.RESET_PASSWORD, { async: true })
-    async handleResetPasswordEvent({ user, newPassword, urlConfirmationToken }: ResetPasswordEvent)
-    {
-        try
-        {
-            await this.mailerService.sendMail({
-                to: user.email,
-                subject: 'Please change your password',
-                template: './mail/auth/reset-password', // `.hbs` extension is appended automatically
-                context: { // ✏️ filling curly brackets with content
-                    fullName: user.FullName,
-                    newPassword,
-                    urlConfirmationToken,
                     urlWeb: this.configService.getOrThrow('server.url.web'),
                     urlApi: this.configService.getOrThrow('server.url.api'),
                     emailSupport: this.configService.getOrThrow('smtp.emails.default')

@@ -1,9 +1,9 @@
 import { IDecodeToken } from '@modules/auth/domain/models';
+import { TokenService } from '@modules/auth/domain/services';
 import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ForbiddenCustomException } from '@shared/exceptions';
+import { ForbiddenCustomException } from '@shared/app/exceptions';
 import { FastifyRequest } from 'fastify';
-import { TokenService } from '../../domain/services/token.service';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate

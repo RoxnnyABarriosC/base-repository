@@ -3,11 +3,11 @@ import { RoleSerializer } from '@modules/role/presentation/serializers';
 import { SCOPE } from '@modules/user/domain/constants';
 import { User } from '@modules/user/domain/entities';
 import { GenderEnum } from '@modules/user/domain/enums';
-import { UserSerializerGroupsEnum } from '@modules/user/presentation/enums';
-import { SerializerScope } from '@shared/abstractClass';
-import { UnixDate } from '@shared/decorators';
-import { Serializer as SerializerMap } from '@shared/utils';
+import { SerializerScope } from '@shared/classValidator/abstractClass';
+import { ParseUnixDate } from '@shared/classValidator/transforms';
+import { Serializer as SerializerMap } from '@shared/classValidator/utils';
 import { Expose } from 'class-transformer';
+import { UserSerializerGroupsEnum } from '../enums';
 
 
 export class UserSerializer extends SerializerScope(SCOPE)
@@ -20,7 +20,7 @@ export class UserSerializer extends SerializerScope(SCOPE)
     @Expose() public readonly gender: GenderEnum;
 
     @Expose()
-    @UnixDate()
+    @ParseUnixDate()
     public readonly birthday: Date | number;
 
     @Expose() public readonly enable: boolean;

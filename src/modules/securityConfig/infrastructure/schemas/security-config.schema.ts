@@ -1,7 +1,8 @@
 import { SecurityConfig } from '@modules/securityConfig/domain/entities';
 import { User } from '@modules/user/domain/entities';
-import { BaseColumnsSchema } from '@shared/schemas';
+import { BaseColumnsSchema } from '@shared/typeOrm/schemas';
 import { EntitySchema } from 'typeorm';
+
 
 export const SecurityConfigSchema = new EntitySchema<SecurityConfig>({
     name: SecurityConfig.name,

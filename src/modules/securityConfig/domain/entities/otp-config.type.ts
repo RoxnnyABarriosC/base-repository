@@ -1,4 +1,4 @@
-import { OTPProvidersEnum, OTPTargetConfigEnum } from '@modules/securityConfig/domain/enums';
+import { OTPProvidersEnum, OTPTargetConfigEnum } from '../enums';
 
 export type OTPConfigType = {
     [key in OTPTargetConfigEnum]: {

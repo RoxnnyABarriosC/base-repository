@@ -1,18 +1,18 @@
 import { EncryptionFactory } from '@modules/auth/domain/factories';
-import { OTPPropertiesToTargetDictionary } from '@modules/securityConfig/domain/dictionaries/otp-properties-to-target.dictionary';
-import { SecurityConfig } from '@modules/securityConfig/domain/entities';
-import { OTPPropertiesEnum, OTPTargetConfigEnum } from '@modules/securityConfig/domain/enums';
 import { AuthOTPDto } from '@modules/securityConfig/presentation/dtos';
 import { User } from '@modules/user/domain/entities';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { BadRequestCustomException } from '@shared/exceptions';
-import { ErrorModel } from '@shared/models';
+import { BadRequestCustomException } from '@shared/app/exceptions';
+import { ErrorModel } from '@shared/classValidator/models';
 import { EncodeText, GetMilliseconds } from '@shared/utils';
 import { Cache } from 'cache-manager';
 import { I18nContext } from 'nestjs-i18n';
 import { TwilioService as _TwilioService } from 'nestjs-twilio/dist/module/twilio.service';
+import { OTPPropertiesToTargetDictionary } from '../dictionaries';
+import { SecurityConfig } from '../entities';
+import { OTPPropertiesEnum, OTPTargetConfigEnum } from '../enums';
 
 @Injectable()
 export class OTPService

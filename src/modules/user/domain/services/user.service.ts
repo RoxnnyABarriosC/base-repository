@@ -1,16 +1,19 @@
 import { PasswordValueObject } from '@modules/auth/domain/valueObjects';
 import { UniqueService } from '@modules/common/index/infrastructure/services';
-import { User } from '@modules/user/domain/entities';
-import { DontDeleteYourselfException, SuperAdminCanNotBeModifiedException } from '@modules/user/domain/exceptions';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { getEmailDomain } from '@shared/utils';
+import { User } from '../entities';
+import { EmailDomainTypeEnum } from '../enums';
 
 @Injectable()
 export class UserService
 {
     constructor(
         private readonly uniqueService: UniqueService,
-        private readonly repository: UserRepository
+        private readonly repository: UserRepository,
+        private readonly configService: ConfigService
     )
     { }
 
@@ -33,25 +36,6 @@ export class UserService
         return  await (new PasswordValueObject(password, 5, 30)).ready();
     }
 
-    async checkSuperAdminPolicy(id: string, withDeleted = false): Promise<void>
-    {
-        const user = await this.repository.exist({ condition: { _id: id }, initThrow: true, select: ['isSuperAdmin', '_id'], withDeleted }) as User;
-
-        if (user.isSuperAdmin)
-        {
-            throw new SuperAdminCanNotBeModifiedException();
-        }
-    }
-
-    async checkYourselfPolicy(authUserId: string, id: string, withDeleted = false): Promise<void>
-    {
-        const user = await this.repository.exist({ condition: { _id: id }, initThrow: true, select: ['_id'], withDeleted }) as User;
-
-        if (user._id === authUserId)
-        {
-            throw new DontDeleteYourselfException();
-        }
-    }
 
     async getEmailAndPhone(emailOrPhone: string)
     {
@@ -59,5 +43,24 @@ export class UserService
             condition: [{ email: emailOrPhone }, { phone: emailOrPhone }],
             select: ['phone', 'email']
         });
+    }
+
+
+    getDomainTypeOfEmail(email: string): EmailDomainTypeEnum
+    {
+        const emailsAppDomain = this.configService.getOrThrow<string>('emailsDomain.app').split(',');
+        const emailsAdminDomain = this.configService.getOrThrow<string>('emailsDomain.admin').split(',');
+
+        const domain = getEmailDomain(email);
+
+        if (emailsAppDomain.includes(domain))
+        {
+            return EmailDomainTypeEnum.APP;
+        }
+
+        if (emailsAdminDomain.includes(domain))
+        {
+            return EmailDomainTypeEnum.ADMIN;
+        }
     }
 }

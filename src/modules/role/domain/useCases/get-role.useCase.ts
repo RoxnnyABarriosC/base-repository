@@ -1,6 +1,6 @@
-import { Role } from '@modules/role/domain/entities';
 import { RoleRepository } from '@modules/role/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
+import { Role } from '../entities';
 
 declare interface IGetRoleUseCaseProps {
     slug: string;

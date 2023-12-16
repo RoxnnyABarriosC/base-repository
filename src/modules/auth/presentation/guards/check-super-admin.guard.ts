@@ -1,11 +1,8 @@
 import { SuperAdminOnlyException } from '@modules/auth/domain/exceptions';
-import { IAuthData } from '@modules/auth/domain/strategies';
-import { checkIsPublic } from '@modules/auth/presentation/decorators';
-import { CanActivate, ExecutionContext, Inject, Injectable, Logger, SetMetadata } from '@nestjs/common';
+import { RequestAuth } from '@modules/auth/domain/strategies';
+import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-
-export const CHECK_SUPER_ADMIN = 'check_super_admin';
-export const CheckSuperAdmin = () => SetMetadata(CHECK_SUPER_ADMIN, true);
+import { CHECK_SUPER_ADMIN, checkIsPublic } from '../decorators';
 
 @Injectable()
 export class CheckSuperAdminGuard implements CanActivate
@@ -29,7 +26,7 @@ export class CheckSuperAdminGuard implements CanActivate
             context.getClass()
         ]) ?? false;
 
-        const { user: { data } } = context.switchToHttp().getRequest<Request & { user: IAuthData }>();
+        const { user: { data } } = context.switchToHttp().getRequest<RequestAuth>();
 
         if (checkSuperAdmin && !data.isSuperAdmin)
         {

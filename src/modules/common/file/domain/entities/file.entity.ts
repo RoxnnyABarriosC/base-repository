@@ -1,4 +1,4 @@
-import { BaseEntity } from '@shared/entities';
+import { BaseEntity } from '@shared/app/entities';
 import { Expose } from 'class-transformer';
 import { MulterFile } from 'fastify-file-interceptor';
 

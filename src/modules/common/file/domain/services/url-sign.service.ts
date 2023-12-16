@@ -2,7 +2,7 @@ import configuration from '@config/configuration';
 import { Logger } from '@nestjs/common';
 import { IConfig } from '@src/config';
 import { Client } from 'minio';
-import { File } from '../entities/file.entity';
+import { File } from '../entities';
 
 export class UrlSignService
 {

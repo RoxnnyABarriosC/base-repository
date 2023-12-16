@@ -14,3 +14,5 @@ export * from './apple-auth.decorator';
 export * from './facebook-auth.decorator';
 export * from './google-auth.decorator';
 export * from './oauth-payload.decorator';
+export * from './check-super-admin.decorator';
+export * from './check-email-domain.decorator';

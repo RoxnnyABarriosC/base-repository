@@ -7,11 +7,11 @@ import {
     FastifyAdapter,
     NestFastifyApplication
 } from '@nestjs/platform-fastify';
-import { LoggerContext } from '@shared/constants';
-import { CustomExceptionsFilter } from '@shared/filters';
-import { onRequestHook } from '@shared/hooks';
-import { UserAgentMiddleware } from '@shared/middlewares';
-import { ValidationPipe } from '@shared/pipes';
+import { CustomExceptionsFilter } from '@shared/app/filters';
+import { onRequestHook } from '@shared/app/hooks';
+import { UserAgentMiddleware } from '@shared/app/middlewares';
+import { ValidationPipe } from '@shared/classValidator/pipes';
+import { LoggerContext } from '@shared/enums/logger-context';
 import { handlebars } from '@shared/utils';
 import { IServerConfig } from '@src/config';
 import cookieParser from 'cookie-parser';

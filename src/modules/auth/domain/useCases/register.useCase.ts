@@ -1,6 +1,4 @@
-import { TokenActionEnum } from '@modules/auth/domain/enums';
-import { TokenService } from '@modules/auth/domain/services';
-import { RegisterDto } from '@modules/auth/presentation/dtos/register.dto';
+import { RegisterDto } from '@modules/auth/presentation/dtos';
 import { ActivateAccountEvent } from '@modules/common/mail/domain/events';
 import { MailEventEnum } from '@modules/common/mail/domain/listeners';
 import { User } from '@modules/user/domain/entities';
@@ -9,9 +7,11 @@ import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { ILocalMessage } from '@shared/interfaces';
-import { RmProp, SendLocalMessage } from '@shared/utils';
+import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
+import { RmProp } from '@shared/utils';
 import { IServerConfig } from '@src/config';
+import { TokenActionEnum } from '../enums';
+import { TokenService } from '../services';
 
 declare interface IRegisterUseCaseProps {
     dto: RegisterDto;

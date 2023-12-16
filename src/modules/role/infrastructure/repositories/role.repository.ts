@@ -1,19 +1,18 @@
 import { Role } from '@modules/role/domain/entities';
 import {
-    NotAllowedRemoveASystemRolException,
     NotFoundOrDisabledRoleException
 } from '@modules/role/domain/exceptions';
-import { GetOneBySlugParamsInterface } from '@modules/role/infrastructure/repositories/role-repository.interface';
-import { RoleSchema } from '@modules/role/infrastructure/schemas';
 import { RoleFilters } from '@modules/role/presentation/criterias';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseRepository, IDeleteParams } from '@shared/abstractClass';
-import { CriteriaBuilder } from '@shared/criterias';
-import { NotFoundCustomException } from '@shared/exceptions';
-import { PgSqlFilter } from '@shared/helpers/pg-sql-filter.helper';
-import { Paginator } from '@shared/pagination';
+import { NotFoundCustomException } from '@shared/app/exceptions';
+import { CriteriaBuilder } from '@shared/criteria';
+import { BaseRepository } from '@shared/typeOrm/abstractClass';
+import { PgSqlFilterCriteria } from '@shared/typeOrm/helpers';
+import { Paginator } from '@shared/typeOrm/pagination';
 import { In, Repository } from 'typeorm';
+import { RoleSchema } from '../schemas';
+import { GetOneBySlugParamsInterface } from './role-repository.interface';
 
 @Injectable()
 export class RoleRepository extends BaseRepository<Role>
@@ -29,7 +28,7 @@ export class RoleRepository extends BaseRepository<Role>
     {
         const queryBuilder = this.repository.createQueryBuilder('i');
 
-        const filter = new PgSqlFilter(criteria.getFilter<any>(), queryBuilder);
+        const filter = new PgSqlFilterCriteria(criteria.getFilter<any>(), queryBuilder);
 
         queryBuilder.where('1 = 1');
 

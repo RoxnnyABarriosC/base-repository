@@ -1,5 +1,5 @@
 import { File } from '@modules/common/file/domain/entities';
-import { BaseColumnsSchema } from '@shared/schemas';
+import { BaseColumnsSchema } from '@shared/typeOrm/schemas';
 import { EntitySchema } from 'typeorm';
 
 export const FileSchema = new EntitySchema<File>({

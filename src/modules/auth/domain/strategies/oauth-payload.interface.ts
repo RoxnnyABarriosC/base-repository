@@ -1,5 +1,5 @@
-import { OAuthProviderEnum } from '@modules/auth/domain/enums';
 import { RegisterDto } from '@modules/auth/presentation/dtos';
+import { OAuthProviderEnum } from '../enums';
 
 export interface IOAuthPayload {
     dto: Partial<RegisterDto>,

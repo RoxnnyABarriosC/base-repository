@@ -1,6 +1,6 @@
 import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { LoggerContext } from '@shared/constants';
+import { LoggerContext } from '@shared/enums/logger-context';
 import { RmProp } from '@shared/utils';
 import { FastifyRequest } from 'fastify';
 import { Observable, catchError, throwError } from 'rxjs';

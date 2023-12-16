@@ -1,8 +1,8 @@
 import { OTPService } from '@modules/securityConfig/domain/services';
 import { Injectable, Logger } from '@nestjs/common';
 import { User } from '@src/modules/user/domain/entities';
-import { JWTModel } from '../models/JWT.model';
-import { TokenService } from '../services/token.service';
+import { JWTModel } from '../models';
+import { TokenService } from '../services';
 
 declare interface ILoginUseCaseProps {
     user: User;

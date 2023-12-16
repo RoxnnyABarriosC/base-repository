@@ -1,8 +1,8 @@
-import { FileValidator, IValidatorOptions } from '@modules/common/file/presentation/validators/file.validator';
 import {
     ParseFilePipe,
     UploadedFiles as _UploadedFiles
 } from '@nestjs/common';
+import { FileValidator, IValidatorOptions } from '../validators/file.validator';
 
 interface IPropsUploadedFiles extends IValidatorOptions {
     required?: boolean;

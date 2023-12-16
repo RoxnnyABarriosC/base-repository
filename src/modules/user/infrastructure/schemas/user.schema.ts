@@ -3,7 +3,7 @@ import { Role } from '@modules/role/domain/entities';
 import { SecurityConfig } from '@modules/securityConfig/domain/entities';
 import { User } from '@modules/user/domain/entities';
 import { GenderEnum } from '@modules/user/domain/enums';
-import { BaseColumnsSchema } from '@shared/schemas';
+import { BaseColumnsSchema } from '@shared/typeOrm/schemas';
 import { EntitySchema } from 'typeorm';
 
 export const UserSchema = new EntitySchema<User>({

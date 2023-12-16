@@ -1,4 +1,4 @@
-import { BaseSerializer } from '@shared/abstractClass';
+import { BaseSerializer } from '@shared/classValidator/abstractClass';
 import { Exclude, Expose } from 'class-transformer';
 
 export interface UserSerializerMockInterface {

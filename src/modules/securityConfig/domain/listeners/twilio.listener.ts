@@ -1,8 +1,8 @@
-import { SendOTPEmailEvent, SendOTPPhoneEvent } from '@modules/securityConfig/domain/events';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OnEvent } from '@nestjs/event-emitter';
 import { TwilioService as _TwilioService } from 'nestjs-twilio/dist/module/twilio.service';
+import { SendOTPEmailEvent, SendOTPPhoneEvent } from '../events';
 
 export enum TwilioEventEnum {
     SEND_OTP_PHONE = 'twilio.send.otp.phone',

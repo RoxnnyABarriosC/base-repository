@@ -1,6 +1,6 @@
 import { User } from '@modules/user/domain/entities';
-import { DefaultFilters, Filter } from '@shared/abstractClass';
-import { ParseBoolean } from '@shared/decorators';
+import { Parse } from '@shared/classValidator/transforms';
+import { DefaultFilters, Filter } from '@shared/criteria/abstractClass';
 import { Expose } from 'class-transformer';
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
@@ -21,27 +21,27 @@ export class UserFilter extends Filter
     public readonly search: string;
 
     @IsOptional()
-    @ParseBoolean()
+    @Parse()
     @IsBoolean()
     public readonly withPartialRemoved: boolean;
 
     @IsOptional()
-    @ParseBoolean()
+    @Parse()
     @IsBoolean()
     public readonly partialRemoved: boolean;
 
     @IsOptional()
-    @ParseBoolean()
+    @Parse()
     @IsBoolean()
     public readonly enable: boolean;
 
     @IsOptional()
-    @ParseBoolean()
+    @Parse()
     @IsBoolean()
     public readonly verify: boolean;
 
     @IsOptional()
-    @ParseBoolean()
+    @Parse()
     @IsBoolean()
     public readonly isSuperAdmin: boolean;
 

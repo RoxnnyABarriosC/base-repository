@@ -1,18 +1,26 @@
 import { AuthModule } from '@modules/auth';
 import { CommonModule } from '@modules/common';
 import { RoleModule } from '@modules/role';
-import { UserService } from '@modules/user/domain/services';
-import {
-    DeleteUserUseCase, EnableOrDisableUserUseCase, GetUserByUserNameUseCase,
-    GetUserUseCase,
-    ListUsersUseCase, ResetPasswordUseCase, RestoreUserUseCase,
-    SaveUserUseCase, SetRolesUserUseCase, UpdatePermissionsUserUseCase, UpdateUserUseCase, VerifyOrUnverifyUserUseCase
-} from '@modules/user/domain/useCases';
-import { UserRepository } from '@modules/user/infrastructure/repositories';
-import { UserSchema } from '@modules/user/infrastructure/schemas';
-import { UserController } from '@modules/user/presentation/controllers';
 import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserPolicyService, UserService } from './domain/services';
+import {
+    DeleteUserUseCase,
+    EnableOrDisableUserUseCase,
+    GetUserByUserNameUseCase,
+    GetUserUseCase,
+    ListUsersUseCase,
+    ResetPasswordUseCase,
+    RestoreUserUseCase,
+    SaveUserUseCase,
+    SetRolesUserUseCase,
+    UpdatePermissionsUserUseCase,
+    UpdateUserUseCase,
+    VerifyOrUnverifyUserUseCase
+} from './domain/useCases';
+import { UserRepository } from './infrastructure/repositories';
+import { UserSchema } from './infrastructure/schemas';
+import { UserController } from './presentation/controllers';
 
 @Module({
     imports: [
@@ -36,9 +44,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         UpdatePermissionsUserUseCase,
         SetRolesUserUseCase,
         UserRepository,
-        UserService
+        UserService,
+        UserPolicyService
     ],
-    exports: [UserService, UserRepository]
+    exports: [UserService, UserRepository, UserPolicyService]
 })
 export class UserModule
 {}

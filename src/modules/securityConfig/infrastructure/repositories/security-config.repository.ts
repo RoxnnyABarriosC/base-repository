@@ -1,11 +1,11 @@
 import { SecurityConfig } from '@modules/securityConfig/domain/entities';
-import { SecurityConfigSchema } from '@modules/securityConfig/infrastructure/schemas';
 import { User } from '@modules/user/domain/entities';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseRepository } from '@shared/abstractClass';
-import { NotFoundCustomException } from '@shared/exceptions';
+import { NotFoundCustomException } from '@shared/app/exceptions';
+import { BaseRepository } from '@shared/typeOrm/abstractClass';
 import { Repository } from 'typeorm';
+import { SecurityConfigSchema } from '../schemas';
 
 @Injectable()
 export class SecurityConfigRepository extends BaseRepository<SecurityConfig>

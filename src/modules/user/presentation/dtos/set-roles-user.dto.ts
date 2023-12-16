@@ -1,4 +1,4 @@
-import { ArraySet } from '@shared/decorators';
+import { ArraySet } from '@shared/classValidator/transforms';
 import { IsArray, IsUUID } from 'class-validator';
 
 export class SetRolesUserDto

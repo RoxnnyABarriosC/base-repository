@@ -1,5 +1,4 @@
-import { CheckPolicies, ForceCheckPolicy, ManagePermissions, Protected, RequirePermissions } from '@modules/auth/presentation/decorators';
-import { CheckSuperAdmin } from '@modules/auth/presentation/guards';
+import { CheckEmailDomain, CheckPolicies, CheckSuperAdmin, ForceCheckPolicy, ManagePermissions, Protected, RequirePermissions } from '@modules/auth/presentation/decorators';
 import { SCOPE } from '@modules/role/domain/constants';
 import { NotAllowedRemoveASystemRolPolicy, SystemRolCanNotBeModifiedPolicy } from '@modules/role/domain/policies';
 import {
@@ -14,17 +13,8 @@ import {
     UpdateRoleUseCase,
     UpdateScopeConfigRoleUseCase
 } from '@modules/role/domain/useCases';
-import { RoleFilter, RoleSort } from '@modules/role/presentation/criterias';
-import {
-    AllowedViewsDto,
-    PermissionsDto,
-    SaveRoleDto,
-    ScopeConfigDto,
-    UpdateRoleDto
-} from '@modules/role/presentation/dtos';
-import { RoleSerializerGroupsEnum } from '@modules/role/presentation/enums';
-import { RoleSerializer } from '@modules/role/presentation/serializers';
 import { RolePermissionsEnum } from '@modules/role/role.permissions';
+import { EmailDomainTypeEnum } from '@modules/user/domain/enums';
 import { CacheTTL } from '@nestjs/cache-manager';
 import {
     Body,
@@ -36,20 +26,23 @@ import {
     Param, Patch,
     Post, Put
 } from '@nestjs/common';
-import { CriteriaBuilder, IUris, PaginationFilter } from '@shared/criterias';
+import { ALL_MANAGE_PERMISSION } from '@shared/app/constants';
+import { SetScopeSerializer, SetSerializerGroups } from '@shared/classValidator/decorators';
+import { Serializer } from '@shared/classValidator/utils';
+import { CriteriaBuilder, IUris } from '@shared/criteria';
+import { Criteria, Filter, Pagination, Sort, Uris } from '@shared/criteria/decorators';
+import { PaginationFilter } from '@shared/criteria/filters';
+import { Bool, DeletePermanently, PartialRemoved, UUID } from '@shared/decorators';
+import { RoleFilter, RoleSort } from '../criterias';
 import {
-    Bool,
-    Criteria,
-    DeletePermanently,
-    Filter,
-    Pagination,
-    PartialRemoved,
-    SetSerializerGroups, Sort,
-    UUID, Uris
-} from '@shared/decorators';
-import { ALL_MANAGE_PERMISSION } from '@shared/factories';
-import { SetScopeSerializer } from '@shared/interceptors';
-import { Serializer } from '@shared/utils';
+    AllowedViewsDto,
+    PermissionsDto,
+    SaveRoleDto,
+    ScopeConfigDto,
+    UpdateRoleDto
+} from '../dtos';
+import { RoleSerializerGroupsEnum } from '../enums';
+import { RoleSerializer } from '../serializers';
 
 @Controller({
     path: 'roles',
@@ -57,6 +50,7 @@ import { Serializer } from '@shared/utils';
 })
 @Protected()
 @SetScopeSerializer(SCOPE)
+@CheckEmailDomain(EmailDomainTypeEnum.ADMIN)
 @ManagePermissions(ALL_MANAGE_PERMISSION, RolePermissionsEnum.MANAGE)
 export class RoleController
 {
@@ -206,7 +200,7 @@ export class RoleController
         }), RoleSerializer)) as typeof RoleSerializer;
     }
 
-    @Patch(':id/enable-or-disable/:enable')
+    @Patch(':id/enable/:enable')
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(RolePermissionsEnum.UPDATE_ENABLE)
     @CheckPolicies(SystemRolCanNotBeModifiedPolicy)

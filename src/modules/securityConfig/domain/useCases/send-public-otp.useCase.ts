@@ -1,15 +1,15 @@
-import { OTPChannelToTargetDictionary } from '@modules/securityConfig/domain/dictionaries';
-import { OTPSendChannelEnum } from '@modules/securityConfig/domain/enums';
-import { SendOTPEmailEvent, SendOTPPhoneEvent } from '@modules/securityConfig/domain/events';
-import { OTPUniqueTargetException } from '@modules/securityConfig/domain/exceptions';
-import { TwilioEventEnum } from '@modules/securityConfig/domain/listeners';
 import { SendOTPDto } from '@modules/securityConfig/presentation/dtos';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { SendLocalMessage } from '@shared/utils';
+import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
 import { Cache } from 'cache-manager';
+import { OTPChannelToTargetDictionary } from '../dictionaries';
+import { OTPSendChannelEnum } from '../enums';
+import { SendOTPEmailEvent, SendOTPPhoneEvent } from '../events';
+import { OTPUniqueTargetException } from '../exceptions';
+import { TwilioEventEnum } from '../listeners';
 
 interface  ISendPublicOTPUseCaseProps {
     dto: SendOTPDto;
@@ -27,7 +27,7 @@ export class SendPublicOTPUseCase
     )
     {}
 
-    async handle({ dto: { channel, to } }: ISendPublicOTPUseCaseProps)
+    async handle({ dto: { channel, to } }: ISendPublicOTPUseCaseProps): Promise<ILocalMessage>
     {
         const target = OTPChannelToTargetDictionary.get(channel);
 

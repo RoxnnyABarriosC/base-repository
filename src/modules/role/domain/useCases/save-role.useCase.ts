@@ -1,8 +1,8 @@
-import { Role } from '@modules/role/domain/entities';
-import { RoleService } from '@modules/role/domain/services';
 import { RoleRepository } from '@modules/role/infrastructure/repositories';
 import { SaveRoleDto } from '@modules/role/presentation/dtos';
 import { Injectable, Logger } from '@nestjs/common';
+import { Role } from '../entities';
+import { RoleService } from '../services';
 
 declare interface ISaveRoleUseCaseProps {
     dto: SaveRoleDto;

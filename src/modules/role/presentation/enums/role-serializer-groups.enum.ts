@@ -1,5 +1,5 @@
 import { SCOPE } from '@modules/role/domain/constants';
-import { SerializerGroupsEnum } from '@shared/abstractClass';
+import { SerializerGroupsEnum } from '@shared/classValidator/enums';
 
 export enum RoleSerializerGroupsEnum {
     ALL = `${SCOPE}${SerializerGroupsEnum.ALL}`,

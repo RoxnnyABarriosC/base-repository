@@ -5,10 +5,10 @@ export const IS_PUBLIC_KEY = 'is_public_key';
 
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 
-export function checkIsPublic(context: ExecutionContext, reflector: Reflector)
+export const checkIsPublic = (context: ExecutionContext, reflector: Reflector) =>
 {
     return reflector.getAllAndOverride(IS_PUBLIC_KEY, [
         context.getHandler(),
         context.getClass()
     ]) ?? false;
-}
+};

@@ -1,9 +1,9 @@
 import { IMyStore } from '@modules/common/store';
-import { User } from '@modules/user/domain/entities';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import {  Injectable, Logger } from '@nestjs/common';
-import { CriteriaBuilder } from '@shared/criterias';
+import { CriteriaBuilder } from '@shared/criteria';
 import { ClsService } from 'nestjs-cls';
+import { User } from '../entities';
 
 declare interface IListUsersUseCaseProps {
     criteria: CriteriaBuilder;

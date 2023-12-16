@@ -1,8 +1,8 @@
-import { OTPTargetConfigEnum } from '@modules/securityConfig/domain/enums';
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
-import {  SendLocalMessage  } from '@shared/utils';
+import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
 import { User } from '@src/modules/user/domain/entities';
+import { OTPTargetConfigEnum } from '../enums';
 
 interface IEnableOrDisableOTPUseCaseProps {
     authUser: User;
@@ -20,7 +20,7 @@ export class EnableOrDisableOTPUseCase
     )
     {}
 
-    async handle({ authUser, target, enable }: IEnableOrDisableOTPUseCaseProps)
+    async handle({ authUser, target, enable }: IEnableOrDisableOTPUseCaseProps): Promise<ILocalMessage>
     {
         const securityConfig = await this.repository.getOneBy({
             condition: { user: { _id: authUser._id } },

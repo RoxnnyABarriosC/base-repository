@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { GroupPermissions } from '@shared/factories';
-import { AppPermissionsFactory } from '@src/app.permissions';
+import { GroupPermissions } from '@shared/app/factories';
+import { AllAppPermissions } from '@src/app.permissions';
 
 @Injectable()
 export class GetPermissionsUseCase
@@ -9,6 +9,6 @@ export class GetPermissionsUseCase
 
     async handle(): Promise<GroupPermissions<any>[]>
     {
-        return AppPermissionsFactory.groupPermissions();
+        return AllAppPermissions.groupPermissions();
     }
 }

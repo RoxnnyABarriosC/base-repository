@@ -1,12 +1,10 @@
-import { AuthUser, Protected } from '@modules/auth/presentation/decorators';
+import { AuthUser, Protected, Public } from '@modules/auth/presentation/decorators';
 import { SCOPE } from '@modules/securityConfig/domain/constants';
+import { OTPTargetConfigEnum } from '@modules/securityConfig/domain/enums';
 import {
     EnableOrDisableOTPUseCase, EnableOrDisableRequiredPasswordUseCase, GetFormConfigUseCase,
     SetPhoneOTPProvidersUseCase
 } from '@modules/securityConfig/domain/useCases';
-import { SetProvidersDto } from '@modules/securityConfig/presentation/dtos';
-import { SecurityConfigSerializerGroupsEnum } from '@modules/securityConfig/presentation/enums';
-import { OTPConfigSerializer, SecurityConfigSerializer } from '@modules/securityConfig/presentation/serializers';
 import { User } from '@modules/user/domain/entities';
 import { EmailOrPhone } from '@modules/user/presentation/decorators';
 import {
@@ -17,16 +15,20 @@ import {
     Logger,
     Param, ParseEnumPipe, Patch
 } from '@nestjs/common';
-import { SerializerGroupsEnum } from '@shared/abstractClass';
-import { Bool, SetSerializerGroups } from '@shared/decorators';
-import { SetScopeSerializer, SkipCache } from '@shared/interceptors';
-import { Serializer } from '@shared/utils';
-import { OTPTargetConfigEnum } from '../../domain/enums';
+import { SkipCache } from '@shared/app/decorators';
+import { SetScopeSerializer, SetSerializerGroups } from '@shared/classValidator/decorators';
+import { SerializerGroupsEnum } from '@shared/classValidator/enums';
+import { Serializer } from '@shared/classValidator/utils';
+import { Bool } from '@shared/decorators';
+import { SetProvidersDto } from '../dtos';
+import { SecurityConfigSerializerGroupsEnum } from '../enums';
+import { OTPConfigSerializer, SecurityConfigSerializer } from '../serializers';
 
 @Controller({
     path: 'security',
     version: '1'
 })
+@Protected()
 @SetScopeSerializer(SCOPE)
 export class SecurityController
 {
@@ -41,7 +43,6 @@ export class SecurityController
     {}
 
     @Get()
-    @Protected()
     @HttpCode(HttpStatus.OK)
     @SetSerializerGroups(
         SerializerGroupsEnum.ONLY_ID,
@@ -57,8 +58,7 @@ export class SecurityController
         return (await Serializer(await authUser.securityConfig, SecurityConfigSerializer)) as typeof SecurityConfigSerializer;
     }
 
-    @Patch('required-password/enable-or-disable/:enable')
-    @Protected()
+    @Patch('required-password/enable/:enable')
     @HttpCode(HttpStatus.OK)
     async enableOrDisableRequiredPassword(
       @AuthUser() authUser: User,
@@ -75,7 +75,6 @@ export class SecurityController
     }
 
     @Patch('otp/phone/providers')
-    @Protected()
     @HttpCode(HttpStatus.OK)
     async setProviders(
       @AuthUser() authUser: User,
@@ -91,8 +90,7 @@ export class SecurityController
             });
     }
 
-    @Patch('otp/:target/enable-or-disable/:enable')
-    @Protected()
+    @Patch('otp/:target/enable/:enable')
     @HttpCode(HttpStatus.OK)
     async enableOrDisable(
         @AuthUser() authUser: User,
@@ -113,7 +111,8 @@ export class SecurityController
     @Get('otp/config/:emailOrPhone')
     @HttpCode(HttpStatus.OK)
     @SkipCache()
-    async formConfig(
+    @Public()
+    async config(
       @EmailOrPhone() emailOrPhone: string
     )
     {

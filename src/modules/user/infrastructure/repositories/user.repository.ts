@@ -1,18 +1,18 @@
 import { User } from '@modules/user/domain/entities';
-import { UserSchema } from '@modules/user/infrastructure/schemas';
 import { UserFilters } from '@modules/user/presentation/criterias';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseRepository } from '@shared/abstractClass';
-import { CriteriaBuilder } from '@shared/criterias';
-import { NotFoundCustomException } from '@shared/exceptions';
-import { PgSqlFilter } from '@shared/helpers/pg-sql-filter.helper';
-import { Paginator } from '@shared/pagination';
+import { NotFoundCustomException } from '@shared/app/exceptions';
+import { CriteriaBuilder } from '@shared/criteria';
+import { BaseRepository } from '@shared/typeOrm/abstractClass';
+import { PgSqlFilterCriteria } from '@shared/typeOrm/helpers';
+import { Paginator } from '@shared/typeOrm/pagination';
 import { Repository } from 'typeorm';
+import { UserSchema } from '../schemas';
 import type {
     GetOneByEmailOrPhoneParamsInterface,
     GetOneByUserNameParamsInterface
-} from '@modules/user/infrastructure/repositories';
+} from './user-repository.interface';
 
 @Injectable()
 export class UserRepository extends BaseRepository<User>
@@ -28,7 +28,7 @@ export class UserRepository extends BaseRepository<User>
     {
         const queryBuilder = this.repository.createQueryBuilder('i');
 
-        const filter = new PgSqlFilter(criteria.getFilter<any>(), queryBuilder);
+        const filter = new PgSqlFilterCriteria(criteria.getFilter<any>(), queryBuilder);
 
         void queryBuilder.where('1 = 1');
 

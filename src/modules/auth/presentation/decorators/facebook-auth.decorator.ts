@@ -1,5 +1,5 @@
-import { FacebookAuthGuard } from '@modules/auth/presentation/guards';
 import { UseGuards, applyDecorators } from '@nestjs/common';
+import { FacebookAuthGuard } from '../guards';
 
 export const FacebookAuth = () =>
 {

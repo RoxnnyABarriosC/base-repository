@@ -1,13 +1,11 @@
 import { UniqueService } from '@modules/common/index/infrastructure/services';
-import { Role } from '@modules/role/domain/entities';
-import { NotAllowedRemoveASystemRolException, WrongPermissionsException } from '@modules/role/domain/exceptions';
-import { SystemRolCanNotBeModifiedException } from '@modules/role/domain/exceptions/system-rol-can-not-be-modified.exception';
 import { RoleRepository } from '@modules/role/infrastructure/repositories';
-import { SuperAdminCanNotBeModifiedException } from '@modules/user/domain/exceptions';
 import { Injectable, Logger } from '@nestjs/common';
-import { AppPermissionsFactory } from '@src/app.permissions';
+import { AllAppPermissions } from '@src/app.permissions';
 import { isEmpty } from 'class-validator';
 import { intersection } from 'lodash';
+import { Role } from '../entities';
+import { NotAllowedRemoveASystemRolException, SystemRolCanNotBeModifiedException, WrongPermissionsException } from '../exceptions';
 
 @Injectable()
 export class RoleService
@@ -36,7 +34,7 @@ export class RoleService
 
     async validatePermissions(permissions: string[]): Promise<void>
     {
-        if (!isEmpty(permissions) && isEmpty(intersection(permissions, AppPermissionsFactory.permissions())))
+        if (!isEmpty(permissions) && isEmpty(intersection(permissions, AllAppPermissions.permissions())))
         {
             throw new WrongPermissionsException();
         }

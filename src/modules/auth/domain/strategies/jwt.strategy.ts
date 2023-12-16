@@ -1,13 +1,13 @@
-import { IDecodeToken } from '@modules/auth/domain/models';
-import { TokenService } from '@modules/auth/domain/services';
 import { User } from '@modules/user/domain/entities';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { ForbiddenCustomException } from '@shared/exceptions';
+import { ForbiddenCustomException } from '@shared/app/exceptions';
 import { FastifyRequest } from 'fastify';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { IDecodeToken } from '../models';
+import { TokenService } from '../services';
 
 export declare interface IAuthData {
     payload: IDecodeToken;

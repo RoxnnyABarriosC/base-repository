@@ -1,12 +1,11 @@
-import { AuthService } from '@modules/auth/domain/services';
-import { ChangeMyPasswordDto } from '@modules/auth/presentation/dtos/change-my-password.dto';
+import { ChangeMyPasswordDto } from '@modules/auth/presentation/dtos';
 import { SecurityConfigService } from '@modules/securityConfig/domain/services';
 import { User } from '@modules/user/domain/entities';
 import { UserService } from '@modules/user/domain/services';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
-import { ILocalMessage } from '@shared/interfaces';
-import { SendLocalMessage } from '@shared/utils';
+import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
+import { AuthService } from '../services';
 
 declare interface IChangeMyPasswordUseCaseProps {
     dto: ChangeMyPasswordDto,

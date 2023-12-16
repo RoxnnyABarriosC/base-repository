@@ -1,5 +1,3 @@
-import { User } from '@modules/user/domain/entities';
-import { UserService } from '@modules/user/domain/services';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { SaveUserDto } from '@modules/user/presentation/dtos';
 import { Injectable, Logger } from '@nestjs/common';
@@ -8,6 +6,8 @@ import { passwordGeneratorRegex } from '@shared/regex';
 import { generateRandomNumber } from '@shared/utils';
 import { ILengthConfig } from '@src/config';
 import passwordGenerator from 'password-generator';
+import { User } from '../entities';
+import { UserService } from '../services';
 
 declare interface ISaveUserUseCaseProps {
     dto: SaveUserDto;

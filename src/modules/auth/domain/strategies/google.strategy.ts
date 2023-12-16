@@ -1,10 +1,10 @@
-import { OAuthProviderDictionary } from '@modules/auth/domain/dictionaries';
-import { IOAuthPayload } from '@modules/auth/domain/strategies/oauth-payload.interface';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { IOAuthStrategyConfig } from '@src/config';
 import { Profile, Strategy  } from 'passport-google-oauth20';
+import { OAuthProviderDictionary } from '../dictionaries';
+import { IOAuthPayload } from '../strategies';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google')

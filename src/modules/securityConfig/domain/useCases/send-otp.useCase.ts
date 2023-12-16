@@ -1,18 +1,17 @@
-import { OTPChannelToTargetDictionary } from '@modules/securityConfig/domain/dictionaries';
-import { OTPProvidersEnum, OTPSendChannelEnum, OTPTargetConfigEnum } from '@modules/securityConfig/domain/enums';
-import { SendOTPEmailEvent, SendOTPPhoneEvent } from '@modules/securityConfig/domain/events';
-import { OTPLimitExceededException, PhoneNotDefinedForOtpSendingException } from '@modules/securityConfig/domain/exceptions';
-import { OTPDisabledException } from '@modules/securityConfig/domain/exceptions/otp-disabled.exception';
-import { TwilioEventEnum } from '@modules/securityConfig/domain/listeners';
-import { OTPService } from '@modules/securityConfig/domain/services';
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { SendLocalMessage } from '@shared/utils';
+import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
 import { Cache } from 'cache-manager';
+import { OTPChannelToTargetDictionary } from '../dictionaries';
+import { OTPProvidersEnum, OTPSendChannelEnum, OTPTargetConfigEnum } from '../enums';
+import { SendOTPEmailEvent, SendOTPPhoneEvent } from '../events';
+import { OTPDisabledException, OTPLimitExceededException, PhoneNotDefinedForOtpSendingException } from '../exceptions';
+import { TwilioEventEnum } from '../listeners';
+import { OTPService } from '../services';
 
 interface ISendOTPUseCaseProps {
     channel: OTPSendChannelEnum;
@@ -35,7 +34,7 @@ export class SendOTPUseCase
     )
     {}
 
-    async handle({ channel, userId, countAttempts = false }: ISendOTPUseCaseProps)
+    async handle({ channel, userId, countAttempts = false }: ISendOTPUseCaseProps): Promise<ILocalMessage>
     {
         const user = await this.userRepository.getOne({ id: userId });
 

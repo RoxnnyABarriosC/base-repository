@@ -7,3 +7,4 @@ export * from './refresh-token.guard';
 export * from './apple-auth.guard';
 export * from './facebook-auth.guard';
 export * from './google-auth.guard';
+export * from './check-email-domain.guard';

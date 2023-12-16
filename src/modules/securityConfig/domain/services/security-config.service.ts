@@ -1,9 +1,9 @@
 import { EncryptionFactory } from '@modules/auth/domain/factories';
-import { SecurityConfig } from '@modules/securityConfig/domain/entities';
-import { CannotUseYourOldPasswordException } from '@modules/securityConfig/domain/exceptions';
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { User } from '@modules/user/domain/entities';
 import {  Injectable, Logger } from '@nestjs/common';
+import { SecurityConfig } from '../entities';
+import { CannotUseYourOldPasswordException } from '../exceptions';
 
 @Injectable()
 export class SecurityConfigService
@@ -19,6 +19,8 @@ export class SecurityConfigService
     async checkOldPassword(user: User, password: string): Promise<void>
     {
         const securityConfig = await user.securityConfig;
+
+        console.log('===========================> VALIDANDO OLD PASSWORD');
 
         if (securityConfig.oldPassword)
         {

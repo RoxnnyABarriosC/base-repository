@@ -1,6 +1,6 @@
-import { BaseEntity } from '@shared/entities';
+import { BaseEntity } from '@shared/app/entities';
 import { Exclude, Expose } from 'class-transformer';
-import type { IDecodeToken } from '@modules/auth/domain/models';
+import type { IDecodeToken } from '../models';
 
 export interface IHash
 {
