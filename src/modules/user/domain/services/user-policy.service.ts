@@ -1,9 +1,9 @@
-import { EmailDomainTypeEnum } from '@modules/user/domain/enums';
 import { UserService } from '@modules/user/domain/services/user.service';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { getEmailDomain } from '@shared/utils';
+import { EmailDomainTypeEnum } from '@shared/enums';
+import { GetDomainTypeOfEmail, getEmailDomain } from '@shared/utils';
 import { User } from '../entities';
 import {
     DontDeleteYourselfException,
@@ -17,12 +17,16 @@ import {
 @Injectable()
 export class UserPolicyService
 {
+    private readonly emailAdminDomains: string[];
+
     constructor(
         private readonly repository: UserRepository,
         private readonly userService: UserService,
         private readonly configService: ConfigService
     )
-    { }
+    {
+        this.emailAdminDomains = configService.getOrThrow<string>('emailsDomain.admin').split(',');
+    }
 
 
     async checkSuperAdminCanNotBeModifiedPolicy(id: string, withDeleted = false): Promise<void>
@@ -49,7 +53,7 @@ export class UserPolicyService
     {
         const user = await this.repository.exist({ condition: { _id: id }, initThrow: true, select: ['_id', 'email'] }) as User;
 
-        if (this.userService.getDomainTypeOfEmail(user.email) !== EmailDomainTypeEnum.ADMIN)
+        if (GetDomainTypeOfEmail(user.email, this.emailAdminDomains) !== EmailDomainTypeEnum.ADMIN)
         {
             throw new UserIsNotAdminException();
         }
@@ -84,20 +88,21 @@ export class UserPolicyService
         const currentDomain = getEmailDomain(current);
         const newDomain = getEmailDomain(_new);
 
+
         if (newDomain !== currentDomain)
         {
-            if (this.userService.getDomainTypeOfEmail(current) === EmailDomainTypeEnum.APP
-              && this.userService.getDomainTypeOfEmail(_new) !== EmailDomainTypeEnum.APP)
+            const userEmailDomainType = GetDomainTypeOfEmail(current, this.emailAdminDomains);
+            const newEmailDomainType = GetDomainTypeOfEmail(_new, this.emailAdminDomains);
+
+
+            if (userEmailDomainType === EmailDomainTypeEnum.ADMIN && newEmailDomainType === EmailDomainTypeEnum.APP)
             {
-                throw new UserNewEmailDomainIsNotAllowedException(this.configService
-                    .getOrThrow<string>('emailsDomain.app').split(','));
+                throw new UserNewEmailDomainIsNotAllowedException({ newDomain });
             }
 
-            if (this.userService.getDomainTypeOfEmail(current) === EmailDomainTypeEnum.ADMIN
-              && this.userService.getDomainTypeOfEmail(_new) !== EmailDomainTypeEnum.ADMIN)
+            else if (userEmailDomainType === EmailDomainTypeEnum.APP && newEmailDomainType === EmailDomainTypeEnum.ADMIN)
             {
-                throw new UserNewEmailDomainIsNotAllowedException(this.configService
-                    .getOrThrow<string>('emailsDomain.admin').split(','));
+                throw new UserNewEmailDomainIsNotAllowedException({ newDomain });
             }
         }
     }

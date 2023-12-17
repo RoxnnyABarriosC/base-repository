@@ -16,3 +16,4 @@ export * from './prototype-to-string';
 export * from './create-search-regex';
 export * from './generate-random-number';
 export * from './add-time-to-current-date';
+export * from './get-domain-type-of-email';

@@ -1,11 +1,12 @@
 import { EmailDomainNotValidException } from '@modules/auth/domain/exceptions';
 import { RequestAuth } from '@modules/auth/domain/strategies';
-import { EmailDomainTypeEnum } from '@modules/user/domain/enums';
 import { UserService } from '@modules/user/domain/services';
 import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ModuleRef, Reflector } from '@nestjs/core';
-import { CHECK_EMAIL_DOMAIN, checkIsPublic } from '../decorators';
+import { CHECK_EMAIL_DOMAIN, checkIsPublic } from '@shared/app/decorators';
+import { EmailDomainTypeEnum } from '@shared/enums';
+import { GetDomainTypeOfEmail } from '@shared/utils';
 
 @Injectable()
 export class CheckEmailDomainGuard implements CanActivate
@@ -38,11 +39,13 @@ export class CheckEmailDomainGuard implements CanActivate
 
         if (checkEmailDomain)
         {
-            const emailDomainType = this.userService.getDomainTypeOfEmail(data.email);
+            const emailAdminDomains =  this.configService.getOrThrow<string>('emailsDomain.admin').split(',');
+
+            const emailDomainType = GetDomainTypeOfEmail(data.email, emailAdminDomains);
 
             if (emailDomainType !== checkEmailDomain)
             {
-                throw new EmailDomainNotValidException(this.configService.getOrThrow<string>(`emailsDomain.${checkEmailDomain}`).split(','));
+                throw new EmailDomainNotValidException({ [emailDomainType === EmailDomainTypeEnum.ADMIN ? 'notAllow' : 'allow' ]: emailAdminDomains });
             }
         }
 

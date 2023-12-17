@@ -2,7 +2,7 @@ import { SuperAdminOnlyException } from '@modules/auth/domain/exceptions';
 import { RequestAuth } from '@modules/auth/domain/strategies';
 import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { CHECK_SUPER_ADMIN, checkIsPublic } from '../decorators';
+import { CHECK_SUPER_ADMIN, checkIsPublic } from '@shared/app/decorators';
 
 @Injectable()
 export class CheckSuperAdminGuard implements CanActivate

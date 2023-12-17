@@ -1,6 +1,6 @@
 import configuration from '@config/configuration';
 import { GenderEnum } from '@modules/user/domain/enums';
-import { EmailDomainLength, IsAgeBetween, IsEmailFromDomain, ValidateIfPropertyExists } from '@shared/classValidator/decorators';
+import { EmailDomainLength, IsAgeBetween, IsEmailFromDomain, IsNotEmailFromDomain, ValidateIfPropertyExists } from '@shared/classValidator/decorators';
 import { ContextGroupsEnum } from '@shared/classValidator/enums';
 import { IsDateString, IsEmail, IsEnum, IsMobilePhone, IsString, Length } from 'class-validator';
 
@@ -33,7 +33,7 @@ export class MeDto
     @IsEmailFromDomain(emailDomains.admin.split(','), {
         groups: [ContextGroupsEnum.ADMIN]
     })
-    @IsEmailFromDomain(emailDomains.app.split(','), {
+    @IsNotEmailFromDomain(emailDomains.admin.split(','), {
         groups: [ContextGroupsEnum.APP]
     })
     @EmailDomainLength(emailDomainLength)

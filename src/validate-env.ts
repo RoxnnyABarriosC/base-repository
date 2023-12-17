@@ -103,8 +103,7 @@ export function validateEnv(config: Record<string, any>): Record<string, any>
         AP_OAUTH_SECRET: str(),
         AP_OAUTH_CALLBACK: url(),
 
-        DOMAINS_ALLOWED_FOR_ADMINISTRATOR_EMAILS: str(),
-        DOMAINS_ALLOWED_FOR_APP_EMAILS: str({ default: 'gmail.com,hotmail.com,outlook.com,yahoo.com' })
+        DOMAINS_ALLOWED_FOR_ADMINISTRATOR_EMAILS: str()
     });
 
     config = { ...config, ...clean };

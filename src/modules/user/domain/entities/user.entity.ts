@@ -1,10 +1,14 @@
+import configuration from '@config/configuration';
 import { PasswordValueObject } from '@modules/auth/domain/valueObjects';
 import { File } from '@modules/common/file/domain/entities';
 import { Role } from '@modules/role/domain/entities';
 import { SecurityConfig } from '@modules/securityConfig/domain/entities';
 import { BaseEntity } from '@shared/app/entities';
+import { GetDomainTypeOfEmail } from '@shared/utils';
 import { Exclude, Expose } from 'class-transformer';
 import { GenderEnum } from '../enums';
+
+const emailAdminDomain = configuration().emailsDomain.admin.split(',');
 
 @Exclude()
 export class User extends BaseEntity
@@ -46,6 +50,11 @@ export class User extends BaseEntity
     public get UserName()
     {
         return `${this.userName}#${this.userNameId}`;
+    }
+
+    public get Target()
+    {
+        return GetDomainTypeOfEmail(this.email, emailAdminDomain);
     }
 
     public cleanRoles(): void

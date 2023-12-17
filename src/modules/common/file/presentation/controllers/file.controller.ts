@@ -1,4 +1,4 @@
-import { ManagePermissions, Protected, RequirePermissions } from '@modules/auth/presentation/decorators';
+import { Protected } from '@modules/auth/presentation/decorators';
 import { MimeTypeEnum } from '@modules/common/file/domain/enums';
 import {
     DeleteFileUseCase,
@@ -12,6 +12,7 @@ import { FilePermissionsEnum } from '@modules/common/file/file.permissions';
 import { UserFilter, UserSort } from '@modules/user/presentation/criterias';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Logger, Patch, Post } from '@nestjs/common';
 import { ALL_MANAGE_PERMISSION } from '@shared/app/constants';
+import { ManagePermissions, RequirePermissions } from '@shared/app/decorators';
 import { Serializer } from '@shared/classValidator/utils';
 import { CriteriaBuilder, IUris } from '@shared/criteria';
 import { Criteria, Filter, Pagination, Sort, Uris } from '@shared/criteria/decorators';

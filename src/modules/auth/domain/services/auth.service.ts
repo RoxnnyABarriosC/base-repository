@@ -1,8 +1,8 @@
-import { PermissionActions } from '@modules/auth/presentation/decorators';
 import { User } from '@modules/user/domain/entities';
 import { DisabledUserException, UserIsNotSuperAdminException } from '@modules/user/domain/exceptions';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
+import { PermissionActions } from '@shared/app/decorators';
 import { OAuthAccountPropertiesDictionary } from '../dictionaries';
 import { OAuthProviderEnum } from '../enums';
 import { BadCredentialsException } from '../exceptions';

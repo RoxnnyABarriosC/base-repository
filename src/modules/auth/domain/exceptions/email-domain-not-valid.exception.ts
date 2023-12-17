@@ -3,8 +3,8 @@ import { HttpException } from '@shared/app/exceptions';
 
 export class EmailDomainNotValidException extends HttpException
 {
-    constructor(allowed: string[])
+    constructor(options: object)
     {
-        super(HttpStatus.UNPROCESSABLE_ENTITY, 'exceptions.auth.emailDomainNotValid', { allowed });
+        super(HttpStatus.FORBIDDEN, 'exceptions.auth.emailDomainNotValid', { ...options });
     }
 }

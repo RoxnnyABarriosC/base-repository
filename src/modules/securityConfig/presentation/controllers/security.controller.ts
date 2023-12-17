@@ -1,4 +1,4 @@
-import { AuthUser, Protected, Public } from '@modules/auth/presentation/decorators';
+import { AuthUser, Protected } from '@modules/auth/presentation/decorators';
 import { SCOPE } from '@modules/securityConfig/domain/constants';
 import { OTPTargetConfigEnum } from '@modules/securityConfig/domain/enums';
 import {
@@ -15,14 +15,14 @@ import {
     Logger,
     Param, ParseEnumPipe, Patch
 } from '@nestjs/common';
-import { SkipCache } from '@shared/app/decorators';
+import { Public, SkipCache } from '@shared/app/decorators';
 import { SetScopeSerializer, SetSerializerGroups } from '@shared/classValidator/decorators';
 import { SerializerGroupsEnum } from '@shared/classValidator/enums';
 import { Serializer } from '@shared/classValidator/utils';
 import { Bool } from '@shared/decorators';
 import { SetProvidersDto } from '../dtos';
 import { SecurityConfigSerializerGroupsEnum } from '../enums';
-import { OTPConfigSerializer, SecurityConfigSerializer } from '../serializers';
+import { OtpUserConfigSerializer, SecurityConfigSerializer } from '../serializers';
 
 @Controller({
     path: 'security',
@@ -42,7 +42,7 @@ export class SecurityController
     )
     {}
 
-    @Get()
+    @Get('config')
     @HttpCode(HttpStatus.OK)
     @SetSerializerGroups(
         SerializerGroupsEnum.ONLY_ID,
@@ -54,6 +54,8 @@ export class SecurityController
     )
     {
         this.logger.log('Processing get security config request...');
+
+        console.log(await authUser.securityConfig);
 
         return (await Serializer(await authUser.securityConfig, SecurityConfigSerializer)) as typeof SecurityConfigSerializer;
     }
@@ -120,6 +122,6 @@ export class SecurityController
 
         const data  = await this.getFormConfigUseCase.handle({ emailOrPhone });
 
-        return (await Serializer(data, OTPConfigSerializer)) as typeof OTPConfigSerializer;
+        return (await Serializer(data, OtpUserConfigSerializer)) as typeof OtpUserConfigSerializer;
     }
 }

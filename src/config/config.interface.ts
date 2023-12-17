@@ -163,8 +163,7 @@ export interface IPropertiesConfig {
 }
 
 export interface IEmailsDomainConfig {
-    admin: string
-    app: string
+    admin: string;
 }
 
 export interface ISendgridTemplates {

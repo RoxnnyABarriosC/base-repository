@@ -1,4 +1,4 @@
-import { CheckEmailDomain, CheckPolicies, CheckSuperAdmin, ForceCheckPolicy, ManagePermissions, Protected, RequirePermissions } from '@modules/auth/presentation/decorators';
+import {  Protected } from '@modules/auth/presentation/decorators';
 import { SCOPE } from '@modules/role/domain/constants';
 import { NotAllowedRemoveASystemRolPolicy, SystemRolCanNotBeModifiedPolicy } from '@modules/role/domain/policies';
 import {
@@ -14,7 +14,6 @@ import {
     UpdateScopeConfigRoleUseCase
 } from '@modules/role/domain/useCases';
 import { RolePermissionsEnum } from '@modules/role/role.permissions';
-import { EmailDomainTypeEnum } from '@modules/user/domain/enums';
 import { CacheTTL } from '@nestjs/cache-manager';
 import {
     Body,
@@ -27,12 +26,14 @@ import {
     Post, Put
 } from '@nestjs/common';
 import { ALL_MANAGE_PERMISSION } from '@shared/app/constants';
+import { CheckEmailDomain, CheckPolicies, CheckSuperAdmin, ForceCheckPolicy, ManagePermissions, RequirePermissions } from '@shared/app/decorators';
 import { SetScopeSerializer, SetSerializerGroups } from '@shared/classValidator/decorators';
 import { Serializer } from '@shared/classValidator/utils';
 import { CriteriaBuilder, IUris } from '@shared/criteria';
 import { Criteria, Filter, Pagination, Sort, Uris } from '@shared/criteria/decorators';
 import { PaginationFilter } from '@shared/criteria/filters';
 import { Bool, DeletePermanently, PartialRemoved, UUID } from '@shared/decorators';
+import { EmailDomainTypeEnum } from '@shared/enums';
 import { RoleFilter, RoleSort } from '../criterias';
 import {
     AllowedViewsDto,

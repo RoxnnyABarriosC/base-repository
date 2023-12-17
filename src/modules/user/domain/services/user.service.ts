@@ -3,9 +3,7 @@ import { UniqueService } from '@modules/common/index/infrastructure/services';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { getEmailDomain } from '@shared/utils';
 import { User } from '../entities';
-import { EmailDomainTypeEnum } from '../enums';
 
 @Injectable()
 export class UserService
@@ -43,24 +41,5 @@ export class UserService
             condition: [{ email: emailOrPhone }, { phone: emailOrPhone }],
             select: ['phone', 'email']
         });
-    }
-
-
-    getDomainTypeOfEmail(email: string): EmailDomainTypeEnum
-    {
-        const emailsAppDomain = this.configService.getOrThrow<string>('emailsDomain.app').split(',');
-        const emailsAdminDomain = this.configService.getOrThrow<string>('emailsDomain.admin').split(',');
-
-        const domain = getEmailDomain(email);
-
-        if (emailsAppDomain.includes(domain))
-        {
-            return EmailDomainTypeEnum.APP;
-        }
-
-        if (emailsAdminDomain.includes(domain))
-        {
-            return EmailDomainTypeEnum.ADMIN;
-        }
     }
 }

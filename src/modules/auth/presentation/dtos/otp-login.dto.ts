@@ -1,6 +1,6 @@
 import configuration from '@config/configuration';
 import { AuthOTPDto } from '@modules/securityConfig/presentation/dtos';
-import { IsEmailFromDomain, ValidateIfPropertyExists } from '@shared/classValidator/decorators';
+import { IsEmailFromDomain, IsNotEmailFromDomain, ValidateIfPropertyExists } from '@shared/classValidator/decorators';
 import { ContextGroupsEnum } from '@shared/classValidator/enums';
 import { emailOrPhoneRegex } from '@shared/regex';
 import { Transform } from 'class-transformer';
@@ -17,7 +17,7 @@ export class OTPLoginDto extends AuthOTPDto
     @IsEmailFromDomain(emailDomains.admin.split(','), {
         groups: [ContextGroupsEnum.ADMIN]
     })
-    @IsEmailFromDomain(emailDomains.app.split(','), {
+    @IsNotEmailFromDomain(emailDomains.admin.split(','), {
         groups: [ContextGroupsEnum.APP]
     })
     @Matches(

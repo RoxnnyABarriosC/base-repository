@@ -1,6 +1,6 @@
 import { RequestAuth } from '@modules/auth/domain/strategies';
-import { Policy } from '@modules/auth/presentation/guards';
 import { ModuleRef } from '@nestjs/core';
+import { Policy } from '@shared/app/abstractClass';
 import { RolePolicyService } from '../services';
 
 export class NotAllowedRemoveASystemRolPolicy extends Policy

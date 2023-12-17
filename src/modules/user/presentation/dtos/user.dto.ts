@@ -1,6 +1,6 @@
 import configuration from '@config/configuration';
 import { GenderEnum } from '@modules/user/domain/enums';
-import { EmailDomainLength, IsAgeBetween, IsEmailFromDomain, ValidateIfPropertyExists } from '@shared/classValidator/decorators';
+import { EmailDomainLength, IsAgeBetween, IsEmailFromDomain, IsNotEmailFromDomain, ValidateIfPropertyExists } from '@shared/classValidator/decorators';
 import { ContextGroupsEnum } from '@shared/classValidator/enums';
 import { Transform } from 'class-transformer';
 import { IsDateString, IsEmail, IsEnum, IsMobilePhone, IsOptional, IsString, Length } from 'class-validator';
@@ -34,7 +34,7 @@ export class UserDto extends PasswordDto
     @IsEmailFromDomain(emailDomains.admin.split(','), {
         groups: [ContextGroupsEnum.ADMIN]
     })
-    @IsEmailFromDomain(emailDomains.app.split(','), {
+    @IsNotEmailFromDomain(emailDomains.admin.split(','), {
         groups: [ContextGroupsEnum.APP]
     })
     @EmailDomainLength(emailDomainLength)

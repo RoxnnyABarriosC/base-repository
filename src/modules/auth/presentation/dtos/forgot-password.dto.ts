@@ -1,5 +1,5 @@
 import configuration from '@config/configuration';
-import { IsEmailFromDomain } from '@shared/classValidator/decorators';
+import { IsEmailFromDomain, IsNotEmailFromDomain } from '@shared/classValidator/decorators';
 import { ContextGroupsEnum } from '@shared/classValidator/enums';
 import { emailOrPhoneRegex } from '@shared/regex';
 import { Transform } from 'class-transformer';
@@ -12,7 +12,7 @@ export class ForgotPasswordDto
     @IsEmailFromDomain(emailDomains.admin.split(','), {
         groups: [ContextGroupsEnum.ADMIN]
     })
-    @IsEmailFromDomain(emailDomains.app.split(','), {
+    @IsNotEmailFromDomain(emailDomains.admin.split(','), {
         groups: [ContextGroupsEnum.APP]
     })
     @Matches(

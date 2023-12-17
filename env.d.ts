@@ -91,6 +91,5 @@ declare namespace NodeJS {
         AP_OAUTH_CALLBACK: string;
 
         DOMAINS_ALLOWED_FOR_ADMINISTRATOR_EMAILS: string;
-        DOMAINS_ALLOWED_FOR_APP_EMAILS: string;
     }
 }

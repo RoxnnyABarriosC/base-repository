@@ -161,8 +161,7 @@ export default (): IConfig => ({
         emailDomainLength: 3
     },
     emailsDomain: {
-        admin: process.env.DOMAINS_ALLOWED_FOR_ADMINISTRATOR_EMAILS,
-        app: process.env.DOMAINS_ALLOWED_FOR_APP_EMAILS
+        admin: process.env.DOMAINS_ALLOWED_FOR_ADMINISTRATOR_EMAILS
     },
     sendgridTemplates: {
         otp: process.env.SENDGRID_TEMPLATE_OTP_ID,

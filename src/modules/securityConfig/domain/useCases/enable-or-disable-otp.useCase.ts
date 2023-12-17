@@ -1,3 +1,4 @@
+import { PhoneNotDefinedForOTPSendingException } from '@modules/securityConfig/domain/exceptions';
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
 import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
@@ -28,6 +29,11 @@ export class EnableOrDisableOTPUseCase
                 initThrow: true
             }
         });
+
+        if (target === OTPTargetConfigEnum.PHONE && !(authUser?.phone))
+        {
+            throw new PhoneNotDefinedForOTPSendingException();
+        }
 
         securityConfig.otp[target].enable = enable;
 

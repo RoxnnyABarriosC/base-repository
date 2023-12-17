@@ -1,9 +1,9 @@
-import { CheckEmailDomain, CheckSuperAdmin, Protected } from '@modules/auth/presentation/decorators';
-import { EmailDomainTypeEnum } from '@modules/user/domain/enums';
+import { Protected } from '@modules/auth/presentation/decorators';
 import { Controller, Get, Logger } from '@nestjs/common';
-import { NotInterceptResponse, SkipCache } from '@shared/app/decorators';
+import { CheckEmailDomain, CheckSuperAdmin, NotInterceptResponse, SkipCache } from '@shared/app/decorators';
 import { Criteria, Pagination } from '@shared/criteria/decorators';
 import { PaginationFilter } from '@shared/criteria/filters';
+import { EmailDomainTypeEnum } from '@shared/enums';
 import { toArrayOfPlainStringsOrJson } from 'log-parsed-json';
 import * as fs from 'fs';
 import { SkipLogging } from '../interceptors';

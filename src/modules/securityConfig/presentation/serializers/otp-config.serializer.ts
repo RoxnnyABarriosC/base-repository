@@ -1,46 +1,16 @@
-import { SecurityConfig } from '@modules/securityConfig/domain/entities';
-import { OTPPropertiesEnum } from '@modules/securityConfig/domain/enums';
-import { Serializer } from '@shared/classValidator/abstractClass';
-import { EncodeText } from '@shared/utils';
+import { BaseSerializer } from '@shared/classValidator/abstractClass';
 import { Expose } from 'class-transformer';
 
-export class OTPConfigSerializer extends Serializer
+export class OTPConfigSerializer extends BaseSerializer
 {
     @Expose()
-    public requiredProperties: string[];
+    public readonly enable: boolean;
 
     @Expose()
-    public email: string;
+    public readonly providers: object;
 
-    @Expose()
-    public phone: string;
-
-    @Expose()
-    public userId: string;
-
-    override async build(data: SecurityConfig): Promise<void>
+    override async build(data: unknown): Promise<void>
     {
-        const requiredProperties = [];
-
-        if (data.requiredPassword)
-        {
-            requiredProperties.push('password');
-        }
-
-        if (data.otp.email.enable)
-        {
-            requiredProperties.push(OTPPropertiesEnum.EMAIL_OTP_CODE);
-        }
-
-        if (data.otp.phone.enable)
-        {
-            requiredProperties.push(OTPPropertiesEnum.PHONE_OTP_CODE);
-        }
-
-        this.requiredProperties = requiredProperties;
-
-        this.userId = data.__user__._id;
-        this.email = EncodeText(data.__user__.email, 'email');
-        this.phone = EncodeText(data.__user__.phone, 'phone');
+        super.build(data);
     }
 }

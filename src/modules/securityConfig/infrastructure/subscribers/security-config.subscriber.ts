@@ -16,7 +16,7 @@ export class SecurityConfigSubscriber implements EntitySubscriberInterface<Secur
     {
         const entity = event.entity as SecurityConfig;
 
-        if (entity instanceof SecurityConfig && !entity.otp?.email?.enable &&  !entity?.otp?.phone?.enable)
+        if (entity instanceof SecurityConfig && !entity.otp?.email?.enable && !entity?.otp?.phone?.enable)
         {
             entity.requiredPassword = true;
         }

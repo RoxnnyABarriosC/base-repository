@@ -1,10 +1,10 @@
 import configuration from '@config/configuration';
 import { SCOPE } from '@modules/securityConfig/domain/constants';
 import { SecurityConfig } from '@modules/securityConfig/domain/entities';
+import { OTPConfigSerializer } from '@modules/securityConfig/presentation/serializers/otp-config.serializer';
 import { SerializerScope } from '@shared/classValidator/abstractClass';
 import { Serializer } from '@shared/classValidator/utils';
 import { Expose } from 'class-transformer';
-import { OTPConfigSerializer } from './otp-config.serializer';
 
 const { otp, tasks } = configuration();
 

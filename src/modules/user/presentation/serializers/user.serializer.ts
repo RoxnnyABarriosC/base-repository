@@ -1,3 +1,4 @@
+import configuration from '@config/configuration';
 import { UrlFileInterface, UrlFileService } from '@modules/common/file/domain/services';
 import { RoleSerializer } from '@modules/role/presentation/serializers';
 import { SCOPE } from '@modules/user/domain/constants';
@@ -6,9 +7,10 @@ import { GenderEnum } from '@modules/user/domain/enums';
 import { SerializerScope } from '@shared/classValidator/abstractClass';
 import { ParseUnixDate } from '@shared/classValidator/transforms';
 import { Serializer as SerializerMap } from '@shared/classValidator/utils';
+import { EmailDomainTypeEnum } from '@shared/enums';
+import { GetDomainTypeOfEmail } from '@shared/utils';
 import { Expose } from 'class-transformer';
 import { UserSerializerGroupsEnum } from '../enums';
-
 
 export class UserSerializer extends SerializerScope(SCOPE)
 {
@@ -27,6 +29,7 @@ export class UserSerializer extends SerializerScope(SCOPE)
     @Expose() public readonly verify: boolean;
     @Expose() public readonly isSuperAdmin: boolean;
     @Expose() public readonly onBoarding: boolean;
+    @Expose() public target: EmailDomainTypeEnum;
 
     @Expose({
         groups: [
@@ -68,5 +71,6 @@ export class UserSerializer extends SerializerScope(SCOPE)
 
         this.mainPicture = await UrlFileService.handle(data.mainPicture) as UrlFileInterface;
         this.banner = await UrlFileService.handle(data.banner) as UrlFileInterface;
+        this.target = data.Target;
     }
 }

@@ -9,7 +9,7 @@ import { Cache } from 'cache-manager';
 import { OTPChannelToTargetDictionary } from '../dictionaries';
 import { OTPProvidersEnum, OTPSendChannelEnum, OTPTargetConfigEnum } from '../enums';
 import { SendOTPEmailEvent, SendOTPPhoneEvent } from '../events';
-import { OTPDisabledException, OTPLimitExceededException, PhoneNotDefinedForOtpSendingException } from '../exceptions';
+import { OTPDisabledException, OTPLimitExceededException, PhoneNotDefinedForOTPSendingException } from '../exceptions';
 import { TwilioEventEnum } from '../listeners';
 import { OTPService } from '../services';
 
@@ -49,7 +49,7 @@ export class SendOTPUseCase
 
         if (target === OTPTargetConfigEnum.PHONE && !(user?.phone))
         {
-            throw new PhoneNotDefinedForOtpSendingException();
+            throw new PhoneNotDefinedForOTPSendingException();
         }
 
         if (countAttempts)
