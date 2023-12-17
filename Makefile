@@ -78,4 +78,11 @@ seed:
 
 clean:
 	docker compose down -v --remove-orphans
+	docker rmi $$(docker images -f "dangling=true" -q)
+	docker ps -a | grep _run_ | awk '{print $$1}' | xargs -I {} docker rm {}
+
+clean-soft:
+	docker compose down --remove-orphans
+	sh volume.sh $${PROJECT_NAME:-base_repository}
+	docker rmi $$(docker images -f "dangling=true" -q)
 	docker ps -a | grep _run_ | awk '{print $$1}' | xargs -I {} docker rm {}

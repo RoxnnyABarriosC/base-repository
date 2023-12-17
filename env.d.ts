@@ -6,7 +6,7 @@ declare namespace NodeJS {
         PREFIX: string;
         PORT: number;
         VERSION: string;
-        WHITE_LIST: string;
+        WHITE_LIST: string[];
 
         LOGGER_COLORIZE: boolean;
         LOGGER_SINGLE_LINE: boolean;
@@ -90,6 +90,6 @@ declare namespace NodeJS {
         AP_OAUTH_SECRET: string;
         AP_OAUTH_CALLBACK: string;
 
-        DOMAINS_ALLOWED_FOR_ADMINISTRATOR_EMAILS: string;
+        DOMAINS_ALLOWED_FOR_ADMINISTRATOR_EMAILS: string[];
     }
 }

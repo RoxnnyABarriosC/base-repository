@@ -15,7 +15,7 @@ export interface IServerConfig
     prefix: string;
     version: string;
     port: number;
-    whiteList: string;
+    whiteList: string[];
 }
 
 export interface ILoggerConfig
@@ -163,7 +163,7 @@ export interface IPropertiesConfig {
 }
 
 export interface IEmailsDomainConfig {
-    admin: string;
+    admin: string[];
 }
 
 export interface ISendgridTemplates {

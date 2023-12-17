@@ -2,7 +2,7 @@ import { User } from '@modules/user/domain/entities';
 import { GetUserByUserNameUseCase, GetUserUseCase } from '@modules/user/domain/useCases';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundCustomException } from '@shared/exceptions';
+import { NotFoundCustomException } from '@shared/app/exceptions';
 import { I18nContext } from 'nestjs-i18n';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 

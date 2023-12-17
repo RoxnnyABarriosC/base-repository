@@ -14,10 +14,10 @@ const emailDomains = configuration().emailsDomain;
 
 export class OTPLoginDto extends AuthOTPDto
 {
-    @IsEmailFromDomain(emailDomains.admin.split(','), {
+    @IsEmailFromDomain(emailDomains.admin, {
         groups: [ContextGroupsEnum.ADMIN]
     })
-    @IsNotEmailFromDomain(emailDomains.admin.split(','), {
+    @IsNotEmailFromDomain(emailDomains.admin, {
         groups: [ContextGroupsEnum.APP]
     })
     @Matches(

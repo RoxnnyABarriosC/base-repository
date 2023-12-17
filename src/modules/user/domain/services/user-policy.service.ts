@@ -25,7 +25,7 @@ export class UserPolicyService
         private readonly configService: ConfigService
     )
     {
-        this.emailAdminDomains = configService.getOrThrow<string>('emailsDomain.admin').split(',');
+        this.emailAdminDomains = configService.getOrThrow<string[]>('emailsDomain.admin');
     }
 
 

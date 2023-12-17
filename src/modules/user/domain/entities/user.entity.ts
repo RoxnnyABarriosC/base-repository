@@ -8,7 +8,7 @@ import { GetDomainTypeOfEmail } from '@shared/utils';
 import { Exclude, Expose } from 'class-transformer';
 import { GenderEnum } from '../enums';
 
-const emailAdminDomain = configuration().emailsDomain.admin.split(',');
+const emailAdminDomain = configuration().emailsDomain.admin;
 
 @Exclude()
 export class User extends BaseEntity

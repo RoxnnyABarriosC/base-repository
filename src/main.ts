@@ -76,7 +76,7 @@ void (async(): Promise<void> =>
             .get<ConfigService>(ConfigService)
             .get<IServerConfig>('server');
 
-        const _whiteList = whiteList.split(',').filter(u => u.length);
+        const _whiteList = whiteList.filter(u => u.length);
         _whiteList.push(url.web);
 
         // TODO: activar esto a futuro para aumentar la seguridad

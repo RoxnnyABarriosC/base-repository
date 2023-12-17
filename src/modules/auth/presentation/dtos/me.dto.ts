@@ -30,10 +30,10 @@ export class MeDto
     @ValidateIfPropertyExists()
     public readonly lastName: string;
 
-    @IsEmailFromDomain(emailDomains.admin.split(','), {
+    @IsEmailFromDomain(emailDomains.admin, {
         groups: [ContextGroupsEnum.ADMIN]
     })
-    @IsNotEmailFromDomain(emailDomains.admin.split(','), {
+    @IsNotEmailFromDomain(emailDomains.admin, {
         groups: [ContextGroupsEnum.APP]
     })
     @EmailDomainLength(emailDomainLength)

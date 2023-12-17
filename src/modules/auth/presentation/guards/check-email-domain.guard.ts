@@ -39,7 +39,7 @@ export class CheckEmailDomainGuard implements CanActivate
 
         if (checkEmailDomain)
         {
-            const emailAdminDomains =  this.configService.getOrThrow<string>('emailsDomain.admin').split(',');
+            const emailAdminDomains =  this.configService.getOrThrow<string[]>('emailsDomain.admin');
 
             const emailDomainType = GetDomainTypeOfEmail(data.email, emailAdminDomains);
 

@@ -1,6 +1,5 @@
 import configuration from '@config/configuration';
-import { BaseSerializer } from '@shared/abstractClass';
-import { Serializer, SerializerMap } from '@shared/utils';
+import { Serializer } from '@shared/classValidator/utils';
 import {
     UserSerializerMock,
     UserSerializerMockInterface

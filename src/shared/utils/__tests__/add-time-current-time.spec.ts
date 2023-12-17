@@ -1,6 +1,8 @@
 import { addTimeToCurrentDate } from '@shared/utils';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import { describe, expect, it } from 'vitest';
+dayjs.extend(utc);
 
 describe('AddTimeToCurrentDate', () =>
 {

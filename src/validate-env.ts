@@ -1,6 +1,14 @@
-import { bool, cleanEnv, host, num, port, str, url } from 'envalid';
+import { StringToArray } from '@shared/utils';
+import { bool, cleanEnv, host, makeValidator, num, port, str, url } from 'envalid';
 
-export function validateEnv(config: Record<string, any>): Record<string, any>
+
+const srtToArray = makeValidator((input: string) =>
+{
+    return StringToArray(input, ',');
+});
+
+
+export const validateEnv =  (config: Record<string, any>): Record<string, any> =>
 {
     const clean = cleanEnv(config, {
         NODE_ENV: str({
@@ -12,7 +20,10 @@ export function validateEnv(config: Record<string, any>): Record<string, any>
         URL_WEB: url({ default: 'http://app.localhost' }),
         PREFIX: str({ default: '/api' }),
         VERSION: str({ default: '/v1' }),
-        WHITE_LIST: str({ default: 'api.localhost,http://mail.localhost/' }),
+        WHITE_LIST: srtToArray({
+            default: ['api.localhost', 'http://mail.localhost/'],
+            example: 'http://localhost:3000,http://localhost:3001'
+        }),
 
         LOGGER_COLORIZE: bool({ default: true }),
         LOGGER_SINGLE_LINE: bool({ default: false }),
@@ -103,7 +114,11 @@ export function validateEnv(config: Record<string, any>): Record<string, any>
         AP_OAUTH_SECRET: str(),
         AP_OAUTH_CALLBACK: url(),
 
-        DOMAINS_ALLOWED_FOR_ADMINISTRATOR_EMAILS: str()
+        DOMAINS_ALLOWED_FOR_ADMINISTRATOR_EMAILS: srtToArray({
+            example: 'example.com,example2.com',
+            default: ['d2d.com', 'dare2dream.com', 'baserepository.com']
+        })
+
     });
 
     config = { ...config, ...clean };
@@ -111,4 +126,4 @@ export function validateEnv(config: Record<string, any>): Record<string, any>
     process.env = <any>{ ...process.env, ...config };
 
     return config;
-}
+};

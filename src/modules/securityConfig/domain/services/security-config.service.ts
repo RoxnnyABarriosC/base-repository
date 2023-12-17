@@ -1,3 +1,4 @@
+import { BadCredentialsException } from '@modules/auth/domain/exceptions';
 import { EncryptionFactory } from '@modules/auth/domain/factories';
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { User } from '@modules/user/domain/entities';
@@ -20,8 +21,6 @@ export class SecurityConfigService
     {
         const securityConfig = await user.securityConfig;
 
-        console.log('===========================> VALIDANDO OLD PASSWORD');
-
         if (securityConfig.oldPassword)
         {
             if (await this.encryption.compare(password, securityConfig.oldPassword))
@@ -37,6 +36,13 @@ export class SecurityConfigService
 
     async getConfigOfEmailOrPhone(emailOrPhone: string): Promise<SecurityConfig>
     {
-        return await this.repository.getConfigOfEmailOrPhone(emailOrPhone);
+        try
+        {
+            return await this.repository.getConfigOfEmailOrPhone(emailOrPhone);
+        }
+        catch (e)
+        {
+            throw new BadCredentialsException();
+        }
     }
 }
