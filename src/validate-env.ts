@@ -77,8 +77,6 @@ export const validateEnv =  (config: Record<string, any>): Record<string, any> =
         SMTP_SENDER_NAME: str(),
         SMTP_SENDER_EMAIL_DEFAULT: str(),
 
-        MINIO_EXPOSE_HOST: str({ default: undefined }),
-        MINIO_EXPOSE_HTTPS: bool({ default: undefined }),
         MINIO_HOST: str(),
         MINIO_ACCESS_KEY: str(),
         MINIO_SECRET_KEY: str(),

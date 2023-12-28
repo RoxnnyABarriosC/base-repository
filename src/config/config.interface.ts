@@ -101,8 +101,6 @@ type ISMTPConfig = {
 export interface IS3Config
 {
     host: string;
-    exposeHost: string;
-    exposeHttps: boolean;
     accessKey: string;
     secretKey: string;
     useSSL: boolean;

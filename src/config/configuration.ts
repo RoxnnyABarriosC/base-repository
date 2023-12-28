@@ -81,8 +81,6 @@ export default (): IConfig => ({
     },
     s3: {
         host: process.env.MINIO_HOST,
-        exposeHost: process.env.MINIO_EXPOSE_HOST,
-        exposeHttps: process.env.MINIO_EXPOSE_HTTPS,
         accessKey: process.env.MINIO_ACCESS_KEY,
         secretKey: process.env.MINIO_SECRET_KEY,
         useSSL: process.env.MINIO_USE_SSL,

@@ -1,8 +1,14 @@
-export * from './role.service';
-export * from './role-policy.service';
-import * as _services from './index';
+import { RolePolicyService } from './role-policy.service';
+import { RoleService } from './role.service';
 
-export const sevices = [
-    _services.RoleService,
-    _services.RolePolicyService
+const services = [
+    RoleService,
+    RolePolicyService
 ];
+
+export {
+    RoleService,
+    RolePolicyService
+};
+
+export default services;

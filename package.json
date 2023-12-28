@@ -8,7 +8,7 @@
   "scripts": {
     "build": "nest build",
     "start": "node dist/main",
-    "start:doc": "npx @compodoc/compodoc -p tsconfig.json -s --unitTestCoverage ./coverage/coverage-summary.json --language es-ES",
+    "start:doc": "npx @compodoc/compodoc -p tsconfig.build.json -s ",
     "start:dev": "nest start -w",
     "start:dev:check": "nest start --type-check -w",
     "start:dev:hmr": "nest build --webpack --webpackPath webpack-hmr.config.js -w",

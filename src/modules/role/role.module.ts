@@ -1,26 +1,26 @@
 import { CommonModule } from '@modules/common';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RoleService, sevices } from './domain/services';
-import { useCases } from './domain/useCases';
-import { RoleRepository, repositories } from './infrastructure/repositories';
+import services from './domain/services';
+import useCases from './domain/useCases';
+import repositories from './infrastructure/repositories';
 import { RoleSchema } from './infrastructure/schemas';
-import { controllers } from './presentation/controllers';
+import controllers from './presentation/controllers';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([RoleSchema]),
         CommonModule
     ],
-    controllers,
+    controllers: [...controllers],
     providers: [
         ...useCases,
-        ...sevices,
+        ...services,
         ...repositories
     ],
     exports: [
-        RoleService,
-        RoleRepository
+        ...services,
+        ...repositories
     ]
 })
 export class RoleModule

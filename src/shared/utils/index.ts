@@ -3,6 +3,7 @@ export * from './settle';
 export * from './rm-prop';
 export * from './handlebars';
 export * from './encode-text';
+export * from './get-imports';
 export * from './otp-generator';
 export * from './clone-deep-map';
 export * from './slug-generator';

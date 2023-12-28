@@ -1,7 +1,11 @@
-export * from './role.repository';
-export * from './role-repository.interface';
-import * as _repositories from './index';
+import { RoleRepository } from './role.repository';
 
-export const repositories = [
-    _repositories.RoleRepository
+const repositories = [
+    RoleRepository
 ];
+
+export {
+    RoleRepository
+};
+
+export default repositories;

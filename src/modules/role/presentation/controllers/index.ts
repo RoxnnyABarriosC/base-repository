@@ -1,6 +1,11 @@
-export * from './role.controller';
-import * as _controllers from './index';
+import { RoleController } from './role.controller';
 
-export const controllers = [
-    _controllers.RoleController
+const controllers = [
+    RoleController
 ];
+
+export {
+    RoleController
+};
+
+export default controllers;

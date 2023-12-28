@@ -25,18 +25,7 @@ export class UrlFileService
                     'Content-Length': file.size
                 };
 
-                let url = await singUrlService.presignedGetObject(file, metadata);
-                const config = configuration();
-
-                if (config.s3.exposeHost)
-                {
-                    url = url.replace(`${config.s3.host}${ config.s3.port && config.s3.port !== 443 ? `:${config.s3.port}` : ''}`, config.s3.exposeHost);
-                }
-
-                if (config.s3.exposeHttps && !config.s3.useSSL)
-                {
-                    url = url.replace('http', 'https');
-                }
+                const url = await singUrlService.presignedGetObject(file, metadata);
 
                 return  onlyUrl ? url : { id: file._id, url };
             }
