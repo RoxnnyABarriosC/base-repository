@@ -1,29 +1,16 @@
-import { Expose } from 'class-transformer';
+import { RenameProperty } from '@shared/decorators';
+import { DEFAULT_PROPERTIES } from '../constants';
 import { SortEnum } from '../enums';
 
 export type DefaultSorts<E> = {
     [Key in keyof E | string ]?: SortEnum;
 }[]
 
-export abstract class Sort
+export abstract class Sort<E = any>
 {
-    @Expose()
-    Fields(): string[]
+    @RenameProperty(DEFAULT_PROPERTIES)
+    DefaultSorts(): DefaultSorts<E>
     {
-        return Object.getOwnPropertyNames(this);
+        return [];
     }
-
-    @Expose()
-    Sort()
-    {
-        return this.Fields().reduce((acc, field) =>
-        {
-            return {
-                ...acc,
-                [field]: this[field]
-            };
-        }, {});
-    }
-
-    abstract get DefaultSorts(): Record<string, any>
 }

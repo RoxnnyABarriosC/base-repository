@@ -41,13 +41,13 @@ export abstract class BaseEntity<T = any>
 
     partialBuild(data: Partial<T>, { allowNull = false, validate = false }: IPartialBuildOptions = {})
     {
-        const valueProperties  = Object.keys(data);
-
-        const propertiesUpdate = valueProperties.reduce((prev, property) =>
+        const propertiesUpdate = Object.keys(data).reduce((prev, property) =>
         {
+            const value = data[property];
+
             return {
                 ...prev,
-                ...(data[property] || allowNull ? { [property]:data[property] } : {})
+                ...((value !== null && value !== undefined) || (allowNull && value === null) ? { [property]:value } : {})
             };
         }, {});
 

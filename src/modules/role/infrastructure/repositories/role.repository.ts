@@ -37,8 +37,7 @@ export class RoleRepository extends BaseRepository<Role>
         void filter.is(
             {
                 attribute: RoleFilters.PARTIAL_REMOVED,
-                isBoolean: true,
-                dbAttribute: 'deletedAt'
+                isBoolean: true
             },
             'andWhere',
             'IS NOT NULL'
@@ -61,6 +60,7 @@ export class RoleRepository extends BaseRepository<Role>
             'andWhere',
             '='
         );
+
 
         void filter.filterInArrayString(RoleFilters.PERMISSIONS, 'andWhere');
         void filter.filterInArrayString(RoleFilters.ALLOWED_VIEWS, 'andWhere');

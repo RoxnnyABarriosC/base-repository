@@ -110,6 +110,9 @@ export class RoleController
     @Criteria()
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(RolePermissionsEnum.LIST)
+    @SetSerializerGroups(
+        RoleSerializerGroupsEnum.ALL
+    )
     async list(
         @Filter() filters: RoleFilter,
         @Sort() sorts: RoleSort,
@@ -170,6 +173,9 @@ export class RoleController
     @Patch(':id/restore')
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(RolePermissionsEnum.RESTORE)
+    @SetSerializerGroups(
+        RoleSerializerGroupsEnum.ALL
+    )
     async restore(
         @UUID() id: string
     )

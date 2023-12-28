@@ -1,5 +1,5 @@
 import { PaginatorSerializer } from '@src/shared/criteria/serializers';
-import { CriteriaBuilder, FilterCriteria, PaginationCriteria, SortCriteria } from '../index';
+import { CriteriaBuilder, MapCriteria, PaginationCriteria } from '../index';
 
 export interface IPaginatorConfig
 {
@@ -11,8 +11,8 @@ export interface IPaginatorConfig
 
 export abstract class BasePaginator
 {
-    protected filter: FilterCriteria;
-    protected sort: SortCriteria;
+    protected filter: MapCriteria;
+    protected sort: MapCriteria;
     protected pagination: PaginationCriteria;
 
     protected readonly limit: number;

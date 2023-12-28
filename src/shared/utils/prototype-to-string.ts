@@ -2,7 +2,7 @@
 export enum StringPrototypes {
     STRING = '[object String]',
     NUMBER = '[object Number]',
-    Boolean = '[object Boolean]',
+    BOOLEAN = '[object Boolean]',
     NULL = '[object Null]',
     UNDEFINED = '[object Undefined]',
     OBJECT = '[object Object]',

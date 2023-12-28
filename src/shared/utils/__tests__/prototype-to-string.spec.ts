@@ -30,7 +30,7 @@ describe('PrototypeToString', () =>
     it('should to be return boolean prototype', async() =>
     {
         const getPrototype = PrototypeToString(false);
-        expect(getPrototype).toBe(StringPrototypes.Boolean);
+        expect(getPrototype).toBe(StringPrototypes.BOOLEAN);
     });
 
     it('should to be return function prototype', async() =>

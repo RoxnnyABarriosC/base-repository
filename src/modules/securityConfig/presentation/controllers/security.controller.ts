@@ -55,8 +55,6 @@ export class SecurityController
     {
         this.logger.log('Processing get security config request...');
 
-        console.log(await authUser.securityConfig);
-
         return (await Serializer(await authUser.securityConfig, SecurityConfigSerializer)) as typeof SecurityConfigSerializer;
     }
 

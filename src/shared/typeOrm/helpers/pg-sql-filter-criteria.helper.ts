@@ -1,5 +1,5 @@
+import { MapCriteria } from '@shared/criteria';
 import { Parse, PrototypeToString, StringPrototypes } from '@shared/utils';
-import { FilterCriteria } from '@src/shared/criteria';
 import pgp from 'pg-promise';
 import { Brackets, SelectQueryBuilder } from 'typeorm';
 
@@ -35,10 +35,10 @@ export declare type MultiFilterOperator = '=' | 'ilike';
 
 export class PgSqlFilterCriteria<F = any, E = any>
 {
-    private readonly _filter: FilterCriteria;
+    private readonly _filter: MapCriteria;
     private readonly queryBuilder: SelectQueryBuilder<E>;
 
-    constructor(filter: FilterCriteria<F>, queryBuilder: SelectQueryBuilder<E>)
+    constructor(filter: MapCriteria<F>, queryBuilder: SelectQueryBuilder<E>)
     {
         this._filter = filter;
         this.queryBuilder = queryBuilder;
@@ -67,7 +67,7 @@ export class PgSqlFilterCriteria<F = any, E = any>
 
         if (this._filter.has(_attribute))
         {
-            let valueAttribute: string | string[] | boolean = this._filter.get(_attribute);
+            let valueAttribute: string | string[] | boolean = this._filter.getOne(_attribute);
             let aliasAttribute = `:${_attribute}`;
 
             if (_isBoolean)
@@ -119,13 +119,21 @@ export class PgSqlFilterCriteria<F = any, E = any>
 
         if (this._filter.has(_attribute))
         {
-            if (!PrototypeToString(this._filter.get(_attribute), StringPrototypes.STRING))
+            console.log('filterInArrayString', _attribute, _dbAttribute, this.filter);
+
+            const value = this._filter.getOne<string | string[]>(_attribute);
+            let valueAttribute: string[] | string = value;
+
+            if (!PrototypeToString(value, StringPrototypes.STRING) && !PrototypeToString(value, StringPrototypes.ARRAY))
             {
-                throw new Error('The value of the property sent as a filter must be strings separated by commas ","');
+                throw new Error('The value of the property sent as a filter must be strings separated by commas "," or array');
+            }
+            else if (PrototypeToString(value, StringPrototypes.STRING))
+            {
+                valueAttribute = this._filter.getOne(_attribute).split(',');
             }
 
-            let valueAttribute: string[] | string = this._filter.get(_attribute).split(',');
-            valueAttribute = `'${  valueAttribute.join('\',\'')  }'`;
+            valueAttribute = `'${  (valueAttribute as string[]).join('\',\'')  }'`;
 
             this.queryBuilder[condition](`EXISTS ( SELECT * FROM unnest(string_to_array("${alias}"."${_dbAttribute}", ',') ) as datarray WHERE datarray = ANY(ARRAY[${valueAttribute}]))`);
         }
@@ -140,7 +148,7 @@ export class PgSqlFilterCriteria<F = any, E = any>
 
         if (this._filter.has(attribute))
         {
-            const value = this._filter.get(attribute);
+            const value = this._filter.getOne(attribute);
 
             if (Array.isArray(value))
             {
@@ -148,7 +156,7 @@ export class PgSqlFilterCriteria<F = any, E = any>
             }
             else
             {
-                this._filter.get<string>(attribute)?.trim().split(',').map((_attr: string) =>
+                this._filter.getOne<string>(attribute)?.trim().split(',').map((_attr: string) =>
                 {
                     if (_attr?.trim().length > 0)
                     {
@@ -251,7 +259,7 @@ export class PgSqlFilterCriteria<F = any, E = any>
 
         if (this._filter.has(attr))
         {
-            let valueAttr: string | string[] = (<string> this._filter.get(attr))?.trim();
+            let valueAttr: string | string[] = (<string> this._filter.getOne(attr))?.trim();
 
             if (valueAttr.length > 0)
             {
@@ -319,7 +327,7 @@ export class PgSqlFilterCriteria<F = any, E = any>
 
         if (this._filter.has(attr))
         {
-            const valueAttr: string | string[] = this._filter.get(attr)?.trim().split(' ').map((_attr: string) => `%${_attr}%`).join(' ');
+            const valueAttr: string | string[] = this._filter.getOne(attr)?.trim().split(' ').map((_attr: string) => `%${_attr}%`).join(' ');
 
             if (valueAttr.length > 0)
             {
@@ -332,7 +340,7 @@ export class PgSqlFilterCriteria<F = any, E = any>
     /**
      * @param fn
      */
-    async customFilter(fn: (fltr: FilterCriteria<F>, qb: SelectQueryBuilder<E>) => Promise<void>): Promise<void>
+    async customFilter(fn: (fltr: MapCriteria<F>, qb: SelectQueryBuilder<E>) => Promise<void>): Promise<void>
     {
         void await fn(this._filter, this.queryBuilder);
     }
@@ -358,7 +366,7 @@ export class PgSqlFilterCriteria<F = any, E = any>
 
         if (this._filter.has(_attribute))
         {
-            let valueAttr: string | string[] | boolean = this._filter.get(_attribute);
+            let valueAttr: string | string[] | boolean = this._filter.getOne(_attribute);
 
             if (_isBoolean)
             {
@@ -458,7 +466,7 @@ export class PgSqlFilterCriteria<F = any, E = any>
         {
             if (fltr.has(filter))
             {
-                const withDeleted = fltr.get<boolean>(filter as any);
+                const withDeleted = fltr.getOne<boolean>(filter as any);
 
                 if (withDeleted)
                 {

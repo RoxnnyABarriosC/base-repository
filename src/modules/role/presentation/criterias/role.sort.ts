@@ -2,7 +2,6 @@ import { Role } from '@modules/role/domain/entities';
 import { DefaultSorts, Sort } from '@shared/criteria/abstractClass';
 import { IsSort } from '@shared/criteria/decorators';
 import { SortEnum } from '@shared/criteria/enums';
-import { Expose } from 'class-transformer';
 
 export class RoleSort extends Sort
 {
@@ -27,8 +26,7 @@ export class RoleSort extends Sort
     @IsSort()
     public readonly deletedAt: SortEnum;
 
-    @Expose()
-    get DefaultSorts(): DefaultSorts<Role>
+    override DefaultSorts(): DefaultSorts<Role>
     {
         return [
             { createdAt: SortEnum.DESC }

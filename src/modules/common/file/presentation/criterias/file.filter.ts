@@ -1,12 +1,13 @@
-import { User } from '@modules/user/domain/entities';
+import { RoleFilters } from '@modules/role/presentation/criterias';
+import { ValidateIfPropertyExists } from '@shared/classValidator/decorators';
 import { Parse } from '@shared/classValidator/transforms';
-import { DefaultFilters, Filter } from '@shared/criteria/abstractClass';
-import { Expose } from 'class-transformer';
+import { Filter } from '@shared/criteria/abstractClass';
+import { RenameProperty } from '@shared/decorators';
 import { IsBoolean, IsOptional } from 'class-validator';
 
 export enum FileFilters {
     SEARCH = 'search',
-    PARTIAL_REMOVED = 'partialRemoved',
+    PARTIAL_REMOVED = 'deletedAt',
     WITH_PARTIAL_REMOVED = 'withPartialRemoved',
     IS_PRIVATE = 'enable',
 }
@@ -17,24 +18,19 @@ export class FileFilter extends Filter
     @IsOptional()
     public readonly search: string;
 
-    @IsOptional()
-    @Parse()
     @IsBoolean()
-    public readonly withPartialRemoved: boolean;
-
-    @IsOptional()
     @Parse()
-    @IsBoolean()
-    public readonly partialRemoved: boolean;
-
-    @IsOptional()
-    @Parse()
-    @IsBoolean()
+    @ValidateIfPropertyExists()
     public readonly isPrivate: boolean;
 
-    @Expose()
-    get DefaultFilters(): DefaultFilters<User>
-    {
-        return [];
-    }
+    @IsBoolean()
+    @Parse()
+    @ValidateIfPropertyExists()
+    public readonly withPartialRemoved: boolean;
+
+    @IsBoolean()
+    @RenameProperty(RoleFilters.PARTIAL_REMOVED)
+    @Parse()
+    @ValidateIfPropertyExists()
+    public readonly partialRemoved: boolean;
 }

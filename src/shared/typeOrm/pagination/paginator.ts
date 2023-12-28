@@ -1,3 +1,4 @@
+import { SortEnum } from '@shared/criteria/enums';
 import { CriteriaBuilder } from '@src/shared/criteria';
 import { BasePaginator, IPaginatorConfig } from '@src/shared/criteria/pagination';
 import { SelectQueryBuilder } from 'typeorm';
@@ -50,7 +51,7 @@ export class Paginator<E = any> extends BasePaginator
         sorts.forEach((value: string, key: string) =>
         {
             let order = value.toUpperCase();
-            order = (order === 'DESC') ? 'DESC' : 'ASC';
+            order = (order === SortEnum.DESC) ? SortEnum.DESC : SortEnum.ASC;
 
             const [_alias, _key] = key.split('.');
 

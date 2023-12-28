@@ -1,28 +1,15 @@
-import { Expose } from 'class-transformer';
+import { DEFAULT_PROPERTIES } from '@shared/criteria/constants';
+import { RenameProperty } from '@shared/decorators';
 
 export type DefaultFilters<E> = {
     [Key in keyof E]?: any;
 }[]
 
-export abstract class Filter
+export abstract class Filter<E = any>
 {
-    @Expose()
-    Fields(): string[]
+    @RenameProperty(DEFAULT_PROPERTIES)
+    DefaultFilters(): DefaultFilters<E>
     {
-        return Object.getOwnPropertyNames(this);
+        return [];
     }
-
-    @Expose()
-    Filter()
-    {
-        return this.Fields().reduce((acc, field) =>
-        {
-            return {
-                ...acc,
-                [field]: this[field]
-            };
-        }, {});
-    }
-
-    abstract get DefaultFilters(): Record<string, any>
 }
