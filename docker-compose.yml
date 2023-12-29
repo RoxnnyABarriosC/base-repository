@@ -28,6 +28,9 @@ services:
       - MINIO_EXPOSE_HOST=${S3_DOMAIN:-s3.localhost}
       - MINIO_EXPOSE_HTTPS=${TLS:-true}
       - PORT=${API_PORT:-4000}
+      - MINIO_PRIVATE_BUCKET=${S3_PRIVATE_BUCKET:-private.baserepository}
+      - MINIO_PUBLIC_BUCKET=${S3_PUBLIC_BUCKET:-public.baserepository}
+      - MINIO_REGION=${S3_REGION:-us-east-1}
     volumes:
       - api:/app
     networks:
@@ -84,6 +87,22 @@ services:
     volumes:
       - s3:/data
     command: server --address 0.0.0.0:80 --console-address 0.0.0.0:9001 /data
+    networks:
+      - internal_network
+      - external_network
+
+  buckets:
+    image: minio/mc
+    depends_on:
+      - s3
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://s3 ${S3_USER:-baserepository} ${S3_PASSWORD:-baserepository};
+      /usr/bin/mc mb --region=${S3_REGION:-us-east-1} myminio/${S3_PRIVATE_BUCKET:-private.baserepository};
+      /usr/bin/mc mb --region=${S3_REGION:-us-east-1} myminio/${S3_PUBLIC_BUCKET:-public.baserepository};
+      /usr/bin/mc anonymous set public myminio/${S3_PUBLIC_BUCKET:-public.baserepository};
+      exit 0;
+      "
     networks:
       - internal_network
       - external_network

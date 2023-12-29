@@ -44,6 +44,7 @@ proxy:
 	make down-proxy && TLS=$${TLS:-false} ENTRYPOINT=$${ENTRYPOINT:-http} \
 			ACME_STAGING=$${ACME_STAGING} \
     		PROXY_DOMAIN=$${PROXY_DOMAIN:-proxy.localhost} \
+    		ACME_EMAIL=$${ACME_EMAIL:-user@baserepository.com} \
     		docker compose -f docker-compose-proxy.yml up --build -d
 
 down-proxy:
