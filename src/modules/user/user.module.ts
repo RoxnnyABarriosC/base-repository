@@ -1,6 +1,7 @@
 import { AuthModule } from '@modules/auth';
 import { CommonModule } from '@modules/common';
 import { RoleModule } from '@modules/role';
+import { UserToDeleteView } from '@modules/user/infrastructure/views';
 import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserPolicyService, UserService } from './domain/services';
@@ -24,7 +25,7 @@ import { UserController } from './presentation/controllers';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([UserSchema]),
+        TypeOrmModule.forFeature([UserSchema, UserToDeleteView]),
         forwardRef(() => AuthModule),
         CommonModule,
         RoleModule

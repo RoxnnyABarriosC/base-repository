@@ -7,4 +7,5 @@ export declare interface GetOneByUserNameParamsInterface {
 export declare interface GetOneByEmailOrPhoneParamsInterface {
     emailOrPhone: string;
     initThrow?: boolean;
+    withDeleted?: boolean;
 }

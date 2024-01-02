@@ -1,4 +1,5 @@
 import { User } from '@modules/user/domain/entities';
+import { UserToDeleteView } from '@modules/user/infrastructure/views';
 import { UserFilters } from '@modules/user/presentation/criterias';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,7 +20,10 @@ export class UserRepository extends BaseRepository<User>
 {
     private readonly logger = new Logger(UserRepository.name);
 
-    constructor(@InjectRepository(UserSchema) repository: Repository<User>)
+    constructor(
+      @InjectRepository(UserSchema) repository: Repository<User>,
+      @InjectRepository(UserToDeleteView) private readonly userToDeleteRepository: Repository<UserToDeleteView>
+    )
     {
         super(User, repository);
     }
@@ -88,9 +92,9 @@ export class UserRepository extends BaseRepository<User>
         return user;
     }
 
-    async findOneByEmailOrPhone({ emailOrPhone, initThrow = false }: GetOneByEmailOrPhoneParamsInterface): Promise<User>
+    async findOneByEmailOrPhone({ emailOrPhone, initThrow = false, withDeleted = false }: GetOneByEmailOrPhoneParamsInterface): Promise<User>
     {
-        const user = await this.repository.findOne({ where: [{ email: emailOrPhone }, { phone: emailOrPhone }] });
+        const user = await this.repository.findOne({ where: [{ email: emailOrPhone }, { phone: emailOrPhone }], withDeleted });
 
         if (initThrow && !user)
         {
@@ -118,5 +122,19 @@ export class UserRepository extends BaseRepository<User>
     async setFalseFirstLogin(id: string)
     {
         await this.repository.update({ _id: id } as any, { onBoarding: false });
+    }
+
+    async deleteAccounts(domains: string[], days: number)
+    {
+        const subQuery = this.userToDeleteRepository.createQueryBuilder()
+            .select(['_id'])
+            .where('domain NOT IN (:...domains)', { domains })
+            .andWhere('days >= :days', { days }).getQuery();
+
+        const queryBuilder = this.repository.createQueryBuilder()
+            .delete()
+            .where(`_id IN (${subQuery})`, { days, domains });
+
+        await queryBuilder.execute();
     }
 }

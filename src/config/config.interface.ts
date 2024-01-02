@@ -195,4 +195,5 @@ export interface IConfig {
     validatorProperties: IPropertiesConfig;
     emailsDomain: IEmailsDomainConfig;
     sendgridTemplates: ISendgridTemplates;
+    elapsedDaysToDeleteAUser: number;
 }

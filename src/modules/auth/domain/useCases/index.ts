@@ -11,3 +11,4 @@ export * from './unset-main-picture-or-banner.useCase';
 export * from './update-on-boarding.useCase';
 export * from './update-me.useCase';
 export * from './oauth-login.useCase';
+export * from './delete-account.useCase';

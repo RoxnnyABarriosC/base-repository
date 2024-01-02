@@ -119,8 +119,6 @@ export class PgSqlFilterCriteria<F = any, E = any>
 
         if (this._filter.has(_attribute))
         {
-            console.log('filterInArrayString', _attribute, _dbAttribute, this.filter);
-
             const value = this._filter.getOne<string | string[]>(_attribute);
             let valueAttribute: string[] | string = value;
 

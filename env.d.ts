@@ -91,5 +91,7 @@ declare namespace NodeJS {
         AP_OAUTH_CALLBACK: string;
 
         DOMAINS_ALLOWED_FOR_ADMINISTRATOR_EMAILS: string[];
+
+        ELAPSED_DAYS_TO_DELETE_A_USER: number;
     }
 }

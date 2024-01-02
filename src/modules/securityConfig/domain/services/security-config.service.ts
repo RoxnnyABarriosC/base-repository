@@ -42,6 +42,7 @@ export class SecurityConfigService
         }
         catch (e)
         {
+            this.logger.error(e);
             throw new BadCredentialsException();
         }
     }

@@ -30,7 +30,8 @@ export class AuthService
     async validateUser(emailOrPhone: string, password: string, checkFn: (user: User) => Promise<unknown> = null, { checkSuperAdmin = false, checkPassword = true } = {}): Promise<User>
     {
         const user = await this.userRepository.findOneByEmailOrPhone({
-            emailOrPhone
+            emailOrPhone,
+            withDeleted: true
         });
 
         if (!user)
@@ -57,6 +58,8 @@ export class AuthService
         {
             await checkFn(user);
         }
+
+        await this.userRepository.restore(user._id);
 
         return user;
     }
@@ -97,6 +100,15 @@ export class AuthService
             options: {
                 initThrow: false
             }
+        });
+    }
+
+    async getJWTUserById(id: string): Promise<User>
+    {
+        return await this.userRepository.getOneBy({
+            condition: { _id: id },
+            options: { initThrow: false },
+            withDeleted: false
         });
     }
 }

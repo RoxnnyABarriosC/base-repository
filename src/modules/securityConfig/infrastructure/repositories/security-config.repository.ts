@@ -29,6 +29,7 @@ export class SecurityConfigRepository extends BaseRepository<SecurityConfig>
     async getConfigOfEmailOrPhone(emailOrPhone: string): Promise<SecurityConfig>
     {
         const queryBuilder = this.repository.createQueryBuilder('sc');
+        queryBuilder.withDeleted();
 
         void queryBuilder.innerJoin('sc.user', 'user');
 

@@ -39,7 +39,8 @@ export class UserService
     {
         return await this.repository.exist({
             condition: [{ email: emailOrPhone }, { phone: emailOrPhone }],
-            select: ['phone', 'email']
+            select: ['phone', 'email'],
+            withDeleted: true
         });
     }
 }

@@ -1,3 +1,4 @@
+import { DeleteAccountTask } from '@modules/auth/infrastructure/tasks';
 import { CommonModule } from '@modules/common';
 import { SecurityConfigModule } from '@modules/securityConfig';
 import { UserModule } from '@modules/user';
@@ -11,7 +12,7 @@ import { AppleStrategy, FacebookStrategy, GoogleStrategy, JWTStrategy, LocalStra
 import {
     ActivateAccountUseCase,
     ChangeForgotPasswordUseCase,
-    ChangeMyPasswordUseCase,
+    ChangeMyPasswordUseCase, DeleteAccountUseCase,
     ForgotPasswordUseCase,
     LoginUseCase,
     LogoutUseCase, OAuthLoginUseCase,
@@ -72,6 +73,7 @@ import { RefreshTokenMiddleware } from './presentation/middlewares';
         UnsetMainPictureOrBannerUseCase,
         UpdateOnBoardingUseCase,
         OAuthLoginUseCase,
+        DeleteAccountUseCase,
         // SERVICES
         TokenService,
         AuthService,
@@ -82,7 +84,8 @@ import { RefreshTokenMiddleware } from './presentation/middlewares';
         JWTStrategy,
         FacebookStrategy,
         GoogleStrategy,
-        AppleStrategy
+        AppleStrategy,
+        DeleteAccountTask
     ],
     exports: [
         TokenService,

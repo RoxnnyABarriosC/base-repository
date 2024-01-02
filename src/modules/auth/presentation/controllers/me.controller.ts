@@ -1,4 +1,4 @@
-import { ChangeMyPasswordUseCase, SetMainPictureOrBannerUseCase, UnsetMainPictureOrBannerUseCase, UpdateMeUseCase, UpdateOnBoardingUseCase } from '@modules/auth/domain/useCases';
+import { ChangeMyPasswordUseCase, DeleteAccountUseCase, SetMainPictureOrBannerUseCase, UnsetMainPictureOrBannerUseCase, UpdateMeUseCase, UpdateOnBoardingUseCase } from '@modules/auth/domain/useCases';
 import { MimeTypeEnum } from '@modules/common/file/domain/enums';
 import { UploadFile, UploadedFile } from '@modules/common/file/presentation/decorators';
 import { FileSerializer } from '@modules/common/file/presentation/serializers';
@@ -38,7 +38,8 @@ export class MeController
         private readonly setMainPictureOrBannerUseCase: SetMainPictureOrBannerUseCase,
         private readonly unsetMainPictureOrBannerUseCase: UnsetMainPictureOrBannerUseCase,
         private readonly updateOnBoardingUseCase: UpdateOnBoardingUseCase,
-        private readonly changeMyPasswordUseCase: ChangeMyPasswordUseCase
+        private readonly changeMyPasswordUseCase: ChangeMyPasswordUseCase,
+        private readonly deleteAccountUseCase: DeleteAccountUseCase
     )
     {}
 
@@ -154,7 +155,6 @@ export class MeController
         });
     }
 
-
     @Patch('me/change-password')
     @HttpCode(HttpStatus.CREATED)
     async changeMyPassword(
@@ -163,5 +163,15 @@ export class MeController
     )
     {
         return await this.changeMyPasswordUseCase.handle({ dto, authUser });
+    }
+
+    @Delete('me')
+    @HttpCode(HttpStatus.OK)
+    @CheckEmailDomain(EmailDomainTypeEnum.APP)
+    async deleteAccount(
+      @AuthUser() authUser: User
+    )
+    {
+        return await this.deleteAccountUseCase.handle({ id: authUser._id });
     }
 }

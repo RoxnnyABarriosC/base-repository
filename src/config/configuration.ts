@@ -1,7 +1,10 @@
 import { RequestMethod } from '@nestjs/common';
+import { validateEnv } from '@src/validate-env';
 import dotenv from 'dotenv';
 dotenv.config();
 import { IConfig } from './config.interface';
+
+validateEnv(process.env);
 
 export default (): IConfig => ({
     environment: process.env.NODE_ENV,
@@ -164,5 +167,6 @@ export default (): IConfig => ({
     sendgridTemplates: {
         otp: process.env.SENDGRID_TEMPLATE_OTP_ID,
         publicOTP: process.env.SENDGRID_TEMPLATE_PUBLIC_OTP_ID
-    }
+    },
+    elapsedDaysToDeleteAUser: process.env.ELAPSED_DAYS_TO_DELETE_A_USER
 });
