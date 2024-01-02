@@ -1,57 +1,57 @@
+import { RoleFilters } from '@modules/role/presentation/criterias';
 import { User } from '@modules/user/domain/entities';
-import { DefaultFilters, Filter } from '@shared/abstractClass';
-import { ParseBoolean } from '@shared/decorators';
-import { Expose } from 'class-transformer';
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import { IsPermissionValid, ValidateIfPropertyExists } from '@shared/classValidator/decorators';
+import { Parse, StringToArray } from '@shared/classValidator/transforms';
+import { Filter } from '@shared/criteria/abstractClass';
+import { RenameProperty } from '@shared/decorators';
+import { allPermissionsEnums } from '@src/app.permissions';
+import { IsBoolean,  IsString } from 'class-validator';
 
 export enum UserFilters {
     SEARCH = 'search',
-    PARTIAL_REMOVED = 'partialRemoved',
-    WITH_PARTIAL_REMOVED = 'withPartialRemoved',
     PERMISSIONS = 'permissions',
     ENABLE = 'enable',
     VERIFY = 'verify',
     IS_SUPER_ADMIN = 'isSuperAdmin',
+    PARTIAL_REMOVED = 'deletedAt',
+    WITH_PARTIAL_REMOVED = 'withPartialRemoved',
 }
 
 // TODO: cargar a la metadata el campo referencial contr la db
-export class UserFilter extends Filter
+export class UserFilter extends Filter<User>
 {
-    @IsOptional()
+    @IsString()
+    @ValidateIfPropertyExists()
     public readonly search: string;
 
-    @IsOptional()
-    @ParseBoolean()
     @IsBoolean()
-    public readonly withPartialRemoved: boolean;
-
-    @IsOptional()
-    @ParseBoolean()
-    @IsBoolean()
-    public readonly partialRemoved: boolean;
-
-    @IsOptional()
-    @ParseBoolean()
-    @IsBoolean()
+    @Parse()
+    @ValidateIfPropertyExists()
     public readonly enable: boolean;
 
-    @IsOptional()
-    @ParseBoolean()
     @IsBoolean()
+    @Parse()
+    @ValidateIfPropertyExists()
     public readonly verify: boolean;
 
-    @IsOptional()
-    @ParseBoolean()
     @IsBoolean()
+    @Parse()
+    @ValidateIfPropertyExists()
     public readonly isSuperAdmin: boolean;
 
-    @IsOptional()
-    @IsString({ each: true })
-    public readonly permissions: string;
+    @StringToArray()
+    @IsPermissionValid(allPermissionsEnums, { each: true })
+    @ValidateIfPropertyExists()
+    public readonly permissions: string[];
 
-    @Expose()
-    get DefaultFilters(): DefaultFilters<User>
-    {
-        return [];
-    }
+    @IsBoolean()
+    @Parse()
+    @ValidateIfPropertyExists()
+    public readonly withPartialRemoved: boolean;
+
+    @IsBoolean()
+    @RenameProperty(RoleFilters.PARTIAL_REMOVED)
+    @Parse()
+    @ValidateIfPropertyExists()
+    public readonly partialRemoved: boolean;
 }

@@ -1,9 +1,9 @@
-import { User } from '@modules/user/domain/entities';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
+import { User } from '../entities';
 
 declare interface IGetUserUseCaseProps {
-    userName: string;
+    id: string;
     partialRemoved: boolean;
 }
 
@@ -17,14 +17,13 @@ export class GetUserUseCase
     )
     {}
 
-    async handle({ userName, partialRemoved }: IGetUserUseCaseProps): Promise<User>
+    async handle({ id, partialRemoved }: IGetUserUseCaseProps): Promise<User>
     {
         this.logger.log('Get user by username...');
 
-        const user = await this.repository.getOneByUserName({
-            userName,
-            withDeleted: partialRemoved,
-            initThrow: true
+        const user = await this.repository.getOne({
+            id,
+            withDeleted: partialRemoved
         });
 
         this.logger.log('User found successfully');

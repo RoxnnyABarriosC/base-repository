@@ -1,29 +1,33 @@
 import { RequiredPermissionsException } from '@modules/auth/domain/exceptions';
 import { AuthService } from '@modules/auth/domain/services';
 import { RequestAuth } from '@modules/auth/domain/strategies';
-import { CHECK_POLICIES_KEY, MANAGE_PERMISSIONS_KEY, PERMISSIONS_KEY, PERMISSION_ACTION_METHOD_KEY, PermissionActions } from '@modules/auth/presentation/decorators';
 import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { ModuleRef, Reflector } from '@nestjs/core';
-import { checkIsPublic } from '../decorators/public.decorator';
+import { Protected } from '@shared/app/abstractClass';
+import {
+    CHECK_POLICIES_KEY,
+    FORCE_CHECK_POLICY_KEY,
+    MANAGE_PERMISSIONS_KEY,
+    PERMISSIONS_KEY,
+    PERMISSION_ACTION_METHOD_KEY,
+    PermissionActions,
+    checkIsPublic
+} from '@shared/app/decorators';
 
-export abstract class Policy
-{
-    abstract handle(request: RequestAuth, module: any): Promise<void>
-}
-
-export type PolicyType = { new(): Policy }
 
 @Injectable()
-export class ProtectedGuard implements CanActivate
+export class ProtectedGuard extends Protected<RequestAuth> implements CanActivate
 {
     private readonly logger = new Logger(ProtectedGuard.name);
     private readonly authService: AuthService;
 
     constructor(
-        private readonly reflector: Reflector,
-        private readonly moduleRef: ModuleRef
+        protected override readonly reflector: Reflector,
+        protected override readonly moduleRef: ModuleRef
     )
     {
+        super();
+        // TODO: Validar por que no puedo inyectar AuthService directamente en el constructor
         this.authService = this.moduleRef.get(AuthService, { strict: false });
     }
 
@@ -60,6 +64,11 @@ export class ProtectedGuard implements CanActivate
             context.getClass()
         ]) ?? [];
 
+        const forceCheckPolicy = this.reflector.getAllAndOverride(FORCE_CHECK_POLICY_KEY, [
+            context.getHandler(),
+            context.getClass()
+        ]) ?? false;
+
         if (permissions.length)
         {
             allow = await this.authService.authorize(data, permissions, permissionActions);
@@ -72,19 +81,11 @@ export class ProtectedGuard implements CanActivate
             throw new RequiredPermissionsException(permissionActions === 'every', ...permissions);
         }
 
-        if (!isSuperAdmin && !manage && policies.length)
+        if (!isSuperAdmin && !manage && policies.length || ((isSuperAdmin || manage) && forceCheckPolicy && policies.length))
         {
             await this.execPolicyHandler(policies, request);
         }
 
         return (isSuperAdmin || manage || allow);
-    }
-
-    private async execPolicyHandler(policies: PolicyType[], request: RequestAuth): Promise<void>
-    {
-        for (const policy of policies)
-        {
-            await (new policy()).handle(request, this.moduleRef);
-        }
     }
 }

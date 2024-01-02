@@ -1,11 +1,10 @@
 import { UseGuards, applyDecorators } from '@nestjs/common';
-import { CheckSuperAdminGuard } from '../guards/check-super-admin.guard';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { ProtectedGuard } from '../guards/protected.guard';
+import { CheckEmailDomainGuard, CheckSuperAdminGuard, JwtAuthGuard, ProtectedGuard } from '../guards';
+
 
 export const Protected = () =>
 {
     return applyDecorators(
-        UseGuards(JwtAuthGuard, CheckSuperAdminGuard, ProtectedGuard)
+        UseGuards(JwtAuthGuard, CheckSuperAdminGuard, CheckEmailDomainGuard, ProtectedGuard)
     );
 };

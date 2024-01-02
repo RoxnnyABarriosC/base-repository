@@ -1,6 +1,17 @@
+import configuration from '@config/configuration';
 import { GenderEnum } from '@modules/user/domain/enums';
-import { ValidateIfPropertyExists } from '@shared/decorators';
-import { IsDateString, IsEmail, IsEnum, IsPhoneNumber, IsString, Length } from 'class-validator';
+import { EmailDomainLength, IsAgeBetween, IsEmailFromDomain, IsNotEmailFromDomain, ValidateIfPropertyExists } from '@shared/classValidator/decorators';
+import { ContextGroupsEnum } from '@shared/classValidator/enums';
+import { IsDateString, IsEmail, IsEnum, IsMobilePhone, IsString, Length } from 'class-validator';
+
+const {
+    firstName,
+    lastName,
+    emailDomainLength,
+    birthday
+} = configuration().validatorProperties;
+
+const emailDomains = configuration().emailsDomain;
 
 export class MeDto
 {
@@ -10,20 +21,27 @@ export class MeDto
     public readonly userName: string;
 
     @IsString()
-    @Length(3, 20)
+    @Length(firstName.min, firstName.max)
     @ValidateIfPropertyExists()
     public readonly firstName: string;
 
     @IsString()
-    @Length(3, 20)
+    @Length(lastName.min, lastName.max)
     @ValidateIfPropertyExists()
     public readonly lastName: string;
 
+    @IsEmailFromDomain(emailDomains.admin, {
+        groups: [ContextGroupsEnum.ADMIN]
+    })
+    @IsNotEmailFromDomain(emailDomains.admin, {
+        groups: [ContextGroupsEnum.APP]
+    })
+    @EmailDomainLength(emailDomainLength)
     @IsEmail()
     @ValidateIfPropertyExists()
     public readonly email: string;
 
-    @IsPhoneNumber()
+    @IsMobilePhone()
     @ValidateIfPropertyExists()
     public readonly phone: string;
 
@@ -31,6 +49,7 @@ export class MeDto
     @ValidateIfPropertyExists()
     public readonly gender: GenderEnum;
 
+    @IsAgeBetween(birthday.min, birthday.max)
     @IsDateString()
     @ValidateIfPropertyExists()
     public readonly birthday: Date;

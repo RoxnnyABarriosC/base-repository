@@ -16,7 +16,7 @@ export class CreateUsersTable1691331857829 implements MigrationInterface
                     new TableColumn({
                         name: 'userName',
                         type: 'varchar',
-                        isUnique: true
+                        default: '\'user\''
                     }),
                     new TableColumn({
                         name: 'firstName',
@@ -50,7 +50,7 @@ export class CreateUsersTable1691331857829 implements MigrationInterface
                         default: false
                     }),
                     new TableColumn({
-                        name: 'firstLogin',
+                        name: 'onBoarding',
                         type: 'boolean',
                         default: true
                     }),

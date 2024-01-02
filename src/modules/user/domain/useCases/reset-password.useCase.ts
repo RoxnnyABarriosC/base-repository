@@ -1,16 +1,15 @@
 import { TokenActionEnum } from '@modules/auth/domain/enums';
 import { TokenService } from '@modules/auth/domain/services';
-import { ResetPasswordEvent } from '@modules/common/mail/domain/events';
+import { ForgotPasswordEvent } from '@modules/common/mail/domain/events';
 import { MailEventEnum } from '@modules/common/mail/domain/listeners';
-import { UserService } from '@modules/user/domain/services';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { ILocalMessage } from '@shared/interfaces';
-import { SendLocalMessage } from '@shared/utils';
+import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
 import { IServerConfig } from '@src/config';
-import passwordGenerator from 'password-generator';
+import dayjs from 'dayjs';
+import { UserService } from '../services';
 
 declare interface IResetPasswordUseCaseProps {
     id: string;
@@ -34,19 +33,24 @@ export class ResetPasswordUseCase
     async handle({ id }: IResetPasswordUseCaseProps): Promise<ILocalMessage>
     {
         const user = await this.repository.getOne({ id });
-        void this.service.checkSuperAdmin(user);
 
-        const newPassword = passwordGenerator(15, true, /[\w\d]/);
-
-        user.password = await this.service.preparePassword(newPassword);
+        user.passwordRequestedAt = dayjs().utc().toDate();
 
         void this.repository.update(user);
 
-        const confirmationToken = this.tokenService.createConfirmationToken(user.email, TokenActionEnum.RESET_PASSWORD);
+        const confirmationToken = this.tokenService.createConfirmationToken(
+            user.email,
+            TokenActionEnum.CHANGE_FORGOT_PASSWORD
+        );
 
         const { url: { web } } = this.configService.get<IServerConfig>('server');
 
-        this.eventEmitter.emit(MailEventEnum.RESET_PASSWORD, new ResetPasswordEvent(user, newPassword, `${web}/reset-password?token=${confirmationToken}`));
+        const urlConfirmationToken = `${web}/auth/change-forgot-password?token=${confirmationToken}`;
+
+        this.eventEmitter.emit(
+            MailEventEnum.FORGOT_PASSWORD,
+            new ForgotPasswordEvent(user, urlConfirmationToken)
+        );
 
         return SendLocalMessage(() => 'messages.user.resetPassword');
     }

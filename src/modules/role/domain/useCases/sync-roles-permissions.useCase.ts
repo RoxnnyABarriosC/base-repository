@@ -1,9 +1,9 @@
-import { Role } from '@modules/role/domain/entities';
 import { RoleRepository } from '@modules/role/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
-import { ILocalMessage } from '@shared/interfaces';
-import { SendLocalMessage, SlugGenerator } from '@shared/utils';
-import { AppRolesFactory } from '@src/app.roles';
+import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
+import { SlugGenerator } from '@shared/utils';
+import { AllAppRoles } from '@src/app.roles';
+import { Role } from '../entities';
 
 @Injectable()
 export class SyncRolesPermissionsUseCase
@@ -17,7 +17,7 @@ export class SyncRolesPermissionsUseCase
 
     async handle(): Promise<ILocalMessage>
     {
-        const appRoles = AppRolesFactory.getRoles();
+        const appRoles = AllAppRoles.getRoles();
 
         void await Promise.all(appRoles.map(async(appRole) =>
         {

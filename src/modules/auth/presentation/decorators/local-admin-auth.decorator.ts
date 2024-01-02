@@ -1,5 +1,5 @@
 import { UseGuards, applyDecorators } from '@nestjs/common';
-import { LocalAdminAuthGuard } from '../guards/local-admin-auth.guard';
+import { LocalAdminAuthGuard } from '../guards';
 
 export const LocalAdminAuth = () =>
 {

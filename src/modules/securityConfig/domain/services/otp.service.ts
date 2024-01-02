@@ -1,32 +1,18 @@
-import { BadCredentialsException } from '@modules/auth/domain/exceptions';
 import { EncryptionFactory } from '@modules/auth/domain/factories';
-import { AuthService } from '@modules/auth/domain/services';
-import { SecurityConfig } from '@modules/securityConfig/domain/entities';
-import { OTPPropertiesEnum, OTPSendTypeEnum } from '@modules/securityConfig/domain/enums';
-import { OTPNotFoundException } from '@modules/securityConfig/domain/exceptions';
-import { IOTPRedis } from '@modules/securityConfig/domain/models';
-import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { AuthOTPDto } from '@modules/securityConfig/presentation/dtos';
 import { User } from '@modules/user/domain/entities';
-import { DisabledUserException, UserIsNotSuperAdminException } from '@modules/user/domain/exceptions';
-import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { BadRequestCustomException, NotFoundCustomException } from '@shared/exceptions';
-import { ErrorModel } from '@shared/models';
-import { EncodeText } from '@shared/utils';
+import { ConfigService } from '@nestjs/config';
+import { BadRequestCustomException } from '@shared/app/exceptions';
+import { ErrorModel } from '@shared/classValidator/models';
+import { EncodeText, GetMilliseconds } from '@shared/utils';
 import { Cache } from 'cache-manager';
-import days from 'dayjs';
 import { I18nContext } from 'nestjs-i18n';
-import { NotFoundError } from 'rxjs';
-
-interface Iinterface {
-    emailOrPhone: string;
-    password?: string;
-    checkSuperAdmin?:  boolean;
-    dataOtp: AuthOTPDto,
-    otpProperties: OTPPropertiesEnum[]
-}
+import { TwilioService as _TwilioService } from 'nestjs-twilio/dist/module/twilio.service';
+import { OTPPropertiesToTargetDictionary } from '../dictionaries';
+import { SecurityConfig } from '../entities';
+import { OTPPropertiesEnum, OTPTargetConfigEnum } from '../enums';
 
 @Injectable()
 export class OTPService
@@ -35,9 +21,8 @@ export class OTPService
     public readonly encryption = EncryptionFactory.create();
 
     constructor(
-        private readonly repository: SecurityConfigRepository,
-        private readonly userRepository: UserRepository,
-        private readonly authService: AuthService,
+        private readonly configService: ConfigService,
+        private readonly twilioService: _TwilioService,
         @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
     )
     { }
@@ -47,78 +32,56 @@ export class OTPService
         const otpData = securityConfig.otp;
 
         return Object.keys(otpData)
-            .filter(otp => otp.toUpperCase() in OTPSendTypeEnum && otpData[otp].enable)
+            .filter(otp => otp.toUpperCase() in OTPTargetConfigEnum && otpData[otp].enable)
             .flatMap(otp => Object.values(OTPPropertiesEnum)
                 .filter(value => value.includes(otp)));
     }
 
-    async checkOtp(data: AuthOTPDto, otpProperties: OTPPropertiesEnum[], securityConfig: SecurityConfig, otpKeys: {emailKey: string, phoneKey: string})
+    async checkOtp(data: AuthOTPDto, otpProperties: OTPPropertiesEnum[])
     {
         return async(user: User) =>
         {
-            const errors = [];
-
-            const otpChecks = otpProperties.map(async(otp) =>
+            const fnCheck = async(otpProperty: OTPPropertiesEnum) =>
             {
-                const otpType = this.getType(otp);
-                const key = otpKeys[`${otpType}Key`];
-
-                const otpHash = await this.cacheManager.get<IOTPRedis>(key);
+                const target = OTPPropertiesToTargetDictionary.get(otpProperty);
+                const key = `otp:${target}:${user[target]}`;
 
                 const otherProperties = {
-                    [otpType]: EncodeText(user[otpType], otpType)
+                    [target]: EncodeText(user[target], target)
                 };
 
-                if (!otpHash)
+                const tempCode = await this.cacheManager.get(key) as string;
+                let  isValidCode = tempCode === data[otpProperty];
+
+                if (!isValidCode)
                 {
-                    errors.push(this.createMessage(otp, () => `exceptions.securityConfig.otp.${otpType}.expired`, otherProperties));
+                    isValidCode = await this.verifyOTP(user[target], data[otpProperty]);
+                }
+
+                if (!isValidCode)
+                {
+                    return this.createMessage(otpProperty, () => `exceptions.securityConfig.otp.${target}.noMatch`, otherProperties);
                 }
                 else
                 {
-                    if (otpHash?.userId !== user._id || otpHash.target !== otpType)
+                    if (!tempCode)
                     {
-                        throw new OTPNotFoundException(otpType);
+                        await this.cacheManager.set(key, data[otpProperty], GetMilliseconds('10m'));
                     }
 
-                    const verify = await this.encryption.compare(data[otp], otpHash.hash);
-
-                    if (!verify)
-                    {
-                        errors.push(this.createMessage(otp, () => `exceptions.securityConfig.otp.${otpType}.noMatch`, otherProperties));
-                    }
+                    return key;
                 }
-            });
+            };
 
-            await Promise.all(otpChecks);
+            const results = await Promise.all(otpProperties.map(fnCheck));
 
-            if (errors.length)
+            if (results.some(result => typeof result === 'object'))
             {
-                throw new BadRequestCustomException(errors);
+                throw new BadRequestCustomException(results.filter(result => typeof result === 'object'));
             }
-            Object.keys(otpKeys).map(async(key) =>
-            {
-                if (otpKeys[key])
-                {
-                    await this.cacheManager.del(otpKeys[key]);
-                }
-            });
+
+            await Promise.all(results.map(this.cacheManager.del));
         };
-    }
-
-
-    getType(otpProperty: OTPPropertiesEnum)
-    {
-        const otpTypes = {
-            [OTPPropertiesEnum.PHONE_OTP_CODE]: OTPSendTypeEnum.PHONE,
-            [OTPPropertiesEnum.EMAIL_OTP_CODE]: OTPSendTypeEnum.EMAIL
-        };
-
-        if (!Object.keys(otpTypes).some((o => o === otpProperty)))
-        {
-            throw new Error(`The ${otpProperty} property does not exist in the definition object for otp types`);
-        }
-
-        return otpTypes[otpProperty];
     }
 
     protected createMessage(attr: string, keyFn = () => 'exceptions.securityConfig.otp.notFound', otherProperties?: object)
@@ -138,5 +101,29 @@ export class OTPService
                 }
             }
         } as ErrorModel;
+    }
+
+    async verifyOTP(to: string, code: string)
+    {
+        try
+        {
+            const res = await this.twilioService
+                .client
+                .verify
+                .v2
+                .services(this.configService.getOrThrow('twilio.otpServiceSid'))
+                .verificationChecks
+                .create({
+                    to,
+                    code
+                });
+
+            return res.valid;
+        }
+        catch (error)
+        {
+            this.logger.error(error);
+            return false;
+        }
     }
 }

@@ -1,10 +1,10 @@
 import { HttpStatus } from '@nestjs/common';
-import { HttpException } from '@shared/exceptions/http.exception';
+import { HttpException } from '@shared/app/exceptions';
 
 export class OTPConfigException extends HttpException
 {
-    constructor(requiredOtpProperties: string[], values: object)
+    constructor(requiredProperties: string[], values: object)
     {
-        super(HttpStatus.UNPROCESSABLE_ENTITY, 'exceptions.securityConfig.otp.required', { requiredOtpProperties, ...values });
+        super(HttpStatus.UNPROCESSABLE_ENTITY, 'exceptions.securityConfig.otp.required', { requiredProperties, ...values });
     }
 }

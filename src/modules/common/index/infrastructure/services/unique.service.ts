@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { BaseRepository } from '@shared/abstractClass';
-import { BadRequestCustomException } from '@shared/exceptions';
+import { BadRequestCustomException } from '@shared/app/exceptions';
+import { BaseRepository } from '@shared/typeOrm/abstractClass';
 import { I18nContext } from 'nestjs-i18n';
 
 interface IUniqueConfig<T = any>

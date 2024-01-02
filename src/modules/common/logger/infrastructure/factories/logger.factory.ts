@@ -1,5 +1,5 @@
-import { CORRELATION_ID_HEADER, REAL_IP } from '@modules/common/logger/presentation/middlewares';
 import { ConfigService } from '@nestjs/config';
+import { CORRELATION_ID_HEADER, REAL_IP } from '@shared/app/constants';
 import { CreateFileStream } from '@shared/utils';
 import { blue, cyan, green, yellow } from 'colorette';
 import { Params } from 'nestjs-pino';

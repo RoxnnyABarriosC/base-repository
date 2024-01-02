@@ -1,32 +1,40 @@
+import configuration from '@config/configuration';
 import { PasswordValueObject } from '@modules/auth/domain/valueObjects';
 import { File } from '@modules/common/file/domain/entities';
 import { Role } from '@modules/role/domain/entities';
 import { SecurityConfig } from '@modules/securityConfig/domain/entities';
-import { GenderEnum } from '@modules/user/domain/enums';
-import { BaseEntity } from '@shared/entities/base.entity';
+import { BaseEntity } from '@shared/app/entities';
+import { GetDomainTypeOfEmail } from '@shared/utils';
 import { Exclude, Expose } from 'class-transformer';
+import { GenderEnum } from '../enums';
+
+const emailAdminDomain = configuration().emailsDomain.admin;
 
 @Exclude()
 export class User extends BaseEntity
 {
     @Expose() public userName: string;
+    @Expose() public userNameId: string;
     @Expose() public firstName: string;
     @Expose() public lastName: string;
     @Expose() public email: string;
-    @Expose() public phone: string;
-    @Expose() public gender: GenderEnum;
-    @Expose() public birthday: Date;
+    @Expose() public phone?: string;
+    @Expose() public gender?: GenderEnum;
+    @Expose() public birthday?: Date;
     @Expose() public enable = false;
     @Expose() public verify = false;
-    @Expose() public firstLogin = true;
+    @Expose() public onBoarding = true;
     @Expose() public isSuperAdmin = false;
     public password: PasswordValueObject | string;
-    @Expose() public permissions: string[];
-    @Expose() public passwordRequestedAt: Date | number;
+    @Expose() public permissions?: string[];
+    @Expose() public passwordRequestedAt?: Date | number;
     @Expose() public roles: Role[];
     @Expose() public mainPicture?: File;
     @Expose() public banner?: File;
     @Expose() public securityConfig: Promise<SecurityConfig>;
+    @Expose() public facebookAccountId?: string;
+    @Expose() public googleAccountId?: string;
+    @Expose() public appleAccountId?: string;
 
     constructor(data?: Partial<User>, validate?: boolean)
     {
@@ -37,6 +45,16 @@ export class User extends BaseEntity
     public get FullName()
     {
         return `${this.firstName} ${this.lastName}`;
+    }
+
+    public get UserName()
+    {
+        return `${this.userName}#${this.userNameId}`;
+    }
+
+    public get Target()
+    {
+        return GetDomainTypeOfEmail(this.email, emailAdminDomain);
     }
 
     public cleanRoles(): void

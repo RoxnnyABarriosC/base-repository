@@ -1,7 +1,7 @@
-import { OTPConfigType } from '@modules/securityConfig/domain/entities/otp-config.type';
 import { User } from '@modules/user/domain/entities';
-import { BaseEntity } from '@shared/entities/base.entity';
+import { BaseEntity } from '@shared/app/entities';
 import { Exclude, Expose } from 'class-transformer';
+import { OTPConfigType } from './otp-config.type';
 
 @Exclude()
 export class SecurityConfig extends BaseEntity
@@ -9,15 +9,14 @@ export class SecurityConfig extends BaseEntity
     @Expose() public otp: OTPConfigType = {
         phone: {
             enable: false,
-            providers: [],
-            attempts: 0
+            providers: []
         },
         email: {
-            enable: false,
-            attempts: 0
+            enable: false
         }
     };
 
+    @Expose() public otpAttempts  = 0;
     @Expose() public requiredPassword: boolean;
     @Expose() public oldPassword: string;
 

@@ -1,12 +1,12 @@
-import { TokenActionEnum } from '@modules/auth/domain/enums';
-import { TokenService } from '@modules/auth/domain/services';
 import { ActivatedAccountEvent } from '@modules/common/mail/domain/events';
 import { MailEventEnum } from '@modules/common/mail/domain/listeners';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { ILocalMessage } from '@shared/interfaces';
-import { SendLocalMessage } from '@shared/utils';
+import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
+import { TokenActionEnum } from '../enums';
+import { TokenService } from '../services';
 
 declare interface IActivateAccountUseCaseProps {
     confirmationToken: string
@@ -21,13 +21,21 @@ export class ActivateAccountUseCase
     constructor(
         private readonly tokenService: TokenService,
         private readonly repository: UserRepository,
-        private readonly eventEmitter: EventEmitter2
+        private readonly eventEmitter: EventEmitter2,
+        private readonly configService: ConfigService
     )
     {
     }
     async handle({ confirmationToken }: IActivateAccountUseCaseProps): Promise<ILocalMessage>
     {
-        const { email, action } = await this.tokenService.verifyToken(confirmationToken);
+        const { email, action, id } = await this.tokenService.verifyToken(confirmationToken);
+
+        const checkBlackList = this.configService.getOrThrow<boolean>('jwt.checkBlackList');
+
+        if (checkBlackList)
+        {
+            void await this.tokenService.checkConfirmationTokenInBlackList(id);
+        }
 
         void this.tokenService.validateConfirmationTokenAction(action as any, TokenActionEnum.ACTIVATE_ACCOUNT);
 
@@ -39,6 +47,8 @@ export class ActivateAccountUseCase
         user.enable = true;
 
         void await this.repository.update(user);
+
+        await this.tokenService.setConfirmationTokenBlackListed(id, confirmationToken);
 
         this.eventEmitter.emit(MailEventEnum.ACTIVATED_ACCOUNT, new ActivatedAccountEvent(user));
 

@@ -1,11 +1,11 @@
 import dataSource from '@config/db/data-source';
-import { User } from '@modules/user/domain/entities/user.entity';
+import { User } from '@modules/user/domain/entities';
 import { GenderEnum } from '@modules/user/domain/enums';
-import { SuperAdminDataInterface } from '@modules/user/infrastructure/seeds/super-admin-data.interface';
 import { Logger } from '@nestjs/common';
 import bcrypt from 'bcrypt';
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import fs from 'fs';
+import { SuperAdminDataInterface } from './super-admin-data.interface';
 
 export class CreateSuperAdminUserSeed1691333449496 implements MigrationInterface
 {

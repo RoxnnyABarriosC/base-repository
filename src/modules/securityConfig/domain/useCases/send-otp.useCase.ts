@@ -1,24 +1,22 @@
-import { SendOtpEvent } from '@modules/common/mail/domain/events';
-import { MailEventEnum } from '@modules/common/mail/domain/listeners';
-import { OTPSendTypeEnum } from '@modules/securityConfig/domain/enums';
-import { SendMessageEvent } from '@modules/securityConfig/domain/events/send-message.event';
-import { OTPLimitExceededException } from '@modules/securityConfig/domain/exceptions';
-import { OTPDisabledException } from '@modules/securityConfig/domain/exceptions/otp-disabled.exception';
-import { TwilioEventEnum } from '@modules/securityConfig/domain/listeners';
-import { IOTPRedis, OTPModel } from '@modules/securityConfig/domain/models';
-import { OTPService } from '@modules/securityConfig/domain/services';
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { IOTPConfig } from '@src/config';
+import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
 import { Cache } from 'cache-manager';
+import { OTPChannelToTargetDictionary } from '../dictionaries';
+import { OTPProvidersEnum, OTPSendChannelEnum, OTPTargetConfigEnum } from '../enums';
+import { SendOTPEmailEvent, SendOTPPhoneEvent } from '../events';
+import { OTPDisabledException, OTPLimitExceededException, PhoneNotDefinedForOTPSendingException } from '../exceptions';
+import { TwilioEventEnum } from '../listeners';
+import { OTPService } from '../services';
 
 interface ISendOTPUseCaseProps {
-    target: OTPSendTypeEnum;
+    channel: OTPSendChannelEnum;
     userId: string;
+    countAttempts?: boolean
 }
 
 @Injectable()
@@ -36,53 +34,52 @@ export class SendOTPUseCase
     )
     {}
 
-    async handle({ target, userId }: ISendOTPUseCaseProps)
+    async handle({ channel, userId, countAttempts = false }: ISendOTPUseCaseProps): Promise<ILocalMessage>
     {
         const user = await this.userRepository.getOne({ id: userId });
 
         const securityConfig = await user.securityConfig;
+
+        const target = OTPChannelToTargetDictionary.get(channel);
 
         if (!securityConfig.otp[target].enable)
         {
             throw new OTPDisabledException(target);
         }
 
-        const limit = this.configService.get<number>('otp.limitAttempts');
-
-        if (securityConfig.otp[target].attempts >= limit)
+        if (target === OTPTargetConfigEnum.PHONE && !(user?.phone))
         {
-            throw new OTPLimitExceededException(target, limit - securityConfig.otp[target].attempts);
+            throw new PhoneNotDefinedForOTPSendingException();
         }
 
-        const { expirationTime, ...otpConfig } = this.configService.getOrThrow<IOTPConfig>('otp');
-
-        const otp = new OTPModel(
-            expirationTime,
-            this.service.encryption.encrypt,
-            otpConfig as any
-        );
-
-        await otp.build();
-
-        securityConfig.otp[target].attempts += 1;
-
-        await this.cacheManager.set(otp.Key, { target, hash: otp.Hash, userId } as IOTPRedis, otp.ExpirationTime('ms') as number);
-
-        if (target === OTPSendTypeEnum.PHONE)
+        if (countAttempts)
         {
-            const message = `Your OTP code is ${otp.Code}`;
-            this.eventEmitter.emit(TwilioEventEnum.SEND_MESSAGE, new SendMessageEvent(message, user.phone));
+            const limit = this.configService.get<number>('otp.limitAttempts');
+
+            if (securityConfig.otpAttempts >= limit)
+            {
+                throw new OTPLimitExceededException(target, limit - securityConfig.otpAttempts);
+            }
+
+            securityConfig.otpAttempts += 1;
         }
 
-        if (target === OTPSendTypeEnum.EMAIL)
+        if (channel === OTPSendChannelEnum.SMS || channel === OTPSendChannelEnum.CALL || channel === OTPSendChannelEnum.WHATSAPP)
         {
-            this.eventEmitter.emit(MailEventEnum.SEND_OTP, new SendOtpEvent(user, otp.Code));
+            const whatsappChannel = securityConfig
+                .otp[target].providers.find(p =>  p === OTPProvidersEnum.WHATSAPP &&
+              channel !== OTPSendChannelEnum.CALL) as unknown as OTPSendChannelEnum.WHATSAPP;
+
+            this.eventEmitter.emit(TwilioEventEnum.SEND_OTP_PHONE, new SendOTPPhoneEvent(user.phone, whatsappChannel ?? channel));
         }
 
-        await this.repository.update(securityConfig);
+        if (channel === OTPSendChannelEnum.EMAIL)
+        {
+            this.eventEmitter.emit(TwilioEventEnum.SEND_OTP_EMAIL, new SendOTPEmailEvent(user.email, channel, user.FullName));
+        }
 
-        return {
-            [`${target}OtpKey`]: otp.Key
-        };
+        void await this.repository.update(securityConfig);
+
+        return SendLocalMessage(() =>  'messages.securityConfig.otp.sent');
     }
 }

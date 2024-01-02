@@ -1,4 +1,4 @@
-import { SendLocalMessage } from '@shared/utils';
+import { SendLocalMessage } from '@shared/app/utils';
 import { I18nContext } from 'nestjs-i18n';
 import { describe, expect, it, vi } from 'vitest';
 

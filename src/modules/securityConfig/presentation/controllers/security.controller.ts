@@ -1,13 +1,12 @@
 import { AuthUser, Protected } from '@modules/auth/presentation/decorators';
 import { SCOPE } from '@modules/securityConfig/domain/constants';
+import { OTPTargetConfigEnum } from '@modules/securityConfig/domain/enums';
 import {
     EnableOrDisableOTPUseCase, EnableOrDisableRequiredPasswordUseCase, GetFormConfigUseCase,
     SetPhoneOTPProvidersUseCase
 } from '@modules/securityConfig/domain/useCases';
-import { SetProvidersDto } from '@modules/securityConfig/presentation/dtos';
-import { SecurityConfigSerializerGroupsEnum } from '@modules/securityConfig/presentation/enums';
-import { FormConfigSerializer, SecurityConfigSerializer } from '@modules/securityConfig/presentation/serializers';
 import { User } from '@modules/user/domain/entities';
+import { EmailOrPhone } from '@modules/user/presentation/decorators';
 import {
     Body,
     Controller, Get,
@@ -16,16 +15,20 @@ import {
     Logger,
     Param, ParseEnumPipe, Patch
 } from '@nestjs/common';
-import { SerializerGroupsEnum } from '@shared/abstractClass';
-import { Bool, SetSerializerGroups } from '@shared/decorators';
-import { SetScopeSerializer, SkipCache } from '@shared/interceptors';
-import { Serializer } from '@shared/utils';
-import { OTPSendTypeEnum } from '../../domain/enums';
+import { Public, SkipCache } from '@shared/app/decorators';
+import { SetScopeSerializer, SetSerializerGroups } from '@shared/classValidator/decorators';
+import { SerializerGroupsEnum } from '@shared/classValidator/enums';
+import { Serializer } from '@shared/classValidator/utils';
+import { Bool } from '@shared/decorators';
+import { SetProvidersDto } from '../dtos';
+import { SecurityConfigSerializerGroupsEnum } from '../enums';
+import { OtpUserConfigSerializer, SecurityConfigSerializer } from '../serializers';
 
 @Controller({
     path: 'security',
     version: '1'
 })
+@Protected()
 @SetScopeSerializer(SCOPE)
 export class SecurityController
 {
@@ -39,8 +42,7 @@ export class SecurityController
     )
     {}
 
-    @Get()
-    @Protected()
+    @Get('config')
     @HttpCode(HttpStatus.OK)
     @SetSerializerGroups(
         SerializerGroupsEnum.ONLY_ID,
@@ -56,8 +58,7 @@ export class SecurityController
         return (await Serializer(await authUser.securityConfig, SecurityConfigSerializer)) as typeof SecurityConfigSerializer;
     }
 
-    @Patch('required-password/enable-or-disable/:enable')
-    @Protected()
+    @Patch('required-password/enable/:enable')
     @HttpCode(HttpStatus.OK)
     async enableOrDisableRequiredPassword(
       @AuthUser() authUser: User,
@@ -74,7 +75,6 @@ export class SecurityController
     }
 
     @Patch('otp/phone/providers')
-    @Protected()
     @HttpCode(HttpStatus.OK)
     async setProviders(
       @AuthUser() authUser: User,
@@ -90,13 +90,12 @@ export class SecurityController
             });
     }
 
-    @Patch('otp/:target/enable-or-disable/:enable')
-    @Protected()
+    @Patch('otp/:target/enable/:enable')
     @HttpCode(HttpStatus.OK)
     async enableOrDisable(
         @AuthUser() authUser: User,
         @Bool() enable: boolean,
-        @Param('target', new ParseEnumPipe(OTPSendTypeEnum)) target: string
+        @Param('target', new ParseEnumPipe(OTPTargetConfigEnum)) target: string
     )
     {
         this.logger.log(`Processing enable or disable ${target} otp request...`);
@@ -105,21 +104,22 @@ export class SecurityController
             .handle({
                 authUser,
                 enable,
-                target: target as OTPSendTypeEnum
+                target: target as OTPTargetConfigEnum
             });
     }
 
-    @Get('form-config/:emailOrPhone')
+    @Get('otp/config/:emailOrPhone')
     @HttpCode(HttpStatus.OK)
     @SkipCache()
-    async formConfig(
-      @Param('emailOrPhone') emailOrPhone: string
+    @Public()
+    async config(
+      @EmailOrPhone() emailOrPhone: string
     )
     {
-        this.logger.log('Processing get form config request...');
+        this.logger.log('Processing get otp config request...');
 
         const data  = await this.getFormConfigUseCase.handle({ emailOrPhone });
 
-        return (await Serializer(data, FormConfigSerializer)) as typeof FormConfigSerializer;
+        return (await Serializer(data, OtpUserConfigSerializer)) as typeof OtpUserConfigSerializer;
     }
 }

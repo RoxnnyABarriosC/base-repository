@@ -1,8 +1,13 @@
-import { User } from '@modules/user/domain/entities';
-import { UserService } from '@modules/user/domain/services';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { SaveUserDto } from '@modules/user/presentation/dtos';
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { passwordGeneratorRegex } from '@shared/regex';
+import { generateRandomNumber } from '@shared/utils';
+import { ILengthConfig } from '@src/config';
+import passwordGenerator from 'password-generator';
+import { User } from '../entities';
+import { UserService } from '../services';
 
 declare interface ISaveUserUseCaseProps {
     dto: SaveUserDto;
@@ -15,18 +20,20 @@ export class SaveUserUseCase
 
     constructor(
         private readonly repository: UserRepository,
-        private readonly service: UserService
+        private readonly service: UserService,
+        private readonly configService: ConfigService
     )
     {}
 
     async handle({ dto }: ISaveUserUseCaseProps): Promise<User>
     {
-        const password = dto.password;
-
-        delete dto.password;
-        delete dto.passwordConfirmation;
-
         this.logger.log('creating user...');
+
+        const { min, max } = this.configService.getOrThrow<ILengthConfig>('validatorProperties.password');
+
+        const passwordLength = generateRandomNumber(min, max);
+
+        const password =  passwordGenerator(passwordLength, false, passwordGeneratorRegex);
 
         let user = new User(dto);
 

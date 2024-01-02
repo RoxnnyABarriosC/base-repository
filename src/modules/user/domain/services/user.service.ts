@@ -1,16 +1,17 @@
 import { PasswordValueObject } from '@modules/auth/domain/valueObjects';
 import { UniqueService } from '@modules/common/index/infrastructure/services';
-import { User } from '@modules/user/domain/entities';
-import { SuperAdminCanNotBeModifiedException } from '@modules/user/domain/exceptions';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { User } from '../entities';
 
 @Injectable()
 export class UserService
 {
     constructor(
         private readonly uniqueService: UniqueService,
-        private readonly repository: UserRepository
+        private readonly repository: UserRepository,
+        private readonly configService: ConfigService
     )
     { }
 
@@ -21,7 +22,6 @@ export class UserService
             validate: {
                 only: {
                     email: entity.email,
-                    userName: entity.userName,
                     phone: entity.phone
                 }
             },
@@ -34,11 +34,13 @@ export class UserService
         return  await (new PasswordValueObject(password, 5, 30)).ready();
     }
 
-    checkSuperAdmin(user: User): void
+
+    async getEmailAndPhone(emailOrPhone: string)
     {
-        if (user.isSuperAdmin)
-        {
-            throw new SuperAdminCanNotBeModifiedException();
-        }
+        return await this.repository.exist({
+            condition: [{ email: emailOrPhone }, { phone: emailOrPhone }],
+            select: ['phone', 'email'],
+            withDeleted: true
+        });
     }
 }

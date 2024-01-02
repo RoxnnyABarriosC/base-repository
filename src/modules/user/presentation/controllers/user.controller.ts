@@ -1,42 +1,39 @@
-import { ManagePermissions, Protected, RequirePermissions } from '@modules/auth/presentation/decorators';
+import { Protected } from '@modules/auth/presentation/decorators';
 import { PermissionsDto } from '@modules/role/presentation/dtos';
 import { RoleSerializerGroupsEnum } from '@modules/role/presentation/enums';
 import { SCOPE } from '@modules/user/domain/constants';
+import { AdminUsersOnlyPolicy, CheckDomainEmailUpdatePolicy, DontDeleteYourselfPolicy, SuperAdminCanNotBeModifiedPolicy } from '@modules/user/domain/policies';
 import {
-    DeleteUserUseCase, EnableOrDisableUserUseCase,
+    DeleteUserUseCase,
+    EnableOrDisableUserUseCase,
+    GetUserByUserNameUseCase,
     GetUserUseCase,
-    ListUsersUseCase, ResetPasswordUseCase, RestoreUserUseCase,
-    SaveUserUseCase, SetRolesUserUseCase, UpdatePermissionsUserUseCase, UpdateUserUseCase, VerifyOrUnverifyUserUseCase
+    ListUsersUseCase,
+    ResetPasswordUseCase,
+    RestoreUserUseCase,
+    SaveUserUseCase,
+    SetRolesUserUseCase,
+    UpdatePermissionsUserUseCase,
+    UpdateUserUseCase,
+    VerifyOrUnverifyUserUseCase
 } from '@modules/user/domain/useCases';
-import { UserFilter, UserSort } from '@modules/user/presentation/criterias';
-import { SaveUserDto, SetRolesUserDto, UpdateUserDto } from '@modules/user/presentation/dtos';
-import { UserSerializerGroupsEnum } from '@modules/user/presentation/enums';
-import { UserSerializer } from '@modules/user/presentation/serializers';
 import { UserPermissionsEnum } from '@modules/user/user.permissions';
-import {
-    Body,
-    Controller, Delete,
-    Get,
-    HttpCode,
-    HttpStatus,
-    Logger,
-    Param, Patch,
-    Post, Put
-} from '@nestjs/common';
-import { CriteriaBuilder, IUris, PaginationFilter } from '@shared/criterias';
-import {
-    Bool,
-    Criteria,
-    DeletePermanently,
-    Filter,
-    Pagination,
-    PartialRemoved,
-    SetSerializerGroups,
-    Sort, UUID, Uris
-} from '@shared/decorators';
-import { ALL_MANAGE_PERMISSION } from '@shared/factories';
-import { SetScopeSerializer } from '@shared/interceptors';
-import { Serializer } from '@shared/utils';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Logger, Patch, Post, Put } from '@nestjs/common';
+import { ALL_MANAGE_PERMISSION } from '@shared/app/constants';
+import { CheckEmailDomain, CheckPolicies, ForceCheckPolicy, ManagePermissions, RequirePermissions } from '@shared/app/decorators';
+import { SetPipeGroups, SetScopeSerializer, SetSerializerGroups } from '@shared/classValidator/decorators';
+import { ContextGroupsEnum } from '@shared/classValidator/enums';
+import { Serializer } from '@shared/classValidator/utils';
+import { CriteriaBuilder, IUris } from '@shared/criteria';
+import { Criteria, Filter, Pagination, Sort, Uris } from '@shared/criteria/decorators';
+import { PaginationFilter } from '@shared/criteria/filters';
+import { Bool, DeletePermanently, PartialRemoved, UUID } from '@shared/decorators';
+import { EmailDomainTypeEnum } from '@shared/enums';
+import { UserFilter, UserSort } from '../criterias';
+import { UserName } from '../decorators';
+import { SaveUserDto, SetRolesUserDto, UpdateUserDto } from '../dtos';
+import { UserSerializerGroupsEnum } from '../enums';
+import { UserSerializer } from '../serializers';
 
 @Controller({
     path: 'users',
@@ -44,6 +41,7 @@ import { Serializer } from '@shared/utils';
 })
 @Protected()
 @SetScopeSerializer(SCOPE)
+@CheckEmailDomain(EmailDomainTypeEnum.ADMIN)
 @ManagePermissions(ALL_MANAGE_PERMISSION, UserPermissionsEnum.MANAGE)
 export class UserController
 {
@@ -60,7 +58,8 @@ export class UserController
         private readonly verifyOrUnverifyUseCase: VerifyOrUnverifyUserUseCase,
         private readonly resetPasswordUseCase: ResetPasswordUseCase,
         private readonly updatePermissionsUseCase: UpdatePermissionsUserUseCase,
-        private readonly setRolesUseCase: SetRolesUserUseCase
+        private readonly setRolesUseCase: SetRolesUserUseCase,
+        private readonly getByUserNameUseCase: GetUserByUserNameUseCase
     )
     {}
 
@@ -70,6 +69,7 @@ export class UserController
         UserSerializerGroupsEnum.ALL
     )
     @RequirePermissions(UserPermissionsEnum.SAVE)
+    @SetPipeGroups(ContextGroupsEnum.APP)
     async save(
         @Body() dto: SaveUserDto
     )
@@ -77,6 +77,67 @@ export class UserController
         this.logger.log('Processing save user request...');
 
         return (await Serializer(await this.saveUseCase.handle({ dto }), UserSerializer)) as typeof UserSerializer;
+    }
+
+    @Post('admin')
+    @HttpCode(HttpStatus.CREATED)
+    @SetSerializerGroups(
+        UserSerializerGroupsEnum.ALL
+    )
+    @RequirePermissions(UserPermissionsEnum.SAVE)
+    @SetPipeGroups(ContextGroupsEnum.ADMIN)
+    async saveAdmin(
+      @Body() dto: SaveUserDto
+    )
+    {
+        this.logger.log('Processing save user admin request...');
+
+        return (await Serializer(await this.saveUseCase.handle({ dto }), UserSerializer)) as typeof UserSerializer;
+    }
+
+    @Put(':id')
+    @HttpCode(HttpStatus.OK)
+    @SetSerializerGroups(
+        UserSerializerGroupsEnum.ALL,
+        RoleSerializerGroupsEnum.ONLY_ID
+    )
+    @RequirePermissions(UserPermissionsEnum.UPDATE)
+    @SetPipeGroups(ContextGroupsEnum.APP)
+    @CheckPolicies(SuperAdminCanNotBeModifiedPolicy, CheckDomainEmailUpdatePolicy)
+    @ForceCheckPolicy()
+    async update(
+      @UUID() id: string,
+      @Body() dto: UpdateUserDto
+    )
+    {
+        this.logger.log('Processing update user request...');
+
+        return (await Serializer(await this.updateUseCase.handle({
+            id, dto
+        }), UserSerializer)) as typeof UserSerializer;
+    }
+
+    @Put('admin/:id')
+    @HttpCode(HttpStatus.OK)
+    @SetSerializerGroups(
+        UserSerializerGroupsEnum.ALL,
+        RoleSerializerGroupsEnum.ONLY_ID
+    )
+    @RequirePermissions(UserPermissionsEnum.UPDATE)
+    @SetPipeGroups(ContextGroupsEnum.ADMIN)
+    @CheckPolicies(SuperAdminCanNotBeModifiedPolicy, CheckDomainEmailUpdatePolicy)
+    @ForceCheckPolicy()
+    async updateAdmin(
+      @UUID() id: string,
+      @Body() dto: UpdateUserDto
+    )
+    {
+        this.logger.log('Processing update user request...');
+
+        return (await Serializer(await this.updateUseCase.handle({
+            id,
+            dto
+        }), UserSerializer)) as typeof UserSerializer;
     }
 
     @Get()
@@ -110,7 +171,7 @@ export class UserController
             }), UserSerializer)) as typeof UserSerializer[];
     }
 
-    @Get(':username')
+    @Get(':userName')
     @HttpCode(HttpStatus.OK)
     @SetSerializerGroups(
         UserSerializerGroupsEnum.WITH_ROLES,
@@ -118,15 +179,36 @@ export class UserController
         RoleSerializerGroupsEnum.ONLY_ID
     )
     @RequirePermissions(UserPermissionsEnum.SHOW)
-    async get(
-        @Param('username') userName: string,
+    async getByUserName(
+        @UserName() userName: string,
         @PartialRemoved() partialRemoved?: boolean
     )
     {
         this.logger.log('Processing get user request...');
 
-        return (await Serializer(await this.getUseCase.handle({
+        return (await Serializer(await this.getByUserNameUseCase.handle({
             userName,
+            partialRemoved
+        }), UserSerializer)) as typeof UserSerializer;
+    }
+
+    @Get('id/:id')
+    @HttpCode(HttpStatus.OK)
+    @SetSerializerGroups(
+        UserSerializerGroupsEnum.WITH_ROLES,
+        UserSerializerGroupsEnum.WITH_PERMISSIONS,
+        RoleSerializerGroupsEnum.ONLY_ID
+    )
+    @RequirePermissions(UserPermissionsEnum.SHOW)
+    async getById(
+      @UUID() id: string,
+      @PartialRemoved() partialRemoved?: boolean
+    )
+    {
+        this.logger.log('Processing get user request...');
+
+        return (await Serializer(await this.getUseCase.handle({
+            id,
             partialRemoved
         }), UserSerializer)) as typeof UserSerializer;
     }
@@ -138,6 +220,8 @@ export class UserController
         RoleSerializerGroupsEnum.ONLY_ID
     )
     @RequirePermissions(UserPermissionsEnum.DELETE)
+    @CheckPolicies(DontDeleteYourselfPolicy, SuperAdminCanNotBeModifiedPolicy)
+    @ForceCheckPolicy()
     async delete(
         @UUID() id: string,
         @DeletePermanently() deletePermanently?: boolean
@@ -169,28 +253,11 @@ export class UserController
         }), UserSerializer)) as typeof UserSerializer;
     }
 
-    @Put(':id')
-    @HttpCode(HttpStatus.OK)
-    @SetSerializerGroups(
-        UserSerializerGroupsEnum.ALL,
-        RoleSerializerGroupsEnum.ONLY_ID
-    )
-    @RequirePermissions(UserPermissionsEnum.UPDATE)
-    async update(
-        @UUID() id: string,
-        @Body() dto: UpdateUserDto
-    )
-    {
-        this.logger.log('Processing update user request...');
-
-        return (await Serializer(await this.updateUseCase.handle({
-            id, dto
-        }), UserSerializer)) as typeof UserSerializer;
-    }
-
-    @Patch(':id/enable-or-disable/:enable')
+    @Patch(':id/enable/:enable')
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(UserPermissionsEnum.UPDATE_ENABLE)
+    @CheckPolicies(SuperAdminCanNotBeModifiedPolicy)
+    @ForceCheckPolicy()
     async enableOrDisable(
         @UUID() id: string,
         @Bool() enable: boolean
@@ -199,9 +266,11 @@ export class UserController
         return await this.enableOrDisableUseCase.handle({ id, enable });
     }
 
-    @Patch(':id/verify-or-unverify/:verify')
+    @Patch(':id/verify/:verify')
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(UserPermissionsEnum.UPDATE_VERIFY)
+    @CheckPolicies(SuperAdminCanNotBeModifiedPolicy)
+    @ForceCheckPolicy()
     async verifyOrUnverify(@UUID() id: string, @Bool('verify') verify: boolean)
     {
         return await this.verifyOrUnverifyUseCase.handle({ id, verify });
@@ -211,6 +280,8 @@ export class UserController
     @Patch(':id/reset-password')
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(UserPermissionsEnum.RESET_PASSWORD)
+    @CheckPolicies(SuperAdminCanNotBeModifiedPolicy)
+    @ForceCheckPolicy()
     async resetPassword(
         @UUID() id: string
     )
@@ -225,6 +296,8 @@ export class UserController
         RoleSerializerGroupsEnum.ONLY_ID
     )
     @RequirePermissions(UserPermissionsEnum.UPDATE_PERMISSIONS)
+    @CheckPolicies(SuperAdminCanNotBeModifiedPolicy, AdminUsersOnlyPolicy)
+    @ForceCheckPolicy()
     async updatePermissions(
         @UUID() id: string,
         @Body() dto: PermissionsDto)
@@ -242,6 +315,8 @@ export class UserController
         RoleSerializerGroupsEnum.ONLY_ID
     )
     @RequirePermissions(UserPermissionsEnum.UPDATE)
+    @CheckPolicies(SuperAdminCanNotBeModifiedPolicy, AdminUsersOnlyPolicy)
+    @ForceCheckPolicy()
     async setRoles(
         @UUID() id: string,
         @Body() dto: SetRolesUserDto

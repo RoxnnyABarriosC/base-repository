@@ -1,9 +1,8 @@
-import { OTPProvidersEnum, OTPSendTypeEnum } from '@modules/securityConfig/domain/enums';
+import { OTPProvidersEnum, OTPTargetConfigEnum } from '../enums';
 
 export type OTPConfigType = {
-    [key in OTPSendTypeEnum]: {
+    [key in OTPTargetConfigEnum]: {
         enable: boolean;
-        attempts: number;
         providers?: OTPProvidersEnum[];
     }
 }

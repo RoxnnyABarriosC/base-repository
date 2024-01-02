@@ -1,2 +1,11 @@
-export * from './role.repository';
-export * from './role-repository.interface';
+import { RoleRepository } from './role.repository';
+
+const repositories = [
+    RoleRepository
+];
+
+export {
+    RoleRepository
+};
+
+export default repositories;

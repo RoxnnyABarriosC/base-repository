@@ -1,6 +1,6 @@
-import { InvalidPasswordException } from '@modules/auth/domain/exceptions';
-import { EncryptionFactory } from '@modules/auth/domain/factories';
 import { IEncryption } from '@modules/auth/infrastructure/strategies';
+import { InvalidPasswordException } from '../exceptions';
+import { EncryptionFactory } from '../factories';
 
 export class PasswordValueObject
 {

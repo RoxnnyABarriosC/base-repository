@@ -7,13 +7,15 @@ import {
     FastifyAdapter,
     NestFastifyApplication
 } from '@nestjs/platform-fastify';
-import { LoggerContext } from '@shared/constants';
-import { CustomExceptionsFilter } from '@shared/filters';
-import { UserAgentMiddleware } from '@shared/middlewares';
-import { ValidationPipe } from '@shared/pipes';
+import { CustomExceptionsFilter } from '@shared/app/filters';
+import { onRequestHook } from '@shared/app/hooks';
+import { UserAgentMiddleware } from '@shared/app/middlewares';
+import { ValidationPipe } from '@shared/classValidator/pipes';
+import { LoggerContext } from '@shared/enums/logger-context';
 import { handlebars } from '@shared/utils';
 import { IServerConfig } from '@src/config';
 import cookieParser from 'cookie-parser';
+import { fastify } from 'fastify';
 import { contentParser } from 'fastify-file-interceptor';
 import qs from 'fastify-qs';
 import hpropagate from 'hpropagate';
@@ -29,9 +31,13 @@ void (async(): Promise<void> =>
         propagateInResponses: true
     });
 
+    const fastifyInstance =  fastify();
+
+    fastifyInstance.addHook('onRequest', onRequestHook);
+
     const app = await NestFactory.create<NestFastifyApplication>(
         AppModule,
-        new FastifyAdapter(),
+        new FastifyAdapter(fastifyInstance),
         {
             cors: false,
             bufferLogs: true,
@@ -70,7 +76,7 @@ void (async(): Promise<void> =>
             .get<ConfigService>(ConfigService)
             .get<IServerConfig>('server');
 
-        const _whiteList = whiteList.split(',').filter(u => u.length);
+        const _whiteList = whiteList.filter(u => u.length);
         _whiteList.push(url.web);
 
         // TODO: activar esto a futuro para aumentar la seguridad

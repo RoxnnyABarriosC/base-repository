@@ -1,16 +1,15 @@
-import { TokenActionEnum } from '@modules/auth/domain/enums';
-import { TokenService } from '@modules/auth/domain/services';
-import { ForgotPasswordDto } from '@modules/auth/presentation/dtos/forgot-password.dto';
+import { ForgotPasswordDto } from '@modules/auth/presentation/dtos';
 import { ForgotPasswordEvent } from '@modules/common/mail/domain/events';
 import { MailEventEnum } from '@modules/common/mail/domain/listeners';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { ILocalMessage } from '@shared/interfaces';
-import { SendLocalMessage } from '@shared/utils';
+import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
 import { IServerConfig } from '@src/config';
 import dayjs from 'dayjs';
+import { TokenActionEnum } from '../enums';
+import { TokenService } from '../services';
 
 declare interface IForgotPasswordUseCaseProps {
     dto: ForgotPasswordDto;

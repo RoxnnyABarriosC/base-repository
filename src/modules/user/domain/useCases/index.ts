@@ -9,3 +9,4 @@ export * from './verify-or-unverify-user.useCase';
 export * from './reset-password.useCase';
 export * from './set-roles-user.useCase';
 export * from './update-permissions-user.useCase';
+export * from './get-user-by-user-name.useCase';

@@ -1,4 +1,4 @@
-import { BaseEntity } from '@shared/entities';
+import { BaseEntity } from '@shared/app/entities';
 import { SlugGenerator } from '@shared/utils';
 import { Exclude, Expose } from 'class-transformer';
 
@@ -23,14 +23,7 @@ export class Role extends BaseEntity
     {
         permissions = Array.isArray(permissions) ? permissions : [permissions];
 
-        if (Array.isArray(this.permissions))
-        {
-            this.permissions = [...new Set([...permissions as string[], ...this.permissions])];
-        }
-        else
-        {
-            this.permissions = permissions;
-        }
+        this.permissions = permissions;
     }
 
     set AllowedViews(allowedViews: string | string[])

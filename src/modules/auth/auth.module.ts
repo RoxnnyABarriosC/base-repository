@@ -1,26 +1,6 @@
-import { JWTStrategy, LocalStrategy } from '@modules/auth/domain/strategies';
-import {
-    ActivateAccountUseCase,
-    ChangeForgotPasswordUseCase,
-    ChangeMyPasswordUseCase,
-    ForgotPasswordUseCase,
-    LoginUseCase,
-    LogoutUseCase,
-    RefreshTokenUseCase,
-    RegisterUseCase,
-    ResetPasswordWithTokenUseCase,
-    SetMainPictureOrBannerUseCase,
-    UnsetMainPictureOrBannerUseCase,
-    UpdateFirstLoginUseCase,
-    UpdateMeUseCase
-} from '@modules/auth/domain/useCases';
-import { TokenRepository } from '@modules/auth/infrastructure/repositories';
-import { AuthController } from '@modules/auth/presentation/controllers';
-import { RefreshTokenMiddleware } from '@modules/auth/presentation/middlewares';
+import { DeleteAccountTask } from '@modules/auth/infrastructure/tasks';
 import { CommonModule } from '@modules/common';
-import { RoleModule } from '@modules/role';
 import { SecurityConfigModule } from '@modules/securityConfig';
-import { OTPStrategy } from '@modules/securityConfig/domain/strategies/otp.strategy';
 import { UserModule } from '@modules/user';
 import { MiddlewareConsumer, Module, NestModule, RequestMethod, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -28,6 +8,24 @@ import { RouterModule } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService,  TokenService } from './domain/services';
+import { AppleStrategy, FacebookStrategy, GoogleStrategy, JWTStrategy, LocalStrategy } from './domain/strategies';
+import {
+    ActivateAccountUseCase,
+    ChangeForgotPasswordUseCase,
+    ChangeMyPasswordUseCase, DeleteAccountUseCase,
+    ForgotPasswordUseCase,
+    LoginUseCase,
+    LogoutUseCase, OAuthLoginUseCase,
+    RefreshTokenUseCase,
+    RegisterUseCase,
+    SetMainPictureOrBannerUseCase,
+    UnsetMainPictureOrBannerUseCase,
+    UpdateMeUseCase,
+    UpdateOnBoardingUseCase
+} from './domain/useCases';
+import { TokenRepository } from './infrastructure/repositories';
+import { AuthController, MeController, SocialAuthController } from './presentation/controllers';
+import { RefreshTokenMiddleware } from './presentation/middlewares';
 
 @Module({
     imports: [
@@ -56,7 +54,9 @@ import { AuthService,  TokenService } from './domain/services';
         ])
     ],
     controllers: [
-        AuthController
+        MeController,
+        AuthController,
+        SocialAuthController
     ],
     providers:[
         // USE CASES
@@ -69,10 +69,11 @@ import { AuthService,  TokenService } from './domain/services';
         ActivateAccountUseCase,
         ChangeForgotPasswordUseCase,
         ForgotPasswordUseCase,
-        ResetPasswordWithTokenUseCase,
         SetMainPictureOrBannerUseCase,
         UnsetMainPictureOrBannerUseCase,
-        UpdateFirstLoginUseCase,
+        UpdateOnBoardingUseCase,
+        OAuthLoginUseCase,
+        DeleteAccountUseCase,
         // SERVICES
         TokenService,
         AuthService,
@@ -80,7 +81,11 @@ import { AuthService,  TokenService } from './domain/services';
         TokenRepository,
         // STRATEGIES
         LocalStrategy,
-        JWTStrategy
+        JWTStrategy,
+        FacebookStrategy,
+        GoogleStrategy,
+        AppleStrategy,
+        DeleteAccountTask
     ],
     exports: [
         TokenService,

@@ -1,23 +1,23 @@
 import { User } from '@modules/user/domain/entities';
-import {  GetUserUseCase } from '@modules/user/domain/useCases';
+import { GetUserByUserNameUseCase, GetUserUseCase } from '@modules/user/domain/useCases';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundCustomException } from '@shared/exceptions';
+import { NotFoundCustomException } from '@shared/app/exceptions';
 import { I18nContext } from 'nestjs-i18n';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-describe('GetUserUseCase', () =>
+describe('GetUserByUserNameUseCase', () =>
 {
-    let useCase: GetUserUseCase;
+    let useCase: GetUserByUserNameUseCase;
     let repository: UserRepository;
 
-    const userMock = new User({ userName: 'test' });
+    const userMock = new User({ userName: 'test#1' });
 
     beforeEach(async() =>
     {
         const app: TestingModule = await Test.createTestingModule({
             providers: [
-                GetUserUseCase,
+                GetUserByUserNameUseCase,
                 {
                     provide: UserRepository,
                     useValue: {
@@ -27,7 +27,7 @@ describe('GetUserUseCase', () =>
             ]
         }).compile();
 
-        useCase = app.get<GetUserUseCase>(GetUserUseCase);
+        useCase = app.get<GetUserByUserNameUseCase>(GetUserByUserNameUseCase);
         repository = app.get<UserRepository>(UserRepository);
     });
 
@@ -52,7 +52,7 @@ describe('GetUserUseCase', () =>
             it('should get a user', async() =>
             {
                 // Arrange
-                const userName = 'test';
+                const userName = 'test#1';
                 const partialRemoved = false;
 
                 // Act
@@ -69,7 +69,7 @@ describe('GetUserUseCase', () =>
             it('should throw an error if user not exist', async() =>
             {
                 // Arrange
-                const userName = 'test';
+                const userName = 'test#1';
                 const partialRemoved = false;
 
                 vi.spyOn(I18nContext, 'current').mockReturnValue(<any>{

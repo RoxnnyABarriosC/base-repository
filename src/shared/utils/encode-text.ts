@@ -15,7 +15,7 @@ export const EncodeText = (text: string, type: AuthType): string =>
     }
     else if (type === 'phone')
     {
-        return mask(7, text.length - 2, text);
+        return mask(5, text.length - 2, text);
     }
     return text;
 };

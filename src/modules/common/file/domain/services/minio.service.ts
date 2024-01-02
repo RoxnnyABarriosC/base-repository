@@ -2,9 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MulterFile } from 'fastify-file-interceptor';
 import { Client } from 'minio';
-import { File } from '../entities/file.entity';
-import { MinioRemoveException } from '../exceptions/minio-remove.exception';
-import { MinioUploadException } from '../exceptions/minio-upload.exception';
+import { File } from '../entities';
+import { MinioRemoveException, MinioUploadException } from '../exceptions';
 
 @Injectable()
 export class MinioService

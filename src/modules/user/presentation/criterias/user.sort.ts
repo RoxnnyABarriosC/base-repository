@@ -1,8 +1,7 @@
 import { User } from '@modules/user/domain/entities';
-import { DefaultSorts, Sort } from '@shared/abstractClass';
-import { IsSort } from '@shared/decorators';
-import { SortEnum } from '@shared/enums';
-import { Expose } from 'class-transformer';
+import { DefaultSorts, Sort } from '@shared/criteria/abstractClass';
+import { IsSort } from '@shared/criteria/decorators';
+import { SortEnum } from '@shared/criteria/enums';
 
 export class UserSort extends Sort
 {
@@ -45,8 +44,7 @@ export class UserSort extends Sort
     @IsSort()
     public readonly deletedAt: SortEnum;
 
-    @Expose()
-    get DefaultSorts(): DefaultSorts<User>
+    override DefaultSorts(): DefaultSorts<User>
     {
         return [
             { createdAt: SortEnum.DESC }

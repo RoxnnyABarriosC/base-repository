@@ -1,5 +1,5 @@
-import { FileFieldsValidator, IValidatorOptions } from '@modules/common/file/presentation/validators';
 import { ParseFilePipe, UploadedFiles as _UploadedFiles } from '@nestjs/common';
+import { FileFieldsValidator, IValidatorOptions } from '../validators/file-fields.validator';
 
 export const UploadedFileFields = (options: IValidatorOptions = {}) =>
 {

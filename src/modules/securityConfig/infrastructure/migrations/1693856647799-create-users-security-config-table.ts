@@ -18,6 +18,11 @@ export class CreateUsersSecurityConfigTable1693856647799 implements MigrationInt
                         type: 'jsonb'
                     }),
                     new TableColumn({
+                        name: 'otpAttempts',
+                        type: 'int',
+                        default: 0
+                    }),
+                    new TableColumn({
                         name: 'oldPassword',
                         type: 'varchar',
                         isNullable: true

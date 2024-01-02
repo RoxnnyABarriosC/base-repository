@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { LoggerContext } from '@shared/constants';
+import { LoggerContext } from '@shared/enums/logger-context';
 
 /**
  * Function to parse an input value and convert it to a specific type.

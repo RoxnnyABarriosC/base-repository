@@ -1,4 +1,4 @@
-import { Permissions } from '@shared/factories';
+import { Permissions } from '@shared/app/factories';
 
 export enum FilePermissionsEnum {
     MANAGE = 'file:manage',

@@ -10,12 +10,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ValidationGuard } from '@shared/guards';
-import { CacheInterceptor } from '@shared/interceptors';
-import {
-    ResponseInterceptorProvider,
-    SerializerInterceptorProvider
-} from '@shared/providers';
+import { CacheInterceptor } from '@shared/app/interceptors';
+import { ResponseInterceptorProvider } from '@shared/app/providers';
+import { ValidationGuard } from '@shared/classValidator/guards';
+import { SerializerInterceptorProvider } from '@shared/classValidator/providers';
 import { ICacheConfig } from '@src/config';
 import { validateEnv } from '@src/validate-env';
 import { redisStore } from 'cache-manager-redis-yet';

@@ -1,12 +1,13 @@
-import { OTPSendTypeEnum } from '@modules/securityConfig/domain/enums';
+import { PhoneNotDefinedForOTPSendingException } from '@modules/securityConfig/domain/exceptions';
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
-import {  SendLocalMessage  } from '@shared/utils';
+import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
 import { User } from '@src/modules/user/domain/entities';
+import { OTPTargetConfigEnum } from '../enums';
 
 interface IEnableOrDisableOTPUseCaseProps {
     authUser: User;
-    target: OTPSendTypeEnum;
+    target: OTPTargetConfigEnum;
     enable: boolean;
 }
 
@@ -20,7 +21,7 @@ export class EnableOrDisableOTPUseCase
     )
     {}
 
-    async handle({ authUser, target, enable }: IEnableOrDisableOTPUseCaseProps)
+    async handle({ authUser, target, enable }: IEnableOrDisableOTPUseCaseProps): Promise<ILocalMessage>
     {
         const securityConfig = await this.repository.getOneBy({
             condition: { user: { _id: authUser._id } },
@@ -28,6 +29,11 @@ export class EnableOrDisableOTPUseCase
                 initThrow: true
             }
         });
+
+        if (target === OTPTargetConfigEnum.PHONE && !(authUser?.phone))
+        {
+            throw new PhoneNotDefinedForOTPSendingException();
+        }
 
         securityConfig.otp[target].enable = enable;
 

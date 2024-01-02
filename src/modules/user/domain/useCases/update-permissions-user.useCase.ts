@@ -1,8 +1,8 @@
 import { RoleService } from '@modules/role/domain/services';
 import { PermissionsDto } from '@modules/role/presentation/dtos';
-import { User } from '@modules/user/domain/entities';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
+import { User } from '../entities';
 
 declare interface IUpdatePermissionsUserUseCaseProps {
     id: string;

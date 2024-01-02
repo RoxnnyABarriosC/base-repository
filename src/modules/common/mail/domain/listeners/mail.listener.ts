@@ -2,7 +2,7 @@ import {
     ActivateAccountEvent,
     ActivatedAccountEvent,
     ChangeForgotPasswordEvent,
-    ForgotPasswordEvent, ResetPasswordEvent, SendOtpEvent, SendPublicOtpEvent
+    ForgotPasswordEvent
 } from '@modules/common/mail/domain/events';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -15,9 +15,6 @@ export enum MailEventEnum {
     ACTIVATED_ACCOUNT ='mail.activated.account',
     FORGOT_PASSWORD ='mail.forgot.password',
     CHANGE_FORGOT_PASSWORD ='mail.change.forgot.password',
-    RESET_PASSWORD ='mail.reset.password',
-    SEND_OTP = 'mail.send.otp',
-    SEND_PUBLIC_OTP = 'mail.send.public.otp',
 }
 
 @Injectable()
@@ -116,78 +113,6 @@ export class MailListener
                     urlWeb: this.configService.getOrThrow('server.url.web'),
                     urlApi: this.configService.getOrThrow('server.url.api'),
                     emailSupport: this.configService.getOrThrow('smtp.emails.default')
-                }
-            });
-        }
-        catch (error)
-        {
-            this.logger.error(error);
-        }
-    }
-
-    @OnEvent(MailEventEnum.RESET_PASSWORD, { async: true })
-    async handleResetPasswordEvent({ user, newPassword, urlConfirmationToken }: ResetPasswordEvent)
-    {
-        try
-        {
-            await this.mailerService.sendMail({
-                to: user.email,
-                subject: 'Please change your password',
-                template: './mail/auth/reset-password', // `.hbs` extension is appended automatically
-                context: { // ✏️ filling curly brackets with content
-                    fullName: user.FullName,
-                    newPassword,
-                    urlConfirmationToken,
-                    urlWeb: this.configService.getOrThrow('server.url.web'),
-                    urlApi: this.configService.getOrThrow('server.url.api'),
-                    emailSupport: this.configService.getOrThrow('smtp.emails.default')
-                }
-            });
-        }
-        catch (error)
-        {
-            this.logger.error(error);
-        }
-    }
-
-    @OnEvent(MailEventEnum.SEND_OTP, { async: true })
-    async handleSendOtpEvent({ user, otp }: SendOtpEvent)
-    {
-        try
-        {
-            await this.mailerService.sendMail({
-                to: user.email,
-                subject: 'Verification code',
-                template: './mail/otp/send-otp', // `.hbs` extension is appended automatically
-                context: { // ✏️ filling curly brackets with content
-                    fullName: user.FullName,
-                    otp,
-                    urlWeb: this.configService.getOrThrow('server.url.web'),
-                    urlApi: this.configService.getOrThrow('server.url.api'),
-                    emailSupport: this.configService.getOrThrow('smtp.emails.default')
-                }
-            });
-        }
-        catch (error)
-        {
-            this.logger.error(error);
-        }
-    }
-
-    @OnEvent(MailEventEnum.SEND_PUBLIC_OTP, { async: true })
-    async handleSendPublicOtpEvent({ email, otp }: SendPublicOtpEvent)
-    {
-        try
-        {
-            await this.mailerService.sendMail({
-                to: email,
-                subject: 'Verification code',
-                template: './mail/otp/send-public-otp', // `.hbs` extension is appended automatically
-                context: { // ✏️ filling curly brackets with content
-                    otp,
-                    urlWeb: this.configService.get('server.url.web'),
-                    urlApi: this.configService.get('server.url.api'),
-                    emailSupport: this.configService.get('smtp.emails.default')
                 }
             });
         }

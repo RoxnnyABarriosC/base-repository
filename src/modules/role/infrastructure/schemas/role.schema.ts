@@ -1,6 +1,6 @@
-import { BaseColumnsSchema } from '@shared/schemas';
+import { Role } from '@modules/role/domain/entities';
+import { BaseColumnsSchema } from '@shared/typeOrm/schemas';
 import { EntitySchema } from 'typeorm';
-import { Role } from '../../domain/entities/role.entity';
 
 export const RoleSchema = new EntitySchema<Role>({
     name: 'Role',

@@ -1,8 +1,10 @@
+import { BadCredentialsException } from '@modules/auth/domain/exceptions';
 import { EncryptionFactory } from '@modules/auth/domain/factories';
-import { CannotUseYourOldPasswordException } from '@modules/securityConfig/domain/exceptions';
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { User } from '@modules/user/domain/entities';
 import {  Injectable, Logger } from '@nestjs/common';
+import { SecurityConfig } from '../entities';
+import { CannotUseYourOldPasswordException } from '../exceptions';
 
 @Injectable()
 export class SecurityConfigService
@@ -30,5 +32,18 @@ export class SecurityConfigService
         securityConfig.oldPassword = user.password.toString();
 
         void await this.repository.update(securityConfig);
+    }
+
+    async getConfigOfEmailOrPhone(emailOrPhone: string): Promise<SecurityConfig>
+    {
+        try
+        {
+            return await this.repository.getConfigOfEmailOrPhone(emailOrPhone);
+        }
+        catch (e)
+        {
+            this.logger.error(e);
+            throw new BadCredentialsException();
+        }
     }
 }

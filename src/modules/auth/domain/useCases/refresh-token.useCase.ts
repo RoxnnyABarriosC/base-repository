@@ -1,7 +1,7 @@
-import { IDecodeToken, JWTModel } from '@modules/auth/domain/models';
-import { TokenService } from '@modules/auth/domain/services';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
+import { IDecodeToken, JWTModel } from '../models';
+import { TokenService } from '../services';
 
 declare interface IRefreshTokenUseCaseProps {
     decodeRefreshToken: IDecodeToken
@@ -28,10 +28,10 @@ export class RefreshTokenUseCase
             options: { initThrow: true }
         });
 
-        if (user.firstLogin)
+        if (user.onBoarding)
         {
             void await this.userRepository.setFalseFirstLogin(user._id);
-            user.firstLogin = false;
+            user.onBoarding = false;
         }
 
         const token = await this.tokenService.getToken(tokenId);

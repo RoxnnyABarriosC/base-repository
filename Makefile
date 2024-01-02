@@ -1,8 +1,4 @@
-install:
-	@echo '************                               ************'
-	@echo '************       INSTALL PACKAGES        ************'
-	@echo '************                               ************'
-	pnpm i
+#########################       CONFIG      #######################
 
 network:
 	@echo '************                               ************'
@@ -12,27 +8,58 @@ network:
 
 volume:
 	@echo '************                               ************'
-	@echo '************         CREATE VOLUME         ************'
+	@echo '************         CLEAN VOLUME          ************'
 	@echo '************                               ************'
 	sh volume.sh $${PROJECT_NAME:-base_repository}
 
-up:
-	@echo '************                               ************'
-	@echo '************        UP CONTAINERS          ************'
-	@echo '************                               ************'
-	docker compose -f docker-compose.yml -f docker-compose-dev.yml up -d
+#########################        DOC        #######################
 
-down:
+doc:
 	@echo '************                               ************'
-	@echo '************        DOWN CONTAINERS        ************'
+	@echo '************        DOC BUILD     	      ************'
 	@echo '************                               ************'
-	docker compose -f docker-compose.yml -f docker-compose-dev.yml down
+	make down-doc && TLS=$${TLS:-false} ENTRYPOINT=$${ENTRYPOINT:-http} \
+		DOC_API_DOMAIN=$${DOC_API_DOMAIN:-doc.api.localhost} \
+		docker compose -f docker-compose-doc.yml up --build -d
 
-stop:
+down-doc:
 	@echo '************                               ************'
-	@echo '************        STOP CONTAINERS        ************'
+	@echo '************        DOC DOWN     	      ************'
 	@echo '************                               ************'
-	docker compose -f docker-compose.yml -f docker-compose-dev.yml stop
+	docker compose -f docker-compose-doc.yml down
+
+stop-doc:
+	@echo '************                               ************'
+	@echo '************        DOC INIT     	      ************'
+	@echo '************                               ************'
+	docker compose -f docker-compose-doc.yml stop
+
+#########################       PROXY       #######################
+
+proxy:
+	@echo '************                               ************'
+	@echo '************        DOC INIT     	      ************'
+	@echo '************                               ************'
+	docker compose -f docker-compose-proxy.yml up --build -d
+	make down-proxy && TLS=$${TLS:-false} ENTRYPOINT=$${ENTRYPOINT:-http} \
+			ACME_STAGING=$${ACME_STAGING} \
+    		PROXY_DOMAIN=$${PROXY_DOMAIN:-proxy.localhost} \
+    		ACME_EMAIL=$${ACME_EMAIL:-user@baserepository.com} \
+    		docker compose -f docker-compose-proxy.yml up --build -d
+
+down-proxy:
+	@echo '************                               ************'
+	@echo '************        DOC INIT     	      ************'
+	@echo '************                               ************'
+	docker compose -f docker-compose-proxy.yml down
+
+stop-proxy:
+	@echo '************                               ************'
+	@echo '************        DOC INIT     	      ************'
+	@echo '************                               ************'
+	docker compose -f docker-compose-proxy.yml stop
+
+#########################      SERVER      #######################
 
 local:
 	@echo '************                               ************'
@@ -46,11 +73,26 @@ dev:
 	@echo '************                               ************'
 	sh dev-server.sh
 
+
 prod:
 	@echo '************                               ************'
 	@echo '************        PROD INIT    	      ************'
 	@echo '************                               ************'
 	sh prod-server.sh
+
+down:
+	@echo '************                               ************'
+	@echo '************        DOWN CONTAINERS        ************'
+	@echo '************                               ************'
+	docker compose -f docker-compose.yml -f docker-compose-dev.yml down
+
+stop:
+	@echo '************                               ************'
+	@echo '************        STOP CONTAINERS        ************'
+	@echo '************                               ************'
+	docker compose -f docker-compose.yml -f docker-compose-dev.yml stop
+
+#########################       EXEC       #######################
 
 exec:
 	@echo '************                               ************'
@@ -64,6 +106,8 @@ sh:
 	@echo '************                               ************'
 	docker compose exec api sh
 
+#########################        DB        #######################
+
 migrate:
 	@echo '************                               ************'
 	@echo '************        MIGRATE DB    	      ************'
@@ -76,6 +120,15 @@ seed:
 	@echo '************                               ************'
 	docker compose exec api npm run seed
 
+#########################       CLEAN       #######################
+
 clean:
 	docker compose down -v --remove-orphans
+	docker rmi $$(docker images -f "dangling=true" -q)
+	docker ps -a | grep _run_ | awk '{print $$1}' | xargs -I {} docker rm {}
+
+clean-soft:
+	docker compose down --remove-orphans
+	sh volume.sh $${PROJECT_NAME:-base_repository}
+	docker rmi $$(docker images -f "dangling=true" -q)
 	docker ps -a | grep _run_ | awk '{print $$1}' | xargs -I {} docker rm {}

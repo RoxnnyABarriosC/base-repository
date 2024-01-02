@@ -1,7 +1,7 @@
 import configuration from '@config/configuration';
-import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
+import { SecurityConfigRepository } from '../repositories';
 
 const otpTaskConfig = configuration().tasks.otp;
 

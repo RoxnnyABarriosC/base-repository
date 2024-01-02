@@ -1,10 +1,10 @@
-import { MinioService } from '@modules/common/file/domain/services';
 import { FileRepository } from '@modules/common/file/infrastructure/repositories';
 import { SaveFileDto } from '@modules/common/file/presentation/dtos';
 import { Injectable, Logger } from '@nestjs/common';
 import { Settle } from '@shared/utils';
 import { MulterFile } from 'fastify-file-interceptor';
 import { File } from '../entities/file.entity';
+import { MinioService } from '../services';
 
 interface ISaveFilesUseCaseProps {
     rawFiles: MulterFile[];

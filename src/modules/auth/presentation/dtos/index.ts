@@ -1,4 +1,4 @@
-export * from './stepper-login.dto';
+export * from './otp-login.dto';
 export * from './login.dto';
 export * from './register.dto';
 export * from './me.dto';

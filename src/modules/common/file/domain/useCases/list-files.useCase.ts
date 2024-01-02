@@ -1,9 +1,9 @@
-import { File } from '@modules/common/file/domain/entities';
 import { FileRepository } from '@modules/common/file/infrastructure/repositories';
 import { IMyStore } from '@modules/common/store';
 import {  Injectable, Logger } from '@nestjs/common';
-import { CriteriaBuilder } from '@shared/criterias';
+import { CriteriaBuilder } from '@shared/criteria';
 import { ClsService } from 'nestjs-cls';
+import { File } from '../entities';
 
 interface IListFilesUseCaseProps {
     criteria: CriteriaBuilder;

@@ -1,8 +1,8 @@
-import { AllowedViewsDto } from '@modules/role/presentation/dtos/allowed-views.dto';
-import { PermissionsDto } from '@modules/role/presentation/dtos/permissions.dto';
-import { ScopeConfigDto } from '@modules/role/presentation/dtos/scope-config.dto';
 import { IntersectionType } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
+import { AllowedViewsDto } from './allowed-views.dto';
+import { PermissionsDto } from './permissions.dto';
+import { ScopeConfigDto } from './scope-config.dto';
 
 export class RoleDto extends IntersectionType(
     PermissionsDto,

@@ -1,8 +1,6 @@
-import { NotAllowedRemoveASystemRolException } from '@modules/role/domain/exceptions';
 import { RoleRepository } from '@modules/role/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
-import { ILocalMessage } from '@shared/interfaces';
-import { SendLocalMessage } from '@shared/utils';
+import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
 
 declare interface IEnableOrDisableRoleUseCaseProps {
     id: string;
@@ -22,12 +20,6 @@ export class EnableOrDisableRoleUseCase
         this.logger.log('Getting role...');
 
         const role = await this.repository.getOne({ id });
-
-        this.logger.log('Checking if role is system...');
-        if (role.ofSystem)
-        {
-            throw new NotAllowedRemoveASystemRolException();
-        }
 
         this.logger.log(`Setting role enable: ${enable} ...`);
 

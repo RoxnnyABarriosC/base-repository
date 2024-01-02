@@ -1,8 +1,8 @@
-import { User } from '@modules/user/domain/entities';
-import { UserService } from '@modules/user/domain/services';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import {  UpdateUserDto } from '@modules/user/presentation/dtos';
 import { Injectable, Logger } from '@nestjs/common';
+import { User } from '../entities';
+import { UserService } from '../services';
 
 interface IUpdateUserUseCaseProps {
     id: string;
@@ -31,8 +31,6 @@ export class UpdateUserUseCase
         this.logger.log('Getting user...');
 
         let user = await this.repository.getOne({ id, withDeleted: true });
-
-        void this.service.checkSuperAdmin(user);
 
         user.build(dto);
 

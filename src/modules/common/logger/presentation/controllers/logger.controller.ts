@@ -1,12 +1,12 @@
 import { Protected } from '@modules/auth/presentation/decorators';
-import { CheckSuperAdmin } from '@modules/auth/presentation/guards';
-import { SkipLogging } from '@modules/common/logger/presentation/interceptors';
-import { Controller, Get, Logger, Render } from '@nestjs/common';
-import { PaginationFilter } from '@shared/criterias';
-import { Criteria, Pagination } from '@shared/decorators';
-import { NotInterceptResponse, SkipCache } from '@shared/interceptors';
+import { Controller, Get, Logger } from '@nestjs/common';
+import { CheckEmailDomain, CheckSuperAdmin, NotInterceptResponse, SkipCache } from '@shared/app/decorators';
+import { Criteria, Pagination } from '@shared/criteria/decorators';
+import { PaginationFilter } from '@shared/criteria/filters';
+import { EmailDomainTypeEnum } from '@shared/enums';
 import { toArrayOfPlainStringsOrJson } from 'log-parsed-json';
 import * as fs from 'fs';
+import { SkipLogging } from '../interceptors';
 
 
 @SkipCache()
@@ -15,6 +15,7 @@ import * as fs from 'fs';
 @NotInterceptResponse()
 @Protected()
 @CheckSuperAdmin()
+@CheckEmailDomain(EmailDomainTypeEnum.ADMIN)
 export class LoggerController
 {
     private readonly logger = new Logger(LoggerController.name);

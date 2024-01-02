@@ -1,12 +1,10 @@
-import { IAuthData } from '@modules/auth/domain/strategies';
-import { User } from '@modules/user/domain/entities';
+import { RequestAuth } from '@modules/auth/domain/strategies';
 import { ExecutionContext, createParamDecorator } from '@nestjs/common';
-import { FastifyRequest } from 'fastify';
 
 export const AuthUser = createParamDecorator(
     (data: unknown, ctx: ExecutionContext) =>
     {
-        const request = ctx.switchToHttp().getRequest<FastifyRequest & { user: IAuthData | User}>();
+        const request = ctx.switchToHttp().getRequest<RequestAuth>();
 
         if (!('user' in request))
         {

@@ -1,8 +1,3 @@
-import { Token } from '@modules/auth/domain/entities';
-import { TokenActionEnum } from '@modules/auth/domain/enums';
-import { InvalidConfirmationTokenException } from '@modules/auth/domain/exceptions';
-import { TokenBlackListedException } from '@modules/auth/domain/exceptions/token-black-listed.exception';
-import { IDecodeToken, JWTModel } from '@modules/auth/domain/models';
 import { TokenRepository } from '@modules/auth/infrastructure/repositories';
 import { User } from '@modules/user/domain/entities';
 import { Injectable } from '@nestjs/common';
@@ -13,6 +8,10 @@ import { IJwtConfig } from '@src/config';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { v4 as uuidV4 } from 'uuid';
+import { Token } from '../entities';
+import { TokenActionEnum } from '../enums';
+import { InvalidConfirmationTokenException, TokenBlackListedException } from '../exceptions';
+import { IDecodeToken, JWTModel } from '../models';
 
 @Injectable()
 export class TokenService

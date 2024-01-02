@@ -1,8 +1,8 @@
 import { RoleRepository } from '@modules/role/infrastructure/repositories';
 import { UpdateRoleDto } from '@modules/role/presentation/dtos';
 import { Injectable, Logger } from '@nestjs/common';
-import { Role } from '../entities/role.entity';
-import { RoleService } from '../services/role.service';
+import { Role } from '../entities';
+import { RoleService } from '../services';
 
 declare interface IUpdateRoleUseCaseProps {
     id: string;

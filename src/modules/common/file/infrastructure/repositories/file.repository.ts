@@ -1,13 +1,13 @@
 import { File } from '@modules/common/file/domain/entities';
-import { FileSchema } from '@modules/common/file/infrastructure/schemas';
 import { FileFilters } from '@modules/common/file/presentation/criterias';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseRepository } from '@shared/abstractClass';
-import { CriteriaBuilder } from '@shared/criterias';
-import { PgSqlFilter } from '@shared/helpers';
-import { Paginator } from '@shared/pagination';
+import { CriteriaBuilder } from '@shared/criteria';
+import { BaseRepository } from '@shared/typeOrm/abstractClass';
+import { PgSqlFilterCriteria } from '@shared/typeOrm/helpers';
+import { Paginator } from '@shared/typeOrm/pagination';
 import { Repository } from 'typeorm';
+import { FileSchema } from '../schemas';
 
 
 @Injectable()
@@ -24,7 +24,7 @@ export class FileRepository extends BaseRepository<File>
     {
         const queryBuilder = this.repository.createQueryBuilder('i');
 
-        const filter = new PgSqlFilter(criteria.getFilter<any>(), queryBuilder);
+        const filter = new PgSqlFilterCriteria(criteria.getFilter<any>(), queryBuilder);
 
         queryBuilder.where('1 = 1');
 

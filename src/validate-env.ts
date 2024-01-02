@@ -1,6 +1,14 @@
-import { bool, cleanEnv, host, num, port, str, url } from 'envalid';
+import { StringToArray } from '@shared/utils';
+import { bool, cleanEnv, host, makeValidator, num, port, str, url } from 'envalid';
 
-export function validateEnv(config: Record<string, any>): Record<string, any>
+
+const srtToArray = makeValidator((input: string) =>
+{
+    return StringToArray(input, ',');
+});
+
+
+export const validateEnv =  (config: Record<string, any>): Record<string, any> =>
 {
     const clean = cleanEnv(config, {
         NODE_ENV: str({
@@ -12,7 +20,10 @@ export function validateEnv(config: Record<string, any>): Record<string, any>
         URL_WEB: url({ default: 'http://app.localhost' }),
         PREFIX: str({ default: '/api' }),
         VERSION: str({ default: '/v1' }),
-        WHITE_LIST: str({ default: 'api.localhost,http://mail.localhost/' }),
+        WHITE_LIST: srtToArray({
+            default: ['api.localhost', 'http://mail.localhost/'],
+            example: 'http://localhost:3000,http://localhost:3001'
+        }),
 
         LOGGER_COLORIZE: bool({ default: true }),
         LOGGER_SINGLE_LINE: bool({ default: false }),
@@ -66,8 +77,6 @@ export function validateEnv(config: Record<string, any>): Record<string, any>
         SMTP_SENDER_NAME: str(),
         SMTP_SENDER_EMAIL_DEFAULT: str(),
 
-        MINIO_EXPOSE_HOST: str({ default: undefined }),
-        MINIO_EXPOSE_HTTPS: bool({ default: undefined }),
         MINIO_HOST: str(),
         MINIO_ACCESS_KEY: str(),
         MINIO_SECRET_KEY: str(),
@@ -77,15 +86,38 @@ export function validateEnv(config: Record<string, any>): Record<string, any>
         MINIO_PRIVATE_BUCKET: str(),
         MINIO_REGION: str(),
         MINIO_ROOT_PATH: str(),
-        MINIO_SIGN_EXPIRE: num(),
+        MINIO_SIGN_EXPIRE: num({ default: 9000 }),
 
-        OTP_EXPIRATION_TIME: str(),
-        OTP_LIMIT_ATTEMPTS: num(),
-        OTP_TASK_RESTARTING_ATTEMPTS: str(),
+        OTP_LIMIT_ATTEMPTS: num({ default: 50 }),
+        OTP_TASK_RESTARTING_ATTEMPTS: str({ default: '0 0 * * *' }),
+        OTP_CODE_LENGTH: num({ default: 6 }),
 
         TWILIO_ACCOUNT_SID: str(),
         TWILIO_AUTH_TOKEN: str(),
-        TWILIO_FROM_NUMBER: str()
+        TWILIO_FROM_NUMBER: str(),
+        TWILIO_OTP_SERVICE_SID: str(),
+
+        SENDGRID_TEMPLATE_PUBLIC_OTP_ID: str(),
+        SENDGRID_TEMPLATE_OTP_ID: str(),
+
+        FB_OAUTH_ID: str(),
+        FB_OAUTH_SECRET: str(),
+        FB_OAUTH_CALLBACK: url(),
+
+        GO_OAUTH_ID: str(),
+        GO_OAUTH_SECRET: str(),
+        GO_OAUTH_CALLBACK: url(),
+
+        AP_OAUTH_ID: str(),
+        AP_OAUTH_SECRET: str(),
+        AP_OAUTH_CALLBACK: url(),
+
+        DOMAINS_ALLOWED_FOR_ADMINISTRATOR_EMAILS: srtToArray({
+            example: 'example.com,example2.com',
+            default: ['d2d.com', 'dare2dream.com', 'baserepository.com']
+        }),
+
+        ELAPSED_DAYS_TO_DELETE_A_USER: num({ default:30 })
     });
 
     config = { ...config, ...clean };
@@ -93,4 +125,4 @@ export function validateEnv(config: Record<string, any>): Record<string, any>
     process.env = <any>{ ...process.env, ...config };
 
     return config;
-}
+};

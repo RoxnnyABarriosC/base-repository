@@ -1,19 +1,21 @@
-import { IDecodeToken } from '@modules/auth/domain/models';
-import { TokenService } from '@modules/auth/domain/services';
 import { User } from '@modules/user/domain/entities';
+import { UserService } from '@modules/user/domain/services';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { ForbiddenCustomException } from '@shared/exceptions';
+import { ForbiddenCustomException } from '@shared/app/exceptions';
+import { FastifyRequest } from 'fastify';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { IDecodeToken } from '../models';
+import { AuthService, TokenService } from '../services';
 
 export declare interface IAuthData {
     payload: IDecodeToken;
     data: User;
 }
 
-export type RequestAuth = Request & { user: IAuthData }
+export type RequestAuth = FastifyRequest & { user: IAuthData }
 
 @Injectable()
 export class JWTStrategy extends PassportStrategy(Strategy)
@@ -23,7 +25,7 @@ export class JWTStrategy extends PassportStrategy(Strategy)
     constructor(
         private readonly configService: ConfigService,
         private readonly tokenService: TokenService,
-        private readonly userRepository: UserRepository
+        private readonly service: AuthService
     )
     {
         super({
@@ -42,11 +44,7 @@ export class JWTStrategy extends PassportStrategy(Strategy)
             void await this.tokenService.checkTokenInBlackList(payload.id);
         }
 
-        const user: User = await this.userRepository.getOneBy({
-            condition: { _id: payload.userId },
-            options: { initThrow: false },
-            withDeleted: false
-        });
+        const user: User = await this.service.getJWTUserById(payload.userId);
 
         if (!user)
         {

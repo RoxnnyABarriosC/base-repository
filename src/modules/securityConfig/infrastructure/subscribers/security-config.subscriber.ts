@@ -1,6 +1,6 @@
 import { SecurityConfig } from '@modules/securityConfig/domain/entities';
 import { Logger } from '@nestjs/common';
-import { EntitySubscriberInterface, EventSubscriber, InsertEvent, UpdateEvent } from 'typeorm';
+import { EntitySubscriberInterface, EventSubscriber, UpdateEvent } from 'typeorm';
 
 @EventSubscriber()
 export class SecurityConfigSubscriber implements EntitySubscriberInterface<SecurityConfig>
@@ -16,7 +16,7 @@ export class SecurityConfigSubscriber implements EntitySubscriberInterface<Secur
     {
         const entity = event.entity as SecurityConfig;
 
-        if (!entity.otp.email.enable &&  !entity.otp.phone.enable)
+        if (entity instanceof SecurityConfig && !entity.otp?.email?.enable && !entity?.otp?.phone?.enable)
         {
             entity.requiredPassword = true;
         }

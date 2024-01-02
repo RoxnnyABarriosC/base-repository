@@ -1,10 +1,10 @@
-import { ParseBoolean } from '@shared/decorators';
+import { Parse } from '@shared/classValidator/transforms';
 import { IsBoolean, IsOptional } from 'class-validator';
 
 export class SaveFileDto
 {
     @IsOptional()
     @IsBoolean()
-    @ParseBoolean()
-    public isPrivate;
+    @Parse()
+    public readonly isPrivate: boolean;
 }

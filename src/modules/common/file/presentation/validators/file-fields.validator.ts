@@ -1,6 +1,6 @@
 import { MimeTypeEnum } from '@modules/common/file/domain/enums';
 import { FileValidator } from '@nestjs/common';
-import { BadRequestCustomException } from '@shared/exceptions';
+import { BadRequestCustomException } from '@shared/app/exceptions';
 import { megabytesToBytes } from '@shared/utils';
 import { MulterFile } from 'fastify-file-interceptor';
 

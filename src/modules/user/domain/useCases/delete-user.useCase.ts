@@ -1,6 +1,6 @@
-import { User } from '@modules/user/domain/entities';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
+import { User } from '../entities';
 
 declare interface IDeleteUserUseCaseProps {
     id: string;

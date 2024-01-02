@@ -1,8 +1,7 @@
-import { UserService } from '@modules/user/domain/services';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
-import { ILocalMessage } from '@shared/interfaces';
-import { SendLocalMessage } from '@shared/utils';
+import { ILocalMessage, SendLocalMessage } from '@shared/app/utils';
+import { UserService } from '../services';
 
 interface IVerifyOrUnverifyUserUseCaseProps {
     id: string;
@@ -25,9 +24,6 @@ export class VerifyOrUnverifyUserUseCase
         this.logger.log('Getting user...');
 
         const user = await this.repository.getOne({ id });
-
-        this.logger.log('Checking if user is super admin...');
-        void this.service.checkSuperAdmin(user);
 
         this.logger.log(`Setting user verify: ${verify} ...`);
 
