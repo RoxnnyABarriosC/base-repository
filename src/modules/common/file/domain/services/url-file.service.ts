@@ -1,4 +1,3 @@
-import configuration from '@config/configuration';
 import { Logger } from '@nestjs/common';
 import { File } from '../entities';
 import { UrlSignService } from '../services';

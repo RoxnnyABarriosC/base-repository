@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MulterFile } from 'fastify-file-interceptor';
-import { Client } from 'minio';
+import { MinioService as _MinioService } from 'nestjs-minio-client';
 import { File } from '../entities';
 import { MinioRemoveException, MinioUploadException } from '../exceptions';
 
@@ -9,24 +9,14 @@ import { MinioRemoveException, MinioUploadException } from '../exceptions';
 export class MinioService
 {
     private readonly logger = new Logger(MinioService.name);
-    private readonly client: Client;
     private readonly bucket: string;
 
     constructor(
-        private readonly configService: ConfigService
+        private readonly configService: ConfigService,
+        private readonly minioService: _MinioService
     )
     {
-        this.bucket = this.configService.getOrThrow('s3.publicBucket');
-
-        this.client = new Client(
-            {
-                endPoint: this.configService.getOrThrow('s3.host'),
-                region: this.configService.getOrThrow('s3.region'),
-                accessKey: this.configService.getOrThrow('s3.accessKey'),
-                secretKey: this.configService.getOrThrow('s3.secretKey'),
-                port: this.configService.getOrThrow('s3.port'),
-                useSSL: this.configService.getOrThrow('s3.useSSL')
-            });
+        this.bucket = this.configService.getOrThrow('s3.privateBucket');
     }
 
     async upload(file: MulterFile, fileEntity: File): Promise<void>
@@ -37,7 +27,7 @@ export class MinioService
 
         try
         {
-            await this.client.putObject(this.bucket, objectName, stream, metaData);
+            await this.minioService.client.putObject(this.bucket, objectName, stream, metaData);
         }
         catch (error)
         {
@@ -50,7 +40,7 @@ export class MinioService
     {
         try
         {
-            await this.client.removeObject(this.bucket, file.path);
+            await this.minioService.client.removeObject(this.bucket, file.path);
         }
         catch (error)
         {
@@ -64,7 +54,7 @@ export class MinioService
     {
         try
         {
-            await this.client.removeObjects(this.bucket, files.map(f => f.path));
+            await this.minioService.client.removeObjects(this.bucket, files.map(f => f.path));
         }
         catch (error)
         {
