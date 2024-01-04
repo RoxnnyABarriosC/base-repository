@@ -2,6 +2,7 @@ import { RoleFilters } from '@modules/role/presentation/criterias';
 import { User } from '@modules/user/domain/entities';
 import { IsPermissionValid, ValidateIfPropertyExists } from '@shared/classValidator/decorators';
 import { Parse, StringToArray } from '@shared/classValidator/transforms';
+import { Trim } from '@shared/classValidator/transforms/trim.decorator';
 import { Filter } from '@shared/criteria/abstractClass';
 import { RenameProperty } from '@shared/decorators';
 import { allPermissionsEnums } from '@src/app.permissions';
@@ -21,6 +22,7 @@ export enum UserFilters {
 export class UserFilter extends Filter<User>
 {
     @IsString()
+    @Trim()
     @ValidateIfPropertyExists()
     public readonly search: string;
 

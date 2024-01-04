@@ -5,3 +5,5 @@ export const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,24}$/g;
 export const passwordGeneratorRegex = /.*[A-Za-z\d@$!%*?&]/;
 
 export const userNameRegex = /^(?<username>[a-zA-Z\d]+)#(?<usernameid>\d+)$/g;
+
+export const stringTrim = /\s+/g;

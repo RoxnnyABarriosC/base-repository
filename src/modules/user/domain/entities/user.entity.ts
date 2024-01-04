@@ -35,6 +35,7 @@ export class User extends BaseEntity
     @Expose() public facebookAccountId?: string;
     @Expose() public googleAccountId?: string;
     @Expose() public appleAccountId?: string;
+    @Expose() public blockedAt?: Date | number | null;
 
     constructor(data?: Partial<User>, validate?: boolean)
     {

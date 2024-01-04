@@ -1,5 +1,6 @@
 import { IsPermissionValid, ValidateIfPropertyExists } from '@shared/classValidator/decorators';
 import { Parse, StringToArray } from '@shared/classValidator/transforms';
+import { Trim } from '@shared/classValidator/transforms/trim.decorator';
 import { Filter } from '@shared/criteria/abstractClass';
 import { RenameProperty } from '@shared/decorators';
 import { allPermissionsEnums } from '@src/app.permissions';
@@ -19,6 +20,7 @@ export enum RoleFilters {
 export class RoleFilter extends Filter
 {
     @IsString()
+    @Trim()
     @ValidateIfPropertyExists()
     public readonly search: string;
 
