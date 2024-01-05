@@ -15,7 +15,8 @@ export class CreateUsersSecurityConfigTable1693856647799 implements MigrationInt
                     ...basicPropertiesMigration,
                     new TableColumn({
                         name: 'otp',
-                        type: 'jsonb'
+                        type: 'jsonb',
+                        default: '\'{"phone": { "enable": false, "providers": [] }, "email": { "enable": false }}\'::jsonb'
                     }),
                     new TableColumn({
                         name: 'otpAttempts',

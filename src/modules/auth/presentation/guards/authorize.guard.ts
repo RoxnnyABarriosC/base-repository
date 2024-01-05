@@ -3,7 +3,7 @@ import { AuthService } from '@modules/auth/domain/services';
 import { RequestAuth } from '@modules/auth/domain/strategies';
 import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { ModuleRef, Reflector } from '@nestjs/core';
-import { Protected } from '@shared/app/abstractClass';
+import { Authorize } from '@shared/app/abstractClass';
 import {
     CHECK_POLICIES_KEY,
     FORCE_CHECK_POLICY_KEY,
@@ -16,9 +16,9 @@ import {
 
 
 @Injectable()
-export class ProtectedGuard extends Protected<RequestAuth> implements CanActivate
+export class AuthorizeGuard extends Authorize<RequestAuth> implements CanActivate
 {
-    private readonly logger = new Logger(ProtectedGuard.name);
+    private readonly logger = new Logger(AuthorizeGuard.name);
     private readonly authService: AuthService;
 
     constructor(

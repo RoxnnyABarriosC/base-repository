@@ -6,17 +6,8 @@ import { OTPConfigType } from './otp-config.type';
 @Exclude()
 export class SecurityConfig extends BaseEntity
 {
-    @Expose() public otp: OTPConfigType = {
-        phone: {
-            enable: false,
-            providers: []
-        },
-        email: {
-            enable: false
-        }
-    };
-
-    @Expose() public otpAttempts  = 0;
+    @Expose() public otp: OTPConfigType;
+    @Expose() public otpAttempts: number;
     @Expose() public requiredPassword: boolean;
     @Expose() public oldPassword: string;
 

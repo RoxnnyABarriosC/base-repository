@@ -3,9 +3,11 @@ import { DisabledUserException, UserIsNotSuperAdminException } from '@modules/us
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
 import { PermissionActions } from '@shared/app/decorators';
+import { ForbiddenCustomException } from '@shared/app/exceptions';
+import dayjs from 'dayjs';
 import { OAuthAccountPropertiesDictionary } from '../dictionaries';
 import { OAuthProviderEnum } from '../enums';
-import { BadCredentialsException } from '../exceptions';
+import { BadCredentialsException, BlockedAccountException } from '../exceptions';
 import { EncryptionFactory } from '../factories';
 
 export interface IAuthorizationData
@@ -27,13 +29,39 @@ export class AuthService
     )
     { }
 
-    async validateUser(emailOrPhone: string, password: string, checkFn: (user: User) => Promise<unknown> = null, { checkSuperAdmin = false, checkPassword = true } = {}): Promise<User>
+    async localAuthenticate(emailOrPhone: string, password: string): Promise<User>
     {
         const user = await this.userRepository.findOneByEmailOrPhone({
             emailOrPhone,
             withDeleted: true
         });
 
+        return await this.validateUser(user, password, null);
+    }
+
+    async otpAuthenticate(emailOrPhone: string, password: string,  checkFn: (user: User) => Promise<unknown> = null, checkPassword: boolean): Promise<User>
+    {
+        const user = await this.userRepository.findOneByEmailOrPhone({
+            emailOrPhone,
+            withDeleted: true
+        });
+
+        return await this.validateUser(user, password, checkFn, { checkPassword });
+    }
+
+    async jwtAuthenticate(id: string): Promise<User>
+    {
+        const user = await this.userRepository.getOneBy({
+            condition: { _id: id },
+            options: { initThrow: false },
+            withDeleted: false
+        });
+
+        return await this.validateUser(user, null, null, { checkPassword: false });
+    }
+
+    async validateUser(user: User, password: string, checkFn: (user: User) => Promise<unknown> = null, { checkSuperAdmin = false, checkPassword = true } = {}): Promise<User>
+    {
         if (!user)
         {
             throw new BadCredentialsException();
@@ -54,12 +82,33 @@ export class AuthService
             throw new UserIsNotSuperAdminException();
         }
 
+        const userBlocked = (user.blocked.enable && !user.blocked.blockedAt) ||
+          (user.blocked.enable && user.blocked.blockedAt && dayjs().isBefore(dayjs(user.blocked.blockedAt)));
+
+        if (userBlocked)
+        {
+            throw new BlockedAccountException();
+        }
+
+        if (user.blocked.enable)
+        {
+            user.blocked = {
+                enable: false,
+                blockedAt: null
+            };
+
+            void await this.userRepository.update(user);
+        }
+
         if (checkFn)
         {
             await checkFn(user);
         }
 
-        await this.userRepository.restore(user._id);
+        if (user.deletedAt)
+        {
+            await this.userRepository.restore(user._id);
+        }
 
         return user;
     }
@@ -100,15 +149,6 @@ export class AuthService
             options: {
                 initThrow: false
             }
-        });
-    }
-
-    async getJWTUserById(id: string): Promise<User>
-    {
-        return await this.userRepository.getOneBy({
-            condition: { _id: id },
-            options: { initThrow: false },
-            withDeleted: false
         });
     }
 }

@@ -7,11 +7,11 @@ export class Role extends BaseEntity
 {
     @Expose() public name: string;
     @Expose() public slug: string;
-    @Expose() public enable = false;
-    @Expose() public ofSystem = false;
+    @Expose() public enable: boolean;
+    @Expose() public ofSystem: boolean;
     @Expose() public permissions: string[] = [];
     @Expose() public allowedViews: string[] = [];
-    @Expose() public scopeConfig: unknown = {};
+    @Expose() public scopeConfig: object = {};
 
     constructor(data?: Partial<Role>, validate?: boolean)
     {

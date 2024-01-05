@@ -11,7 +11,8 @@ export const SecurityConfigSchema = new EntitySchema<SecurityConfig>({
     columns: {
         ...BaseColumnsSchema,
         otp: {
-            type: 'jsonb'
+            type: 'jsonb',
+            default: '\'{"phone": { "enable": false, "providers": [] }, "email": { "enable": false }}\'::jsonb'
         },
         otpAttempts: {
             type: Number,

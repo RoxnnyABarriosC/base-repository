@@ -6,6 +6,7 @@ declare interface IPartialBuildOptions
 {
     allowNull?: boolean;
     validate?: boolean;
+    _this?: object;
 }
 
 @Exclude()
@@ -39,7 +40,7 @@ export abstract class BaseEntity<T = any>
         }
     }
 
-    partialBuild(data: Partial<T>, { allowNull = false, validate = false }: IPartialBuildOptions = {})
+    partialBuild(data: Partial<T>, { allowNull = false, validate = false, _this }: IPartialBuildOptions = {})
     {
         const propertiesUpdate = Object.keys(data).reduce((prev, property) =>
         {
@@ -51,9 +52,9 @@ export abstract class BaseEntity<T = any>
             };
         }, {});
 
-        Object.assign(this, validate
+        Object.assign(_this ?? this, validate
             ? plainToClassFromExist(
-                this,
+                _this ?? this,
                 propertiesUpdate,
                 {
                     excludeExtraneousValues: true,

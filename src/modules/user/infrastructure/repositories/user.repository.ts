@@ -137,4 +137,9 @@ export class UserRepository extends BaseRepository<User>
 
         await queryBuilder.execute();
     }
+
+    async disable(id: string)
+    {
+        await this.repository.update({ _id: id } as any, { enable: false });
+    }
 }

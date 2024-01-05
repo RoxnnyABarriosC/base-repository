@@ -6,6 +6,7 @@ import { EmailDomainTypeEnum } from '@shared/enums';
 import { GetDomainTypeOfEmail, getEmailDomain } from '@shared/utils';
 import { User } from '../entities';
 import {
+    DontBlockYourselfException,
     DontDeleteYourselfException,
     OnlySuperAdminCanUpdateEmailException,
     OnlySuperAdminCanUpdateUserNameException,
@@ -46,6 +47,16 @@ export class UserPolicyService
         if (user._id === authUserId)
         {
             throw new DontDeleteYourselfException();
+        }
+    }
+
+    async checkDontBlockYourselfPolicy(authUserId: string, id: string, withDeleted = false): Promise<void>
+    {
+        const user = await this.repository.exist({ condition: { _id: id }, initThrow: true, select: ['_id'], withDeleted }) as User;
+
+        if (user._id === authUserId)
+        {
+            throw new DontBlockYourselfException();
         }
     }
 

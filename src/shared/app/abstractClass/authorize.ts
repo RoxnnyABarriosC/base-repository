@@ -2,7 +2,7 @@ import { ModuleRef, Reflector } from '@nestjs/core';
 import { PolicyType } from './policy';
 
 
-export abstract class Protected<T>
+export abstract class Authorize<T>
 {
     protected readonly reflector: Reflector;
     protected readonly moduleRef: ModuleRef;

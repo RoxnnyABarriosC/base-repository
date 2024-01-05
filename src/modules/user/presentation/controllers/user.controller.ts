@@ -3,7 +3,9 @@ import { PermissionsDto } from '@modules/role/presentation/dtos';
 import { RoleSerializerGroupsEnum } from '@modules/role/presentation/enums';
 import { SCOPE } from '@modules/user/domain/constants';
 import { AdminUsersOnlyPolicy, CheckDomainEmailUpdatePolicy, DontDeleteYourselfPolicy, SuperAdminCanNotBeModifiedPolicy } from '@modules/user/domain/policies';
+import { DontBlockYourselfPolicy } from '@modules/user/domain/policies/dont-block-yourself.policy';
 import {
+    BlockUserUseCase,
     DeleteUserUseCase,
     EnableOrDisableUserUseCase,
     GetUserByUserNameUseCase,
@@ -31,7 +33,7 @@ import { Bool, DeletePermanently, PartialRemoved, UUID } from '@shared/decorator
 import { EmailDomainTypeEnum } from '@shared/enums';
 import { UserFilter, UserSort } from '../criterias';
 import { UserName } from '../decorators';
-import { SaveUserDto, SetRolesUserDto, UpdateUserDto } from '../dtos';
+import { BlockUserDto, SaveUserDto, SetRolesUserDto, UpdateUserDto } from '../dtos';
 import { UserSerializerGroupsEnum } from '../enums';
 import { UserSerializer } from '../serializers';
 
@@ -59,7 +61,8 @@ export class UserController
         private readonly resetPasswordUseCase: ResetPasswordUseCase,
         private readonly updatePermissionsUseCase: UpdatePermissionsUserUseCase,
         private readonly setRolesUseCase: SetRolesUserUseCase,
-        private readonly getByUserNameUseCase: GetUserByUserNameUseCase
+        private readonly getByUserNameUseCase: GetUserByUserNameUseCase,
+        private readonly blockUserUseCase: BlockUserUseCase
     )
     {}
 
@@ -326,5 +329,18 @@ export class UserController
             id,
             dto
         }), UserSerializer)) as typeof UserSerializer;
+    }
+
+    @Patch(':id/block')
+    @HttpCode(HttpStatus.OK)
+    @RequirePermissions(UserPermissionsEnum.BLOCK)
+    @CheckPolicies(DontBlockYourselfPolicy, SuperAdminCanNotBeModifiedPolicy)
+    @ForceCheckPolicy()
+    async block(
+      @UUID() id: string,
+      @Body() dto: BlockUserDto
+    )
+    {
+        return await this.blockUserUseCase.handle({ id, dto });
     }
 }

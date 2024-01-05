@@ -18,7 +18,7 @@ export const RoleSchema = new EntitySchema<Role>({
         },
         enable: {
             type: Boolean,
-            default: true
+            default: false
         },
         ofSystem: {
             type: Boolean,
