@@ -57,6 +57,10 @@ export class OAuthLoginUseCase
 
             user = await this.userRepository.save(user) as User;
         }
+        else
+        {
+            await this.authService.validateUser(user, null, null, { checkPassword: false });
+        }
 
         return await this.tokenService.createToken(user);
     }

@@ -21,7 +21,14 @@ export class DeleteUserUseCase
     {
         this.logger.log('Deleting user...');
 
-        return await this.repository.delete({ id, softDelete: !deletePermanently, withDeleted: deletePermanently });
+        const user = await this.repository.delete({ id, softDelete: !deletePermanently, withDeleted: deletePermanently });
+
+        if (!deletePermanently)
+        {
+            await this.repository.disable(id);
+        }
+
+        return user;
     }
 }
 

@@ -69,17 +69,14 @@ export class OTPStrategy extends PassportStrategy(Strategy, 'otp')
             }
         }
 
-        return await this.authService.validateUser(
+        return await this.authService.otpAuthenticate(
             emailOrPhone?.toLowerCase(),
             password,
             await this.otpService.checkOtp(
                 req.body as AuthOTPDto,
                 requiredOTPProperties
             ),
-            {
-                checkSuperAdmin: false,
-                checkPassword: securityConfig.requiredPassword
-            }
+            securityConfig.requiredPassword
         );
     }
 }

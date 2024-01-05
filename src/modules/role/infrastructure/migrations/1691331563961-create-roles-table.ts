@@ -26,7 +26,7 @@ export class CreateRolesTable1691331563961 implements MigrationInterface
                     new TableColumn({
                         name: 'enable',
                         type: 'boolean',
-                        default: true
+                        default: false
                     }),
                     new TableColumn({
                         name: 'ofSystem',

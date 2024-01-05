@@ -1,2 +1,2 @@
 export * from './policy';
-export * from './protected';
+export * from './authorize';

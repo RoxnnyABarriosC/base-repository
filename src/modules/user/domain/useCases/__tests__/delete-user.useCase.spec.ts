@@ -21,7 +21,8 @@ describe('DeleteUserUseCase', () =>
                 {
                     provide: UserRepository,
                     useValue: {
-                        delete: vi.fn().mockResolvedValue(userMock)
+                        delete: vi.fn().mockResolvedValue(userMock),
+                        disable: vi.fn().mockResolvedValue(undefined)
                     }
                 }
             ]

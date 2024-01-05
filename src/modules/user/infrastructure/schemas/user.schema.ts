@@ -33,14 +33,17 @@ export const UserSchema = new EntitySchema<User>({
         },
         phone: {
             type: String,
-            unique: true
+            unique: true,
+            nullable: true
         },
         gender: {
             type: String,
-            enum: GenderEnum
+            enum: GenderEnum,
+            nullable: true
         },
         birthday: {
-            type: Date
+            type: Date,
+            nullable: true
         },
         verify: {
             type: Boolean,
@@ -75,6 +78,10 @@ export const UserSchema = new EntitySchema<User>({
             type: Boolean,
             default: false
         },
+        blocked:{
+            type: 'jsonb',
+            default: '\'{"enable": false, "blockedAt": null}\'::jsonb'
+        },
         permissions: {
             type: 'simple-array',
             nullable: true
@@ -108,6 +115,16 @@ export const UserSchema = new EntitySchema<User>({
             expression: `
               ("onBoarding" = true) OR
               ("onBoarding" = false AND phone IS NOT NULL AND gender IS NOT NULL AND birthday IS NOT NULL)
+            `
+        },
+        {
+            name: 'BLOCKED_USER_CHECK',
+            expression: `
+              ((blocked->>'enable')::boolean = false AND (blocked->>'blockedAt' IS NULL)) OR
+              (
+                (blocked->>'enable')::boolean = true AND
+                (blocked->>'blockedAt' IS NULL OR (blocked->>'blockedAt')::timestamp IS NOT NULL)
+              )
             `
         }
     ],

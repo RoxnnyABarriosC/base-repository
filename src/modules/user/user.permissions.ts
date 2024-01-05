@@ -4,6 +4,7 @@ export enum UserPermissionsEnum {
     MANAGE = 'user:manage',
     SAVE = 'user:save',
     UPDATE = 'user:update',
+    BLOCK = 'user:block',
     SHOW = 'user:show',
     LIST = 'user:list',
     DELETE = 'user:delete',

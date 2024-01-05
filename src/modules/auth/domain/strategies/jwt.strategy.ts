@@ -1,10 +1,7 @@
 import { User } from '@modules/user/domain/entities';
-import { UserService } from '@modules/user/domain/services';
-import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { ForbiddenCustomException } from '@shared/app/exceptions';
 import { FastifyRequest } from 'fastify';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { IDecodeToken } from '../models';
@@ -44,12 +41,7 @@ export class JWTStrategy extends PassportStrategy(Strategy)
             void await this.tokenService.checkTokenInBlackList(payload.id);
         }
 
-        const user: User = await this.service.getJWTUserById(payload.userId);
-
-        if (!user)
-        {
-            throw new ForbiddenCustomException();
-        }
+        const user: User = await this.service.jwtAuthenticate(payload.userId);
 
         return { payload,  data: user };
     }

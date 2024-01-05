@@ -3,6 +3,7 @@ import { PasswordValueObject } from '@modules/auth/domain/valueObjects';
 import { File } from '@modules/common/file/domain/entities';
 import { Role } from '@modules/role/domain/entities';
 import { SecurityConfig } from '@modules/securityConfig/domain/entities';
+import { IBlockedUser } from '@modules/user/domain/entities/blocked-user.interface';
 import { BaseEntity } from '@shared/app/entities';
 import { GetDomainTypeOfEmail } from '@shared/utils';
 import { Exclude, Expose } from 'class-transformer';
@@ -21,10 +22,10 @@ export class User extends BaseEntity
     @Expose() public phone?: string;
     @Expose() public gender?: GenderEnum;
     @Expose() public birthday?: Date;
-    @Expose() public enable = false;
-    @Expose() public verify = false;
-    @Expose() public onBoarding = true;
-    @Expose() public isSuperAdmin = false;
+    @Expose() public enable: boolean;
+    @Expose() public verify: boolean;
+    @Expose() public onBoarding: boolean;
+    @Expose() public isSuperAdmin: boolean;
     public password: PasswordValueObject | string;
     @Expose() public permissions?: string[];
     @Expose() public passwordRequestedAt?: Date | number;
@@ -35,6 +36,7 @@ export class User extends BaseEntity
     @Expose() public facebookAccountId?: string;
     @Expose() public googleAccountId?: string;
     @Expose() public appleAccountId?: string;
+    @Expose() public blocked?: IBlockedUser;
 
     constructor(data?: Partial<User>, validate?: boolean)
     {

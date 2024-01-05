@@ -3,13 +3,14 @@ import { ModuleRef } from '@nestjs/core';
 import { BadRequestCustomException } from '@shared/app/exceptions';
 import { BaseRepository } from '@shared/typeOrm/abstractClass';
 import { I18nContext } from 'nestjs-i18n';
+import { FindOperator } from 'typeorm';
 
 interface IUniqueConfig<T = any>
 {
     repository: any;
     validate: {
-        only?: {[P in keyof T]?: T[P]}
-        combined?: {[P in keyof T]?: T[P]}[]
+        only?: {[P in keyof T]?: T[P] | FindOperator<T>}
+        combined?: {[P in keyof T]?: T[P] | FindOperator<T>}[]
     }
     refValue?: string;
 }

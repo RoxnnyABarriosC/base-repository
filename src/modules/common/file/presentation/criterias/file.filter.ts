@@ -1,9 +1,10 @@
 import { RoleFilters } from '@modules/role/presentation/criterias';
 import { ValidateIfPropertyExists } from '@shared/classValidator/decorators';
 import { Parse } from '@shared/classValidator/transforms';
+import { Trim } from '@shared/classValidator/transforms/trim.decorator';
 import { Filter } from '@shared/criteria/abstractClass';
 import { RenameProperty } from '@shared/decorators';
-import { IsBoolean, IsOptional } from 'class-validator';
+import { IsBoolean, IsString } from 'class-validator';
 
 export enum FileFilters {
     SEARCH = 'search',
@@ -15,7 +16,9 @@ export enum FileFilters {
 // TODO: cargar a la metadata el campo referencial contr la db
 export class FileFilter extends Filter
 {
-    @IsOptional()
+    @IsString()
+    @Trim()
+    @ValidateIfPropertyExists()
     public readonly search: string;
 
     @IsBoolean()

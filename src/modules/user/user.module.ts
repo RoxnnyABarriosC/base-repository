@@ -6,6 +6,7 @@ import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserPolicyService, UserService } from './domain/services';
 import {
+    BlockUserUseCase,
     DeleteUserUseCase,
     EnableOrDisableUserUseCase,
     GetUserByUserNameUseCase,
@@ -44,6 +45,7 @@ import { UserController } from './presentation/controllers';
         ResetPasswordUseCase,
         UpdatePermissionsUserUseCase,
         SetRolesUserUseCase,
+        BlockUserUseCase,
         UserRepository,
         UserService,
         UserPolicyService
