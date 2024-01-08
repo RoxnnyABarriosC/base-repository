@@ -4,6 +4,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NotFoundCustomException } from '@shared/app/exceptions';
 import { BaseRepository } from '@shared/typeOrm/abstractClass';
+import { addTimeToCurrentDate } from '@shared/utils';
 import { Repository } from 'typeorm';
 import { SecurityConfigSchema } from '../schemas';
 
@@ -74,5 +75,29 @@ export class SecurityConfigRepository extends BaseRepository<SecurityConfig>
         }
 
         return entity;
+    }
+
+    async tempBlockedAt(id: string, time: number)
+    {
+        const tempBlockedAt = addTimeToCurrentDate(`${time}s`).toDate();
+
+        await this.repository.update({ _id: id } as any, { tempBlockedAt, blockedTime: time, authAttempts: 0 });
+
+        return tempBlockedAt;
+    }
+
+    async incrementAttempts(id: string)
+    {
+        await this.repository.update({ _id: id } as any, { authAttempts: () => 'authAttempts + 1' });
+    }
+
+    async setAuthAttempts(id: string, authAttempts = 0)
+    {
+        await this.repository.update({ _id: id } as any, { authAttempts });
+    }
+
+    async resetTempBlock(id: string)
+    {
+        await this.repository.update({ _id: id } as any, { tempBlockedAt: null, blockedTime: 0, authAttempts: 0 });
     }
 }

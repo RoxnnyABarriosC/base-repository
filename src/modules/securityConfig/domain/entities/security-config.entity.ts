@@ -11,6 +11,10 @@ export class SecurityConfig extends BaseEntity
     @Expose() public requiredPassword: boolean;
     @Expose() public oldPassword: string;
 
+    @Expose() public authAttempts: number;
+    @Expose() public blockedTime: number;
+    @Expose() public tempBlockedAt: Date;
+
     @Expose() public readonly user: Promise<User>;
 
     public readonly __user__: User;

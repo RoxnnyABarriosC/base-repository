@@ -1,13 +1,16 @@
+import { SecurityConfig } from '@modules/securityConfig/domain/entities';
+import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { User } from '@modules/user/domain/entities';
 import { DisabledUserException, UserIsNotSuperAdminException } from '@modules/user/domain/exceptions';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PermissionActions } from '@shared/app/decorators';
-import { ForbiddenCustomException } from '@shared/app/exceptions';
 import dayjs from 'dayjs';
 import { OAuthAccountPropertiesDictionary } from '../dictionaries';
 import { OAuthProviderEnum } from '../enums';
-import { BadCredentialsException, BlockedAccountException } from '../exceptions';
+import { AuthAttemptsExceededException, BadCredentialsException, BlockedAccountException, TemporalBlockedAccountException } from '../exceptions';
 import { EncryptionFactory } from '../factories';
 
 export interface IAuthorizationData
@@ -25,7 +28,10 @@ export class AuthService
     private readonly encryption = EncryptionFactory.create();
 
     constructor(
-        private readonly userRepository: UserRepository
+        private readonly userRepository: UserRepository,
+        private readonly securityRepository: SecurityConfigRepository,
+        private readonly configService: ConfigService,
+        private readonly eventEmitter: EventEmitter2
     )
     { }
 
@@ -36,7 +42,7 @@ export class AuthService
             withDeleted: true
         });
 
-        return await this.validateUser(user, password, null);
+        return await this.validateUser(user, password, null, { checkTempBlock: true });
     }
 
     async otpAuthenticate(emailOrPhone: string, password: string,  checkFn: (user: User) => Promise<unknown> = null, checkPassword: boolean): Promise<User>
@@ -46,7 +52,7 @@ export class AuthService
             withDeleted: true
         });
 
-        return await this.validateUser(user, password, checkFn, { checkPassword });
+        return await this.validateUser(user, password, checkFn, { checkPassword, checkTempBlock: true });
     }
 
     async jwtAuthenticate(id: string): Promise<User>
@@ -60,16 +66,42 @@ export class AuthService
         return await this.validateUser(user, null, null, { checkPassword: false });
     }
 
-    async validateUser(user: User, password: string, checkFn: (user: User) => Promise<unknown> = null, { checkSuperAdmin = false, checkPassword = true } = {}): Promise<User>
+    async validateUser(
+        user: User,
+        password: string,
+      checkFn: (user: User) => Promise<unknown> = null,
+      { checkSuperAdmin = false, checkPassword = true, checkTempBlock = false } = {}
+    ): Promise<User>
     {
-        if (!user)
+        this.checkUserValidity(user, checkSuperAdmin, checkTempBlock);
+
+        const securityConfig = await user.securityConfig;
+
+        if (checkTempBlock)
         {
-            throw new BadCredentialsException();
+            await this.handleTempBlockValidation(securityConfig);
         }
 
         if (checkPassword)
         {
-            void await this.checkPassword(password, user?.password.toString());
+            await this.checkPasswordAndHandleSecurity(user, password, securityConfig, checkTempBlock);
+        }
+
+        if (checkFn)
+        {
+            await this.handleCustomCheckFunction(user, checkFn, securityConfig, checkTempBlock);
+        }
+
+        await this.handleUserRestorationAndTempBlockReset(user, securityConfig);
+
+        return user;
+    }
+
+    private checkUserValidity(user: User, checkSuperAdmin: boolean, checkTempBlock: boolean): void
+    {
+        if (!user)
+        {
+            throw new BadCredentialsException();
         }
 
         if (!user.enable)
@@ -82,35 +114,94 @@ export class AuthService
             throw new UserIsNotSuperAdminException();
         }
 
-        const userBlocked = (user.blocked.enable && !user.blocked.blockedAt) ||
-          (user.blocked.enable && user.blocked.blockedAt && dayjs().isBefore(dayjs(user.blocked.blockedAt)));
+        const userBlocked = this.isUserBlocked(user);
 
         if (userBlocked)
         {
             throw new BlockedAccountException();
         }
+    }
 
-        if (user.blocked.enable)
+    private isUserBlocked(user: User): boolean
+    {
+        return (user.blocked.enable && !user.blocked.blockedAt) ||
+          (user.blocked.enable && user.blocked.blockedAt && dayjs().isBefore(dayjs(user.blocked.blockedAt)));
+    }
+
+    private async handleTempBlockValidation(securityConfig: SecurityConfig): Promise<void>
+    {
+        if (securityConfig?.tempBlockedAt && dayjs().isBefore(dayjs(securityConfig.tempBlockedAt)))
         {
-            user.blocked = {
-                enable: false,
-                blockedAt: null
-            };
-
-            void await this.userRepository.update(user);
+            throw new TemporalBlockedAccountException(securityConfig.blockedTime, securityConfig.tempBlockedAt);
         }
 
-        if (checkFn)
+        if (securityConfig?.tempBlockedAt)
+        {
+            securityConfig.authAttempts = 0;
+            securityConfig.tempBlockedAt = null;
+
+            await this.securityRepository.update(securityConfig);
+        }
+
+        const authAttempts = this.configService.getOrThrow<number>('temporalBlock.attempts');
+        const blockedTime = this.configService.getOrThrow<number>('temporalBlock.time');
+
+        if (securityConfig.authAttempts > (authAttempts - 1))
+        {
+            let time = securityConfig.blockedTime || blockedTime;
+
+            if (securityConfig.blockedTime)
+            {
+                time = time * 2;
+            }
+
+            throw new AuthAttemptsExceededException(time, await this.securityRepository.tempBlockedAt(securityConfig._id, time));
+        }
+    }
+
+    private async checkPasswordAndHandleSecurity(user: User, password: string, securityConfig: SecurityConfig, checkTempBlock: boolean): Promise<void>
+    {
+        try
+        {
+            await this.checkPassword(password, user?.password.toString());
+        }
+        catch (e)
+        {
+            if (checkTempBlock)
+            {
+                await this.securityRepository.incrementAttempts(securityConfig._id);
+            }
+            throw e;
+        }
+    }
+
+    private async handleCustomCheckFunction(user: User, checkFn: (user: User) => Promise<unknown>, securityConfig: SecurityConfig, checkTempBlock: boolean): Promise<void>
+    {
+        try
         {
             await checkFn(user);
         }
+        catch (e)
+        {
+            if (checkTempBlock)
+            {
+                await this.securityRepository.incrementAttempts(securityConfig._id);
+            }
+            throw e;
+        }
+    }
 
+    private async handleUserRestorationAndTempBlockReset(user: User, securityConfig: SecurityConfig): Promise<void>
+    {
         if (user.deletedAt)
         {
             await this.userRepository.restore(user._id);
         }
 
-        return user;
+        if (securityConfig.blockedTime)
+        {
+            await this.securityRepository.resetTempBlock(securityConfig._id);
+        }
     }
 
     async checkPassword(password: string, userPassword: string): Promise<void>
