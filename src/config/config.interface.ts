@@ -169,6 +169,11 @@ export interface ISendgridTemplates {
     publicOTP: string;
 }
 
+export interface ITemporalBlockConfig {
+    attempts: number;
+    time: number;
+}
+
 export interface IConfig {
     environment: string;
     server: IServerConfig;
@@ -196,4 +201,5 @@ export interface IConfig {
     emailsDomain: IEmailsDomainConfig;
     sendgridTemplates: ISendgridTemplates;
     elapsedDaysToDeleteAUser: number;
+    temporalBlock: ITemporalBlockConfig;
 }

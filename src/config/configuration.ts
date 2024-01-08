@@ -168,5 +168,9 @@ export default (): IConfig => ({
         otp: process.env.SENDGRID_TEMPLATE_OTP_ID,
         publicOTP: process.env.SENDGRID_TEMPLATE_PUBLIC_OTP_ID
     },
-    elapsedDaysToDeleteAUser: process.env.ELAPSED_DAYS_TO_DELETE_A_USER
+    elapsedDaysToDeleteAUser: process.env.ELAPSED_DAYS_TO_DELETE_A_USER,
+    temporalBlock: {
+        attempts: process.env.TEMPORAL_BLOCK_AUTH_ATTEMPTS,
+        time: process.env.TEMPORAL_BLOCK_TIME
+    }
 });

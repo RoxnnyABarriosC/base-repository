@@ -25,6 +25,18 @@ export const SecurityConfigSchema = new EntitySchema<SecurityConfig>({
         requiredPassword: {
             type: Boolean,
             default: true
+        },
+        authAttempts: {
+            type: Number,
+            default: 0
+        },
+        blockedTime: {
+            type: Number,
+            default: 0
+        },
+        tempBlockedAt: {
+            type: 'timestamp',
+            nullable: true
         }
     },
     relations: {

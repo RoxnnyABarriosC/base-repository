@@ -9,3 +9,5 @@ export * from './required-permissions.exception';
 export * from './super-admin-only.exception';
 export * from './email-domain-not-valid.exception';
 export * from './blocked-account.exception';
+export * from './temporal-blocked-account.exception';
+export * from './auth-attempts-exceeded.exception';

@@ -117,7 +117,10 @@ export const validateEnv =  (config: Record<string, any>): Record<string, any> =
             default: ['d2d.com', 'dare2dream.com', 'baserepository.com']
         }),
 
-        ELAPSED_DAYS_TO_DELETE_A_USER: num({ default:30 })
+        ELAPSED_DAYS_TO_DELETE_A_USER: num({ default:30 }),
+
+        TEMPORAL_BLOCK_TIME: num({ default: 30 }),
+        TEMPORAL_BLOCK_AUTH_ATTEMPTS: num({ default: 3 })
     });
 
     config = { ...config, ...clean };

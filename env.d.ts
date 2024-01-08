@@ -93,5 +93,8 @@ declare namespace NodeJS {
         DOMAINS_ALLOWED_FOR_ADMINISTRATOR_EMAILS: string[];
 
         ELAPSED_DAYS_TO_DELETE_A_USER: number;
+
+        TEMPORAL_BLOCK_TIME: number;
+        TEMPORAL_BLOCK_AUTH_ATTEMPTS: number;
     }
 }
