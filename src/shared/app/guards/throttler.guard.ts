@@ -9,13 +9,27 @@ import { THROTTLE_USE_URL } from '../decorators';
 @Injectable()
 export class ThrottlerGuard extends _ThrottlerGuard
 {
-    protected getTrackerV2(req: FastifyRequest, useUrl = false): string
+    protected getTrackerHttp(req: FastifyRequest, useUrl = false): string
     {
         let track = req.ips?.length ? req.ips[0] : req.ip;
 
         if (useUrl)
         {
             track   = `${track}-${req.url}`;
+        }
+
+        return track;
+    }
+
+    protected getTrackerWs(context: ExecutionContext, useUrl = false): string
+    {
+        const client = context.switchToWs().getClient();
+
+        let track = client.client.conn.remoteAddress;
+
+        if (useUrl)
+        {
+            track   = `${track}-${context.getArgByIndex(3)}`;
         }
 
         return track;
@@ -35,8 +49,15 @@ export class ThrottlerGuard extends _ThrottlerGuard
             context.getClass()
         ]) ?? false;
 
-        const track = this.getTrackerV2(request, useUrl);
+        let track = this.getTrackerHttp(request, useUrl);
+
+        if (context['contextType'] === 'ws')
+        {
+            track = this.getTrackerWs(context, useUrl);
+        }
+
         const key = this.generateKey(context, track);
+
         const { totalHits } = await this.storageService.increment(key, ttl);
 
         if (totalHits > limit)

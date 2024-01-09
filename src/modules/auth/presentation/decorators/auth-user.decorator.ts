@@ -1,10 +1,15 @@
-import { RequestAuth } from '@modules/auth/domain/strategies';
+import { RequestAuth, SocketAuth } from '@modules/auth/domain/strategies';
 import { ExecutionContext, createParamDecorator } from '@nestjs/common';
 
 export const AuthUser = createParamDecorator(
     (data: unknown, ctx: ExecutionContext) =>
     {
-        const request = ctx.switchToHttp().getRequest<RequestAuth>();
+        let request: RequestAuth | SocketAuth = ctx.switchToHttp().getRequest<RequestAuth>();
+
+        if (ctx['contextType'] === 'ws')
+        {
+            request = ctx.switchToWs().getClient<SocketAuth>();
+        }
 
         if (!('user' in request))
         {

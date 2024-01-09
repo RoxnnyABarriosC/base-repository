@@ -1,9 +1,16 @@
 import { UseGuards, applyDecorators } from '@nestjs/common';
-import { AuthorizeGuard, CheckEmailDomainGuard, CheckSuperAdminGuard, JwtAuthGuard } from '../guards';
+import { AuthorizeGuard, CheckEmailDomainGuard, CheckSuperAdminGuard, JWTAuthGuard, JWTWebsocketAuthGuard } from '../guards';
 
-export const Protected = () =>
+export const Protected = (context: 'http' | 'ws' = 'http') =>
 {
+    const decorators: any  = [JWTAuthGuard, CheckSuperAdminGuard, CheckEmailDomainGuard, AuthorizeGuard];
+
+    if (context === 'ws')
+    {
+        decorators[0] = JWTWebsocketAuthGuard;
+    }
+
     return applyDecorators(
-        UseGuards(JwtAuthGuard, CheckSuperAdminGuard, CheckEmailDomainGuard, AuthorizeGuard)
+        UseGuards(...decorators)
     );
 };

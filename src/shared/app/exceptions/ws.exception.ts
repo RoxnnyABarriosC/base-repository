@@ -1,7 +1,8 @@
-import { HttpStatus, HttpException as _HttpException } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { WsException as _WsException } from '@nestjs/websockets';
 import { I18nContext } from 'nestjs-i18n';
 
-export class HttpException extends _HttpException
+export class WsException extends _WsException
 {
     private readonly errorMessage: string;
 
@@ -15,8 +16,7 @@ export class HttpException extends _HttpException
             {
                 errorCode,
                 errorMessage
-            },
-            statusCode
+            }
         );
 
         this.errorMessage = errorMessage;

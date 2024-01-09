@@ -1,6 +1,7 @@
 import configuration from '@config/configuration';
 import { AuthModule } from '@modules/auth';
 import { CommonModule } from '@modules/common';
+import { SocketModule } from '@modules/socket';
 import { HttpModule } from '@nestjs/axios';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
@@ -51,7 +52,8 @@ import { redisStore } from 'cache-manager-redis-yet';
         }),
         HttpModule,
         CommonModule,
-        AuthModule
+        AuthModule,
+        SocketModule
     ],
     controllers: [],
     providers: [
