@@ -1,6 +1,6 @@
 import { RequiredPermissionsException } from '@modules/auth/domain/exceptions';
 import { AuthService } from '@modules/auth/domain/services';
-import { RequestAuth } from '@modules/auth/domain/strategies';
+import { RequestAuth, SocketAuth } from '@modules/auth/domain/strategies';
 import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { ModuleRef, Reflector } from '@nestjs/core';
 import { Authorize } from '@shared/app/abstractClass';
@@ -13,10 +13,11 @@ import {
     PermissionActions,
     checkIsPublic
 } from '@shared/app/decorators';
+import { I18nContext } from 'nestjs-i18n';
 
 
 @Injectable()
-export class AuthorizeGuard extends Authorize<RequestAuth> implements CanActivate
+export class AuthorizeGuard extends Authorize<RequestAuth | SocketAuth> implements CanActivate
 {
     private readonly logger = new Logger(AuthorizeGuard.name);
     private readonly authService: AuthService;
@@ -38,7 +39,13 @@ export class AuthorizeGuard extends Authorize<RequestAuth> implements CanActivat
             return true;
         }
 
-        const request = context.switchToHttp().getRequest<RequestAuth>();
+        let request: RequestAuth | SocketAuth = context.switchToHttp().getRequest<RequestAuth>();
+
+        if (context['contextType'] === 'ws')
+        {
+            request = context.switchToWs().getClient<SocketAuth>();
+            request['messageBody'] = context.switchToWs().getData();
+        }
 
         const { user: { data } } = request;
 

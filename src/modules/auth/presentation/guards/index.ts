@@ -8,3 +8,4 @@ export * from './apple-auth.guard';
 export * from './facebook-auth.guard';
 export * from './google-auth.guard';
 export * from './check-email-domain.guard';
+export * from './jwt-websocket-auth.guard';

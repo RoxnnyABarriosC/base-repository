@@ -1,5 +1,5 @@
 import { EmailDomainNotValidException } from '@modules/auth/domain/exceptions';
-import { RequestAuth } from '@modules/auth/domain/strategies';
+import { RequestAuth, SocketAuth } from '@modules/auth/domain/strategies';
 import { UserService } from '@modules/user/domain/services';
 import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -35,7 +35,14 @@ export class CheckEmailDomainGuard implements CanActivate
             context.getClass()
         ]) ?? undefined;
 
-        const { user: { data } } = context.switchToHttp().getRequest<RequestAuth>();
+        let request: RequestAuth | SocketAuth = context.switchToHttp().getRequest<RequestAuth>();
+
+        if (context['contextType'] === 'ws')
+        {
+            request = context.switchToWs().getClient<SocketAuth>();
+        }
+
+        const { user: { data } } = request;
 
         if (checkEmailDomain)
         {

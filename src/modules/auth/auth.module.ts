@@ -8,7 +8,7 @@ import { RouterModule } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService,  TokenService } from './domain/services';
-import { AppleStrategy, FacebookStrategy, GoogleStrategy, JWTStrategy, LocalStrategy } from './domain/strategies';
+import { AppleStrategy, FacebookStrategy, GoogleStrategy, JWTStrategy, JWTWebsocketStrategy, LocalStrategy } from './domain/strategies';
 import {
     ActivateAccountUseCase,
     ChangeForgotPasswordUseCase,
@@ -85,6 +85,7 @@ import { RefreshTokenMiddleware } from './presentation/middlewares';
         FacebookStrategy,
         GoogleStrategy,
         AppleStrategy,
+        JWTWebsocketStrategy,
         DeleteAccountTask
     ],
     exports: [
