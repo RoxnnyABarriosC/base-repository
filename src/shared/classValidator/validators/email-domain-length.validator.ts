@@ -7,7 +7,7 @@ export class EmailDomainLengthValidator implements ValidatorConstraintInterface
     {
         if (!isEmail(value))
         {
-            return false;
+            return true;
         }
 
         const [minLength] = args.constraints;
