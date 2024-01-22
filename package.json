@@ -107,7 +107,6 @@
     "pg-promise": "^11.5.4",
     "pino": "^8.17.2",
     "pino-http": "^8.6.1",
-    "pino-multi-stream": "^6.0.0",
     "pino-pretty": "^10.3.1",
     "process": "^0.11.10",
     "reflect-metadata": "^0.1.14",

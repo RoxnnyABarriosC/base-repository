@@ -3,7 +3,7 @@ import { CORRELATION_ID_HEADER, REAL_IP } from '@shared/app/constants';
 import { CreateFileStream } from '@shared/utils';
 import { blue, cyan, green, yellow } from 'colorette';
 import { Params } from 'nestjs-pino';
-import pinoms from 'pino-multi-stream';
+import pino from 'pino';
 import PinoPretty from 'pino-pretty';
 
 export const loggerFactory = async(configService: ConfigService): Promise<Params> =>
@@ -40,7 +40,6 @@ export const loggerFactory = async(configService: ConfigService): Promise<Params
 
     return {
         pinoHttp: {
-            logger: pinoms({ streams }) as any,
             autoLogging: false,
             customProps(req)
             {
@@ -48,8 +47,10 @@ export const loggerFactory = async(configService: ConfigService): Promise<Params
                     correlationId: req[CORRELATION_ID_HEADER],
                     realIp: req[REAL_IP]
                 };
-            }
+            },
+            stream: pino.multistream(streams)
+
         },
         exclude: configService.getOrThrow('logger.exclude')
-    };
+    } as Params;
 };
