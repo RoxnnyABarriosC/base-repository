@@ -4,6 +4,7 @@ services:
   api:
     ports:
       - "${API_PORT:-4000}:${API_PORT:-4000}"
+      - "9228:9228"
     volumes:
       - .:/app:cached
 
