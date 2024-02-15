@@ -46,7 +46,7 @@ USER root
 
 RUN rm -rf node_modules
 
-RUN pnpm i
+RUN pnpm i --frozen-lockfile
 
 FROM node:18-alpine as prod
 
@@ -60,7 +60,7 @@ RUN npm install -g pm2
 COPY --from=prerelease --chown=node:node /app/package.json /app/pnpm-lock.yaml ./
 COPY --from=prerelease --chown=node:node /app/node_modules/ ./node_modules/
 COPY --from=prerelease --chown=node:node /app/dist/ ./dist/
-COPY --chown=node:node .env ecosystem.config.js usersfile ./
+COPY --chown=node:node .env ecosystem.config.js usersfile super-admin-data.json ./
 
 RUN mkdir .logs
 

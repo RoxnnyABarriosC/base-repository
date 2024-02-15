@@ -92,25 +92,25 @@ export const validateEnv =  (config: Record<string, any>): Record<string, any> =
         OTP_TASK_RESTARTING_ATTEMPTS: str({ default: '0 0 * * *' }),
         OTP_CODE_LENGTH: num({ default: 6 }),
 
-        TWILIO_ACCOUNT_SID: str(),
-        TWILIO_AUTH_TOKEN: str(),
-        TWILIO_FROM_NUMBER: str(),
-        TWILIO_OTP_SERVICE_SID: str(),
+        TWILIO_ACCOUNT_SID: str({ default:'ACt3st' }),
+        TWILIO_AUTH_TOKEN: str({ default: 'ft3st' }),
+        TWILIO_FROM_NUMBER: str({ default:'+1234456789' }),
+        TWILIO_OTP_SERVICE_SID: str({ default:'VAt3st' }),
 
-        SENDGRID_TEMPLATE_PUBLIC_OTP_ID: str(),
-        SENDGRID_TEMPLATE_OTP_ID: str(),
+        SENDGRID_TEMPLATE_PUBLIC_OTP_ID: str({ default: undefined }),
+        SENDGRID_TEMPLATE_OTP_ID: str({ default: undefined }),
 
-        FB_OAUTH_ID: str(),
-        FB_OAUTH_SECRET: str(),
-        FB_OAUTH_CALLBACK: url(),
+        FB_OAUTH_ID: str({ default: '1234567890' }),
+        FB_OAUTH_SECRET: str({ default: '1234567890' }),
+        FB_OAUTH_CALLBACK: url({ default: 'http://localhost:4000/api/v1/auth/facebook/callback' }),
 
-        GO_OAUTH_ID: str(),
-        GO_OAUTH_SECRET: str(),
-        GO_OAUTH_CALLBACK: url(),
+        GO_OAUTH_ID: str({ default: '1234567890' }),
+        GO_OAUTH_SECRET: str({ default: '1234567890' }),
+        GO_OAUTH_CALLBACK: url({ default: 'http://localhost:4000/api/v1/auth/google/callback' }),
 
-        AP_OAUTH_ID: str(),
-        AP_OAUTH_SECRET: str(),
-        AP_OAUTH_CALLBACK: url(),
+        AP_OAUTH_ID: str({ default: '1234567890' }),
+        AP_OAUTH_SECRET: str({ default: '1234567890' }),
+        AP_OAUTH_CALLBACK: url({ default: 'http://localhost:4000/api/v1/auth/apple/callback' }),
 
         DOMAINS_ALLOWED_FOR_ADMINISTRATOR_EMAILS: srtToArray({
             example: 'example.com,example2.com',

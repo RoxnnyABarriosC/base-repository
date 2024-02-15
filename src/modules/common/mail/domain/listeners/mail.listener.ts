@@ -1,8 +1,8 @@
 import {
-    ActivateAccountEvent,
-    ActivatedAccountEvent,
     ChangeForgotPasswordEvent,
-    ForgotPasswordEvent
+    ForgotPasswordEvent,
+    VerifiedAccountEvent,
+    VerifyAccountEvent
 } from '@modules/common/mail/domain/events';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -11,8 +11,8 @@ import { MailerService } from '@nestjs-modules/mailer';
 
 
 export enum MailEventEnum {
-    ACTIVATE_ACCOUNT ='mail.activate.account',
-    ACTIVATED_ACCOUNT ='mail.activated.account',
+    VERIFY_ACCOUNT ='mail.verify.account',
+    VERIFIED_ACCOUNT ='mail.verified.account',
     FORGOT_PASSWORD ='mail.forgot.password',
     CHANGE_FORGOT_PASSWORD ='mail.change.forgot.password',
 }
@@ -28,15 +28,15 @@ export class MailListener
     )
     { }
 
-    @OnEvent(MailEventEnum.ACTIVATE_ACCOUNT, { async: true })
-    async handleActivateAccountEvent({ user, urlConfirmationToken }: ActivateAccountEvent)
+    @OnEvent(MailEventEnum.VERIFY_ACCOUNT, { async: true })
+    async handleVerifyAccountEvent({ user, urlConfirmationToken }: VerifyAccountEvent)
     {
         try
         {
             await this.mailerService.sendMail({
                 to: user.email,
-                subject: 'Welcome to Base Repository! Confirm your Email',
-                template: './mail/auth/activate-account', // `.hbs` extension is appended automatically
+                subject: 'Welcome to Base Repository! Verify your Email',
+                template: 'mail/auth/verify-account', // `.hbs` extension is appended automatically
                 context: { // ✏️ filling curly brackets with content
                     fullName: user.FullName,
                     urlConfirmationToken,
@@ -52,15 +52,15 @@ export class MailListener
         }
     }
 
-    @OnEvent(MailEventEnum.ACTIVATED_ACCOUNT, { async: true })
-    async handleActivatedAccountEvent({ user }: ActivatedAccountEvent)
+    @OnEvent(MailEventEnum.VERIFIED_ACCOUNT, { async: true })
+    async handleVerifiedAccountEvent({ user }: VerifiedAccountEvent)
     {
         try
         {
             await this.mailerService.sendMail({
                 to: user.email,
                 subject: 'Welcome to Base Repository! you can now log in',
-                template: './mail/auth/activated-account', // `.hbs` extension is appended automatically
+                template: './mail/auth/verified-account', // `.hbs` extension is appended automatically
                 context: { // ✏️ filling curly brackets with content
                     fullName: user.FullName,
                     urlWeb: this.configService.getOrThrow('server.url.web'),

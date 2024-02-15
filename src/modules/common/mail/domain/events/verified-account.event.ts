@@ -1,6 +1,6 @@
 import { User } from '@modules/user/domain/entities';
 
-export class ActivatedAccountEvent
+export class VerifiedAccountEvent
 {
     constructor(
         public readonly user: User

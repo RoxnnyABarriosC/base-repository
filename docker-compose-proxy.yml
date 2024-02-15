@@ -10,7 +10,7 @@ services:
       - "443:443"
     labels:
       - traefik.enable=true
-      - traefik.docker.network=internal_network
+      - traefik.docker.network=external_network
       - traefik.http.routers.proxy.tls=${TLS:-false}
       - traefik.http.routers.proxy.tls.certresolver=lets-encrypt
       - traefik.http.routers.proxy.entrypoints=${ENTRYPOINT:-http}
@@ -19,19 +19,46 @@ services:
       # TODO: Cambiar el password
       - traefik.http.middlewares.auth.basicauth.users=${LOAD_USERS:-nodebaserepository:$$apr1$$RTZSd6uA$$9zpPRgArFsHX2UWgPNXL..}
       - traefik.http.middlewares.auth.basicauth.usersfile=/usersfile
-      - traefik.http.routers.proxy.middlewares=auth
       # Middleware Redirect
       - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+      # Middleware RateLimit
+      - traefik.http.middlewares.rateLimit.ratelimit.average=500
+      - traefik.http.middlewares.rateLimit.ratelimit.burst=1000
+      - traefik.http.middlewares.rateLimit.ratelimit.period=1m
+      # Middleware SecurityHeaders
+      - traefik.http.middlewares.securityHeaders.headers.customFrameOptionsValue=SAMEORIGIN
+      - traefik.http.middlewares.securityHeaders.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.securityHeaders.headers.referrerPolicy=same-origin
+      - traefik.http.middlewares.securityHeaders.headers.accessControlMaxAge=31536000
+      - traefik.http.middlewares.securityHeaders.headers.accessControlAllowHeaders=true
+      - traefik.http.middlewares.securityHeaders.headers.accessControlExposeHeaders=true
+      - traefik.http.middlewares.securityHeaders.headers.framedeny=true
+      - traefik.http.middlewares.securityHeaders.headers.browserxssfilter=true
+      - traefik.http.middlewares.securityHeaders.headers.accesscontrolallowmethods=GET,POST,OPTIONS,PUT,DELETE"
+      - traefik.http.middlewares.securityHeaders.headers.stsSeconds=31536000
+      - traefik.http.middlewares.securityHeaders.headers.stsIncludeSubdomains=true
+      - traefik.http.middlewares.securityHeaders.headers.forceSTSHeader=true
+      - traefik.http.middlewares.securityHeaders.headers.accessControlAllowCredentials=true
+      - traefik.http.middlewares.securityHeaders.headers.browserXssFilter=true
+      - traefik.http.middlewares.securityHeaders.headers.customBrowserXssValue=1
+      - traefik.http.middlewares.securityHeaders.headers.stsPreload=true
+      # Middleware SecurityHeadersPolicy
+      - traefik.http.middlewares.securityHeadersPolicy.headers.contentSecurityPolicy=default-src *; script-src * 'unsafe-inline'"
+      # Middleware GzipCompress
+      - traefik.http.middlewares.gzipCompress.compress=true
+      # Middleware Log4Shell
+      - traefik.http.middlewares.log4shell.plugin.plugin-log4shell.errorcode=200
       # Global Redirect to https
       - traefik.http.routers.redirs.entrypoints=http
       - ${APPLY_REDIRECT:+traefik.http.routers.redirs.middlewares=redirect-to-https}
       - ${APPLY_REDIRECT:+traefik.http.routers.redirs.rule=}hostregexp(`{host:.+}`)
+      # Apply middlewares
+      - traefik.http.routers.proxy.middlewares=auth,rateLimit,securityHeaders,log4shell
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./.traefik/letsencrypt:/letsencrypt
+      - ./../.traefik/letsencrypt:/letsencrypt
       - ./usersfile:/usersfile
     networks:
-      - internal_network
       - external_network
     command:
       - "--log.level=INFO"
@@ -44,12 +71,11 @@ services:
       - "--certificatesresolvers.lets-encrypt.acme.email=${ACME_EMAIL:-user@baserepository.com}"
       - "--certificatesresolvers.lets-encrypt.acme.storage=/letsencrypt/acme.json"
       - "--certificatesresolvers.lets-encrypt.acme.httpchallenge.entrypoint=http"
-      - ${ACME_STAGING:+ --certificatesresolvers.lets-encrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory}
+      - "--experimental.plugins.plugin-log4shell.modulename=github.com/traefik/plugin-log4shell"
+      - "--experimental.plugins.plugin-log4shell.version=v0.1.2"
+      - ${ACME_STAGING:+--certificatesresolvers.lets-encrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory}
 
 networks:
-  internal_network:
-    internal: true
-    name:  internal_${PROJECT_NAME:-base_repository}_network
   external_network:
     external: true
     name:  external_${PROJECT_NAME:-base_repository}_network

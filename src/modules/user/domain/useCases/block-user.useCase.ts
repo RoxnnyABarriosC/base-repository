@@ -26,7 +26,7 @@ export class BlockUserUseCase
 
         const user = await this.repository.exist<User>({ condition: { _id: id }, select: ['_id', 'blocked'], initThrow: true });
 
-        user.partialBuild(dto, { allowNull :true, _this: user.blocked });
+        user.partialBuild(dto, { allowNull: true, _this: user.blocked });
 
         await this.repository.update(user);
 

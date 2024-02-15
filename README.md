@@ -132,26 +132,47 @@ SMTP_SECURE_SSL=false
 SMTP_SENDER_NAME=Notifications
 SMTP_SENDER_EMAIL_DEFAULT=notification@localhost.com
 
-MINIO_EXPOSE_HOST=s3.localhost
-MINIO_EXPOSE_HTTPS=false
 MINIO_HOST=s3
 MINIO_ACCESS_KEY=baserepository
 MINIO_SECRET_KEY=baserepository
 MINIO_USE_SSL=false
 MINIO_PORT=9000
-MINIO_PUBLIC_BUCKET=baserepository
-MINIO_PRIVATE_BUCKET=baserepository
+MINIO_PUBLIC_BUCKET=public.baserepository
+MINIO_PRIVATE_BUCKET=private.baserepository
 MINIO_ROOT_PATH=data
 MINIO_REGION=us-east-1
 MINIO_SIGN_EXPIRE=9000
 
-OTP_CODE_EXPIRE=10m
-OTP_LIMIT_ATTEMPTS=20
+OTP_LIMIT_ATTEMPTS=50
 OTP_TASK_RESTARTING_ATTEMPTS='0 0 * * *'
+OTP_CODE_LENGTH=6
 
-TWILIO_ACCOUNT_SID=
-TWILIO_AUTH_TOKEN=
-TWILIO_FROM_NUMBER=
+TWILIO_ACCOUNT_SID=ACt3st
+TWILIO_AUTH_TOKEN=ft3st
+TWILIO_FROM_NUMBER=+1234456789
+TWILIO_OTP_SERVICE_SID=VAt3st
+
+SENDGRID_TEMPLATE_PUBLIC_OTP_ID=d-t3st
+SENDGRID_TEMPLATE_OTP_ID=d-t3st
+
+FB_OAUTH_ID=null
+FB_OAUTH_SECRET=null
+FB_OAUTH_CALLBACK=http://localhost:4000/api/v1/auth/facebook/callback
+
+GO_OAUTH_ID=null
+GO_OAUTH_SECRET=null
+GO_OAUTH_CALLBACK=http://localhost:4000/api/v1/auth/google/callback
+
+AP_OAUTH_ID=null
+AP_OAUTH_SECRET=null
+AP_OAUTH_CALLBACK=http://localhost:4000/api/v1/auth/apple/callback
+
+DOMAINS_ALLOWED_FOR_ADMINISTRATOR_EMAILS=d2d.com,dare2dream.com,museomoda.com
+
+ELAPSED_DAYS_TO_DELETE_A_USER=30
+
+TEMPORAL_BLOCK_TIME=30
+TEMPORAL_BLOCK_AUTH_ATTEMPTS=3
 
 ```
 
@@ -164,11 +185,14 @@ Create file `local-server.sh` in root project
 ```shell
 #!/bin/bash
 STAGE=dev \
-    API_PORT=4000 \
-    API_DOMAIN=<YOUR_IP>:4000 \
-    S3_API_DOMAIN=<YOUR_IP>:9000 \
-    S3_PANEL_DOMAIN=<YOUR_IP>:9001 \
-    LOAD_DOMAIN=<YOUR_IP> \
+    API_PORT=3000 \
+    TLS=false \
+    ENTRYPOINT=http \
+    S3_DOMAIN=<YOUR_IP>:9002 \
+    S3_URL=http://<YOUR_IP>:9002 \
+    S3_CONSOLE_DOMAIN=<YOUR_IP>:9001 \
+    S3_CONSOLE_URL=http://<YOUR_IP>:9001 \
+    S3_CONSOLE_PATH=/ \
     docker compose -f docker-compose.yml -f docker-compose-dev.yml up --build -d
 ```
 run the file in the terminal
@@ -180,19 +204,17 @@ Create file `prod-server.sh` in root project
 #!/bin/bash
 
 docker compose down && \
-    sh volume.sh && \
+    sh volume.sh museo_moda && \
     STAGE=prod \
     API_PORT=4000 \
     TLS=true \
     ENTRYPOINT=https \
-    API_DOMAIN=<YOUR_DAMIN> \
-    S3_API_DOMAIN=<YOUR_DAMIN> \
-    S3_PANEL_DOMAIN=<YOUR_DAMIN> \
-    LOAD_DOMAIN=<YOUR_DAMIN> \
-    APPLY_REDIRECT=true \
-    PROJECT_NAME=<NAME> \
+    API_DOMAIN=<API_DOMAIN_DNS> \
+    S3_DOMAIN=<S3_DOMAIN_DNS> \
+    S3_URL=https://<S3_DOMAIN_DNS> \
+    S3_CONSOLE_DOMAIN=<S3_CONSOLE_DOMAIN_DNS> \
+    S3_CONSOLE_URL=https://<S3_CONSOLE_DOMAIN_DNS> \
     docker compose up --build -d
-
 ```
 run the file in the terminal
 
@@ -251,8 +273,8 @@ $ pnpm run test:cov:check
 ## URL PANEL
 ___
 
-* [Traefick](http://load.localhost)
-* [S3Panel](http://panel.s3.localhost)
+* [Traefick](http://proxy.localhost)
+* [S3Panel](http://s3.localhost)
 * [S3](http://s3.localhost)
 * [Mail](http://mail.localhost)
 * [Doc](http://doc.api.localhost)

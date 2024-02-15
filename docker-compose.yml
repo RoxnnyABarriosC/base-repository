@@ -15,6 +15,7 @@ services:
       - s3
       - redis
     ports:
+      - "${API_PORT:-4000}:${API_PORT:-4000}"
       - "9228:9228"
     labels:
       - traefik.enable=true
@@ -24,6 +25,7 @@ services:
       - traefik.http.routers.api.tls.certresolver=lets-encrypt
       - traefik.http.routers.api.rule=Host(`${API_DOMAIN:-api.localhost}`)
       - traefik.http.services.api.loadbalancer.server.port=${API_PORT:-4000}
+      - traefik.http.routers.api.middlewares=rateLimit,log4shell,securityHeaders,gzipCompress,securityHeadersPolicy
     environment:
       - MINIO_EXPOSE_HOST=${S3_DOMAIN:-s3.localhost}
       - MINIO_EXPOSE_HTTPS=${TLS:-true}
@@ -43,6 +45,8 @@ services:
     build:
       context: docker/postgres/
       dockerfile: Dockerfile
+    ports:
+      - "5433:5432"
     environment:
       POSTGRES_USER: ${DB_USER:-baserepository}
       POSTGRES_DB: ${DB_NAME:-baserepository}
@@ -63,6 +67,9 @@ services:
       MINIO_DOMAIN: ${S3_DOMAIN:-s3.localhost}
       MINIO_SERVER_URL: ${S3_URL:-http://s3.localhost}
       MINIO_BROWSER_REDIRECT_URL: ${S3_CONSOLE_URL:-http://s3.localhost}${S3_CONSOLE_PATH:-/minio/ui/}
+    ports:
+      - "9002:80"
+      - "9001:9001"
     labels:
       - traefik.enable=true
       - traefik.docker.network=internal_network
@@ -73,6 +80,7 @@ services:
       - traefik.http.routers.s3_storage.service=s3_storage
       - traefik.http.routers.s3_storage.rule=Host(`${S3_DOMAIN:-s3.localhost}`)
       - traefik.http.services.s3_storage.loadbalancer.server.port=80
+      - traefik.http.routers.s3_storage.middlewares=rateLimit,securityHeaders,securityHeadersPolicy,log4shell,gzipCompress
       # Configuración para el panel de control
       - traefik.http.routers.s3_panel.service=s3_panel
       - traefik.http.routers.s3_panel.tls=${TLS:-false}
@@ -83,7 +91,7 @@ services:
       # Middleware para reescribir la ruta
       - traefik.http.middlewares.replace_path_regex.replacepathregex.regex=^${S3_CONSOLE_PATH:-/minio/ui/}(.*)
       - traefik.http.middlewares.replace_path_regex.replacepathregex.replacement=/$$1
-      - traefik.http.routers.s3_panel.middlewares=replace_path_regex
+      - traefik.http.routers.s3_panel.middlewares=replace_path_regex,rateLimit,securityHeaders,log4shell,gzipCompress
     volumes:
       - s3:/data
     command: server --address 0.0.0.0:80 --console-address 0.0.0.0:9001 /data
@@ -111,6 +119,8 @@ services:
     container_name: ${PROJECT_NAME:-base_repository}_redis
     restart: always
     image: bitnami/redis:latest
+    ports:
+      - "6379:6379"
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD:-baserepository}
       - DISABLE_COMMANDS=FLUSHDB,FLUSHALL,CONFIG

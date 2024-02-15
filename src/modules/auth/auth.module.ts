@@ -10,18 +10,18 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthService,  TokenService } from './domain/services';
 import { AppleStrategy, FacebookStrategy, GoogleStrategy, JWTStrategy, JWTWebsocketStrategy, LocalStrategy } from './domain/strategies';
 import {
-    ActivateAccountUseCase,
     ChangeForgotPasswordUseCase,
-    ChangeMyPasswordUseCase, DeleteAccountUseCase,
-    ForgotPasswordUseCase,
+    ChangeMyPasswordUseCase,
+    DeleteAccountUseCase, ForgotPasswordUseCase,
     LoginUseCase,
-    LogoutUseCase, OAuthLoginUseCase,
-    RefreshTokenUseCase,
+    LogoutUseCase,
+    OAuthLoginUseCase, RefreshTokenUseCase,
     RegisterUseCase,
     SetMainPictureOrBannerUseCase,
     UnsetMainPictureOrBannerUseCase,
     UpdateMeUseCase,
-    UpdateOnBoardingUseCase
+    UpdateOnBoardingUseCase,
+    VerifyAccountUseCase
 } from './domain/useCases';
 import { TokenRepository } from './infrastructure/repositories';
 import { AuthController, MeController, SocialAuthController } from './presentation/controllers';
@@ -66,7 +66,7 @@ import { RefreshTokenMiddleware } from './presentation/middlewares';
         RegisterUseCase,
         UpdateMeUseCase,
         ChangeMyPasswordUseCase,
-        ActivateAccountUseCase,
+        VerifyAccountUseCase,
         ChangeForgotPasswordUseCase,
         ForgotPasswordUseCase,
         SetMainPictureOrBannerUseCase,

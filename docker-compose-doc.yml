@@ -9,9 +9,11 @@ services:
       context: .
       dockerfile: Dockerfile
       target: doc
+    ports:
+      - "8080:8080"
     labels:
       - traefik.enable=true
-      - traefik.docker.network=internal_network
+      - traefik.docker.network=external_network
       - traefik.http.routers.doc.entrypoints=${ENTRYPOINT:-http}
       - traefik.http.routers.doc.tls=${TLS:-false}
       - traefik.http.routers.doc.tls.certresolver=lets-encrypt
@@ -19,17 +21,13 @@ services:
       - traefik.http.services.doc.loadbalancer.server.port=8080
       - traefik.http.middlewares.auth.basicauth.users=${LOAD_USERS:-nodebaserepository:$$apr1$$RTZSd6uA$$9zpPRgArFsHX2UWgPNXL..}
       - traefik.http.middlewares.auth.basicauth.usersfile=/usersfile
-      - traefik.http.routers.doc.middlewares=auth
+      - traefik.http.routers.doc.middlewares=auth,rateLimit,log4shell,securityHeaders
     volumes:
       - ./usersfile:/usersfile
     networks:
-      - internal_network
       - external_network
 
 networks:
-  internal_network:
-    internal: true
-    name:  internal_${PROJECT_NAME:-base_repository}_network
   external_network:
     external: true
     name:  external_${PROJECT_NAME:-base_repository}_network

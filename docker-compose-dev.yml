@@ -2,19 +2,8 @@ version: '3.9'
 
 services:
   api:
-    ports:
-      - "${API_PORT:-4000}:${API_PORT:-4000}"
-      - "9228:9228"
     volumes:
       - .:/app:cached
-
-  db:
-    ports:
-      - "5433:5432"
-
-  redis:
-    ports:
-      - "6379:6379"
 
   mail:
     container_name: ${PROJECT_NAME:-base_repository}_mail
@@ -31,14 +20,9 @@ services:
       - traefik.http.services.mail.loadbalancer.server.port=8025
       - traefik.http.middlewares.auth.basicauth.users=${LOAD_USERS:-nodebaserepository:$$apr1$$RTZSd6uA$$9zpPRgArFsHX2UWgPNXL..}
       - traefik.http.middlewares.auth.basicauth.usersfile=/usersfile
-      - traefik.http.routers.mail.middlewares=auth
+      - traefik.http.routers.mail.middlewares=auth,rateLimit,log4shell,securityHeaders
     volumes:
       - ./usersfile:/usersfile
     networks:
       - internal_network
       - external_network
-
-  s3:
-    ports:
-      - "9002:80"
-      - "9001:9001"

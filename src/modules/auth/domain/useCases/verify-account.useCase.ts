@@ -1,4 +1,4 @@
-import { ActivatedAccountEvent } from '@modules/common/mail/domain/events';
+import { VerifiedAccountEvent } from '@modules/common/mail/domain/events';
 import { MailEventEnum } from '@modules/common/mail/domain/listeners';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
@@ -13,9 +13,9 @@ declare interface IActivateAccountUseCaseProps {
 }
 
 @Injectable()
-export class ActivateAccountUseCase
+export class VerifyAccountUseCase
 {
-    private readonly logger = new Logger(ActivateAccountUseCase.name);
+    private readonly logger = new Logger(VerifyAccountUseCase.name);
 
 
     constructor(
@@ -24,8 +24,8 @@ export class ActivateAccountUseCase
         private readonly eventEmitter: EventEmitter2,
         private readonly configService: ConfigService
     )
-    {
-    }
+    { }
+
     async handle({ confirmationToken }: IActivateAccountUseCaseProps): Promise<ILocalMessage>
     {
         const { email, action, id } = await this.tokenService.verifyToken(confirmationToken);
@@ -37,21 +37,21 @@ export class ActivateAccountUseCase
             void await this.tokenService.checkConfirmationTokenInBlackList(id);
         }
 
-        void this.tokenService.validateConfirmationTokenAction(action as any, TokenActionEnum.ACTIVATE_ACCOUNT);
+        void this.tokenService.validateConfirmationTokenAction(action as any, TokenActionEnum.VERIFY_ACCOUNT);
 
         const user = await this.repository.getOneBy({
             condition: { email },
             options: { initThrow: true }
         });
 
-        user.enable = true;
+        user.verify = true;
 
         void await this.repository.update(user);
 
         await this.tokenService.setConfirmationTokenBlackListed(id, confirmationToken);
 
-        this.eventEmitter.emit(MailEventEnum.ACTIVATED_ACCOUNT, new ActivatedAccountEvent(user));
+        this.eventEmitter.emit(MailEventEnum.VERIFIED_ACCOUNT, new VerifiedAccountEvent(user));
 
-        return SendLocalMessage(() => 'messages.auth.activatedAccount');
+        return SendLocalMessage(() => 'messages.auth.verifiedAccount');
     }
 }

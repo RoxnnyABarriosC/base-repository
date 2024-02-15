@@ -1,5 +1,5 @@
 import { RegisterDto } from '@modules/auth/presentation/dtos';
-import { ActivateAccountEvent } from '@modules/common/mail/domain/events';
+import { VerifyAccountEvent } from '@modules/common/mail/domain/events';
 import { MailEventEnum } from '@modules/common/mail/domain/listeners';
 import { User } from '@modules/user/domain/entities';
 import { UserService } from '@modules/user/domain/services';
@@ -42,6 +42,8 @@ export class RegisterUseCase
 
         const user = new User(dto);
 
+        user.enable = true;
+
         void await this.service.validate(user);
 
         user.password = await this.service.preparePassword(password);
@@ -51,7 +53,7 @@ export class RegisterUseCase
 
         const confirmationToken = this.tokenService.createConfirmationToken(
             user.email,
-            TokenActionEnum.ACTIVATE_ACCOUNT
+            TokenActionEnum.VERIFY_ACCOUNT
         );
 
         const {
@@ -59,10 +61,10 @@ export class RegisterUseCase
         } = this.configService.get<IServerConfig>('server');
 
         this.eventEmitter.emit(
-            MailEventEnum.ACTIVATE_ACCOUNT,
-            new ActivateAccountEvent(
+            MailEventEnum.VERIFY_ACCOUNT,
+            new VerifyAccountEvent(
                 user,
-                `${web}/activate-your-account?token=${confirmationToken}`
+                `${web}/verify-account?token=${confirmationToken}`
             )
         );
 
