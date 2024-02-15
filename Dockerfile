@@ -46,7 +46,7 @@ USER root
 
 RUN rm -rf node_modules
 
-RUN pnpm i --frozen-lockfile --ignore-scripts --prod
+RUN pnpm i --frozen-lockfile --prod
 
 FROM node:18-alpine as prod
 
