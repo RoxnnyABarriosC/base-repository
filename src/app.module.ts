@@ -9,12 +9,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ThrottlerGuard } from '@shared/app/guards';
 import { CacheInterceptor } from '@shared/app/interceptors';
 import { ResponseInterceptorProvider } from '@shared/app/providers';
 import { ValidationGuard } from '@shared/classValidator/guards';
 import { SerializerInterceptorProvider } from '@shared/classValidator/providers';
+import { GetMilliseconds } from '@shared/utils';
 import { ICacheConfig } from '@src/config';
 import { validateEnv } from '@src/validate-env';
 import { redisStore } from 'cache-manager-redis-yet';
@@ -38,8 +40,8 @@ import { redisStore } from 'cache-manager-redis-yet';
         ScheduleModule.forRoot(),
         EventEmitterModule.forRoot({ global: true }),
         ThrottlerModule.forRoot({
-            ttl: 60,
-            limit: 100
+            ttl: GetMilliseconds('1m'),
+            limit: 1000
         }),
         TypeOrmModule.forRootAsync({
             inject: [ConfigService],

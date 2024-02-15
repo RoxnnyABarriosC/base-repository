@@ -1,12 +1,12 @@
 import { IDecodeToken } from '@modules/auth/domain/models';
 import {
-    ActivateAccountUseCase,
     ChangeForgotPasswordUseCase,
     ForgotPasswordUseCase,
     LoginUseCase,
     LogoutUseCase,
     RefreshTokenUseCase,
-    RegisterUseCase
+    RegisterUseCase,
+    VerifyAccountUseCase
 } from '@modules/auth/domain/useCases';
 import { IMyStore } from '@modules/common/store';
 import { RoleSerializerGroupsEnum } from '@modules/role/presentation/enums';
@@ -62,7 +62,7 @@ export class AuthController
         private readonly registerUseCase: RegisterUseCase,
         private readonly logoutUseCase: LogoutUseCase,
         private readonly refreshTokenUseCase: RefreshTokenUseCase,
-        private readonly activateAccountUseCase: ActivateAccountUseCase,
+        private readonly verifyAccountUseCase: VerifyAccountUseCase,
         private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
         private readonly changeForgotPasswordUseCase: ChangeForgotPasswordUseCase
     )
@@ -78,10 +78,10 @@ export class AuthController
         RoleSerializerGroupsEnum.ONLY_ID
     )
     async basicLogin(
-        @Res({ passthrough: true }) res: FastifyReply,
-        @Body() dto: LoginDto,
-        @AuthUser() authUser: User,
-        @UserAgent() agent: Agent
+      @Res({ passthrough: true }) res: FastifyReply,
+      @Body() dto: LoginDto,
+      @AuthUser() authUser: User,
+      @UserAgent() agent: Agent
     )
     {
         const data = await this.loginUseCase.handle({ user: authUser });
@@ -141,10 +141,10 @@ export class AuthController
     )
     @SetPipeGroups(ContextGroupsEnum.ADMIN)
     async loginAdmin(
-        @Res({ passthrough: true }) res: FastifyReply,
-        @Body() dto: OTPLoginDto,
-        @AuthUser() authUser: User,
-        @UserAgent() agent: Agent
+      @Res({ passthrough: true }) res: FastifyReply,
+      @Body() dto: OTPLoginDto,
+      @AuthUser() authUser: User,
+      @UserAgent() agent: Agent
     )
     {
         const data = await this.loginUseCase.handle({ user: authUser });
@@ -174,11 +174,11 @@ export class AuthController
     @CheckRefreshToken()
     @HttpCode(HttpStatus.OK)
     async logout(
-        @Res({ passthrough: true }) res: FastifyReply,
-        @DecodeToken() decodeToken: IDecodeToken,
-        @DecodeRefreshToken() decodeRefreshToken: IDecodeToken,
-        @AuthUser() authUser: User,
-        @UserAgent() agent: Agent
+      @Res({ passthrough: true }) res: FastifyReply,
+      @DecodeToken() decodeToken: IDecodeToken,
+      @DecodeRefreshToken() decodeRefreshToken: IDecodeToken,
+      @AuthUser() authUser: User,
+      @UserAgent() agent: Agent
     )
     {
         const data = await this.logoutUseCase.handle({
@@ -206,9 +206,9 @@ export class AuthController
         RoleSerializerGroupsEnum.ONLY_ID
     )
     async refreshToken(
-        @Res({ passthrough: true }) res: FastifyReply,
-        @DecodeRefreshToken() decodeRefreshToken: IDecodeToken,
-        @UserAgent() agent: Agent
+      @Res({ passthrough: true }) res: FastifyReply,
+      @DecodeRefreshToken() decodeRefreshToken: IDecodeToken,
+      @UserAgent() agent: Agent
     )
     {
         const data = await this.refreshTokenUseCase.handle({
@@ -227,11 +227,11 @@ export class AuthController
         return (await Serializer(data, AuthSerializer)) as typeof AuthSerializer;
     }
 
-    @Patch('activate-account')
+    @Patch('verify-account')
     @HttpCode(HttpStatus.CREATED)
-    async activateAccount(@Query('token') confirmationToken: string)
+    async verifyAccount(@Query('token') confirmationToken: string)
     {
-        return await this.activateAccountUseCase.handle({
+        return await this.verifyAccountUseCase.handle({
             confirmationToken
         });
     }
@@ -247,8 +247,8 @@ export class AuthController
     @Patch('change-password')
     @HttpCode(HttpStatus.CREATED)
     async changePassword(
-        @Body() dto: PasswordDto,
-        @Query('token') confirmationToken: string
+      @Body() dto: PasswordDto,
+      @Query('token') confirmationToken: string
     )
     {
         return await this.changeForgotPasswordUseCase.handle({

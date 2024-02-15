@@ -45,7 +45,7 @@ export class ResetPasswordUseCase
 
         const { url: { web } } = this.configService.get<IServerConfig>('server');
 
-        const urlConfirmationToken = `${web}/auth/change-forgot-password?token=${confirmationToken}`;
+        const urlConfirmationToken = `${web}/auth/change-password?token=${confirmationToken}`;
 
         this.eventEmitter.emit(
             MailEventEnum.FORGOT_PASSWORD,

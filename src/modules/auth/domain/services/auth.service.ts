@@ -1,7 +1,7 @@
 import { SecurityConfig } from '@modules/securityConfig/domain/entities';
 import { SecurityConfigRepository } from '@modules/securityConfig/infrastructure/repositories';
 import { User } from '@modules/user/domain/entities';
-import { DisabledUserException, UserIsNotSuperAdminException } from '@modules/user/domain/exceptions';
+import { DisabledUserException, UnverifiedUserException, UserIsNotSuperAdminException } from '@modules/user/domain/exceptions';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -107,6 +107,11 @@ export class AuthService
         if (!user.enable)
         {
             throw new DisabledUserException();
+        }
+
+        if (!user.verify)
+        {
+            throw new UnverifiedUserException();
         }
 
         if (checkSuperAdmin && !user.isSuperAdmin)

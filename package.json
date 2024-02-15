@@ -1,6 +1,6 @@
 {
-  "name": "node-base-repository",
-  "version": "0.0.1",
+  "name": "base-repository",
+  "version": "1.0.0",
   "description": "",
   "private": false,
   "contributors": [],
@@ -93,7 +93,7 @@
     "nestjs-minio-client": "^2.2.0",
     "nestjs-pino": "^3.5.0",
     "nestjs-twilio": "^4.3.0",
-    "nodemailer": "^6.9.8",
+    "nodemailer": "^6.9.9",
     "passport": "^0.6.0",
     "passport-2fa-totp": "^0.0.1",
     "passport-apple": "^2.0.2",

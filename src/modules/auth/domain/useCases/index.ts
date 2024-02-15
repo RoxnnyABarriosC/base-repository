@@ -1,4 +1,4 @@
-export * from './activate-account.useCase';
+export * from './verify-account.useCase';
 export * from './change-forgot-password.useCase';
 export * from './change-my-password.useCase';
 export * from './forgot-password.useCase';
