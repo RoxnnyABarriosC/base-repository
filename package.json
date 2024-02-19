@@ -37,6 +37,8 @@
     "m:r": "npx typeorm migration:revert -d dist/config/db/data-source.js"
   },
   "dependencies": {
+    "@azure/identity": "^4.0.1",
+    "@azure/storage-blob": "^12.17.0",
     "@fastify/compress": "~6.5.0",
     "@fastify/cookie": "~9.2.0",
     "@fastify/helmet": "~11.1.1",

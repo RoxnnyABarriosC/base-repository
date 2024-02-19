@@ -1,5 +1,5 @@
 import { File } from '@modules/common/file/domain/entities';
-import { MinioService } from '@modules/common/file/domain/services';
+import { BlobService } from '@modules/common/file/domain/services/azure';
 import { FileRepository } from '@modules/common/file/infrastructure/repositories';
 import { User } from '@modules/user/domain/entities';
 import { PropertyFileEnum } from '@modules/user/domain/enums';
@@ -21,7 +21,7 @@ export class SetMainPictureOrBannerUseCase
     constructor(
         private readonly repository: UserRepository,
         private readonly fileRepository: FileRepository,
-        private readonly minioService: MinioService
+        private readonly minioService: BlobService
     )
     { }
 

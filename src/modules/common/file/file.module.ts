@@ -1,3 +1,4 @@
+import { BlobService } from '@modules/common/file/domain/services/azure';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -39,6 +40,7 @@ import { FileController } from './presentation/controllers';
     ],
     providers: [
         FileRepository,
+        BlobService,
         MinioService,
         SaveFileUseCase,
         SaveFilesUseCase,
@@ -49,6 +51,7 @@ import { FileController } from './presentation/controllers';
     ],
     exports: [
         MinioService,
+        BlobService,
         FileRepository
     ]
 })

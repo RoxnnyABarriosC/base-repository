@@ -37,6 +37,7 @@ declare namespace NodeJS {
         DB_DATABASE: string;
         DB_TYPE: 'postgres';
         DB_LOGGING: boolean;
+        DB_USE_SSL: boolean;
         PAGINATION_LIMIT: number;
 
         ENCRYPTION_DEFAULT: 'bcrypt' | 'md5';

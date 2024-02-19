@@ -58,6 +58,7 @@ export const validateEnv =  (config: Record<string, any>): Record<string, any> =
             default: 'postgres', choices: ['postgres']
         }),
         DB_LOGGING: bool({ default: true }),
+        DB_USE_SSL: bool({ default: false }),
 
         PAGINATION_LIMIT: num({ default: 10 }),
 

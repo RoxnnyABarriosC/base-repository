@@ -51,6 +51,7 @@ export default (): IConfig => ({
         logging: process.env.DB_LOGGING,
         migrationsRun: false,
         autoLoadEntities: true,
+        ssl: process.env.DB_USE_SSL,
         subscribers: [`${process.cwd()}/dist/modules/**/infrastructure/subscribers/*.subscriber{.ts,.js}`]
     },
     pagination: {

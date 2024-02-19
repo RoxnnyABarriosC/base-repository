@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
-import { File } from '../entities';
-import { UrlSignService } from '../services/azure';
+import { File } from '../../entities';
+import { UrlSignService } from '../../services';
 
 export interface UrlFileInterface {
     id: string;
