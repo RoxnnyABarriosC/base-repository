@@ -1,8 +1,8 @@
 import { FileRepository } from '@modules/common/file/infrastructure/repositories';
-import { Injectable, Logger } from '@nestjs/common';
+import { STORAGE_SERVICE } from '@modules/common/storage';
+import { IStorageService } from '@modules/common/storage/domain/services';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { File } from '../entities';
-import { MinioService } from '../services';
-
 interface IDeleteFileUseCaseProps {
     id: string;
     deletePermanently: boolean;
@@ -15,7 +15,7 @@ export class DeleteFileUseCase
 
     constructor(
         private readonly repository: FileRepository,
-        private readonly minioService: MinioService
+        @Inject(STORAGE_SERVICE) private readonly storageService: IStorageService
     )
     { }
 
@@ -29,7 +29,7 @@ export class DeleteFileUseCase
 
             if (deletePermanently && file)
             {
-                await this.minioService.removeObject(file);
+                await this.storageService.removeObject(file);
             }
         });
 

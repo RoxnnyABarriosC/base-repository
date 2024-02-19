@@ -83,17 +83,18 @@ export default (): IConfig => ({
         },
         secure: process.env.SMTP_SECURE_SSL
     },
-    s3: {
-        host: process.env.MINIO_HOST,
-        accessKey: process.env.MINIO_ACCESS_KEY,
-        secretKey: process.env.MINIO_SECRET_KEY,
-        useSSL: process.env.MINIO_USE_SSL,
-        port: process.env.MINIO_PORT,
-        publicBucket: process.env.MINIO_PUBLIC_BUCKET,
-        privateBucket: process.env.MINIO_PRIVATE_BUCKET,
-        rootPath: process.env.MINIO_ROOT_PATH,
-        region: process.env.MINIO_REGION,
-        expire: process.env.MINIO_SIGN_EXPIRE
+    storage: {
+        type: process.env.STORAGE_TYPE,
+        host: process.env.STORAGE_HOST,
+        accessKey: process.env.STORAGE_ACCESS_KEY,
+        secretKey: process.env.STORAGE_SECRET_KEY,
+        useSSL: process.env.STORAGE_USE_SSL,
+        port: process.env.STORAGE_PORT,
+        publicStorage: process.env.STORAGE_PUBLIC,
+        privateStorage: process.env.STORAGE_PRIVATE,
+        rootPath: process.env.STORAGE_ROOT_PATH,
+        region: process.env.STORAGE_REGION,
+        signExpires: process.env.STORAGE_SIGN_EXPIRE
     },
     serializer: {
         excludePrefixes: ['_'],

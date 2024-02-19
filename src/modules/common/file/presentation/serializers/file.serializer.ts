@@ -1,5 +1,5 @@
 import { File } from '@modules/common/file/domain/entities';
-import { UrlFileService } from '@modules/common/file/domain/services';
+import { UrlFileService } from '@modules/common/storage/domain/services';
 import { Serializer } from '@shared/classValidator/abstractClass';
 import { Expose } from 'class-transformer';
 

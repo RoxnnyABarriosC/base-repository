@@ -54,18 +54,17 @@ declare namespace NodeJS {
         SMTP_SENDER_NAME: string;
         SMTP_SENDER_EMAIL_DEFAULT: string;
 
-        MINIO_HOST: string;
-        MINIO_ACCESS_KEY: string;
-        MINIO_SECRET_KEY: string;
-        MINIO_USE_SSL: boolean;
-        MINIO_PORT: number;
-        MINIO_PUBLIC_BUCKET: string;
-        MINIO_PRIVATE_BUCKET: string;
-        MINIO_REGION: string;
-        MINIO_ROOT_PATH: string;
-        MINIO_SIGN_EXPIRE: number;
-        MINIO_EXPOSE_HTTPS: boolean;
-        MINIO_EXPOSE_HOST: string;
+        STORAGE_TYPE: 's3' | 'blob';
+        STORAGE_HOST: string;
+        STORAGE_ACCESS_KEY: string;
+        STORAGE_SECRET_KEY: string;
+        STORAGE_USE_SSL: boolean;
+        STORAGE_PORT: number;
+        STORAGE_PUBLIC: string;
+        STORAGE_PRIVATE: string;
+        STORAGE_REGION: string;
+        STORAGE_ROOT_PATH: string;
+        STORAGE_SIGN_EXPIRE: number;
 
         OTP_LIMIT_ATTEMPTS: number;
         OTP_TASK_RESTARTING_ATTEMPTS: string;

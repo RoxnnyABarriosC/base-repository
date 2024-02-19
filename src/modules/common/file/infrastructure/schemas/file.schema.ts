@@ -33,7 +33,7 @@ export const FileSchema = new EntitySchema<File>({
         },
         isPrivate: {
             type: Boolean,
-            default: false
+            default: true
         }
     }
 });

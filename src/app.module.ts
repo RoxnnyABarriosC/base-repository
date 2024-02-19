@@ -45,12 +45,7 @@ import { redisStore } from 'cache-manager-redis-yet';
         }),
         TypeOrmModule.forRootAsync({
             inject: [ConfigService],
-            useFactory: (config: ConfigService) =>
-            {
-                return {
-                    ...config.getOrThrow('db')
-                };
-            }
+            useFactory: (config: ConfigService) => config.getOrThrow('db')
         }),
         HttpModule,
         CommonModule,

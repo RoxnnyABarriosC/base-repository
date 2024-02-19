@@ -1,10 +1,11 @@
 import { File } from '@modules/common/file/domain/entities';
-import { BlobService } from '@modules/common/file/domain/services/azure';
 import { FileRepository } from '@modules/common/file/infrastructure/repositories';
+import { STORAGE_SERVICE } from '@modules/common/storage';
+import { IStorageService } from '@modules/common/storage/domain/services';
 import { User } from '@modules/user/domain/entities';
 import { PropertyFileEnum } from '@modules/user/domain/enums';
 import { UserRepository } from '@modules/user/infrastructure/repositories';
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { MulterFile } from 'fastify-file-interceptor';
 
 declare interface ISetMainPictureOrBannerUseCaseProps {
@@ -21,7 +22,7 @@ export class SetMainPictureOrBannerUseCase
     constructor(
         private readonly repository: UserRepository,
         private readonly fileRepository: FileRepository,
-        private readonly minioService: BlobService
+        @Inject(STORAGE_SERVICE) private readonly storageService: IStorageService
     )
     { }
 
@@ -37,7 +38,7 @@ export class SetMainPictureOrBannerUseCase
         {
             authUser[property] = await this.fileRepository.save(file, transactionManager) as File;
             void await this.repository.update(authUser, transactionManager);
-            void await this.minioService.upload(rawFile, file);
+            void await this.storageService.upload(rawFile, file);
         });
 
         return file;

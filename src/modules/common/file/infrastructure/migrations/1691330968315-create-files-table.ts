@@ -46,7 +46,7 @@ export class CreateFilesTable1691330968315 implements MigrationInterface
                     new TableColumn({
                         name: 'isPrivate',
                         type: 'boolean',
-                        default: false
+                        default: true
                     })
                 ]
             })

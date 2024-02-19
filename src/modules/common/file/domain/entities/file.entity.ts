@@ -13,7 +13,7 @@ export class File extends BaseEntity
     @Expose() public contentType: string;
     @Expose() public size: number;
 
-    constructor(rawFile: MulterFile, isPrivate = false, validate?: boolean)
+    constructor(rawFile: MulterFile, isPrivate = true, validate?: boolean)
     {
         super();
 
