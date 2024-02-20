@@ -1,5 +1,4 @@
-import configuration from '@config/configuration';
-import { UrlFileInterface, UrlFileService } from '@modules/common/file/domain/services';
+import { UrlFileInterface, UrlFileService } from '@modules/common/storage/domain/services';
 import { RoleSerializer } from '@modules/role/presentation/serializers';
 import { SCOPE } from '@modules/user/domain/constants';
 import { User } from '@modules/user/domain/entities';
@@ -8,7 +7,6 @@ import { SerializerScope } from '@shared/classValidator/abstractClass';
 import { ParseUnixDate } from '@shared/classValidator/transforms';
 import { Serializer as SerializerMap } from '@shared/classValidator/utils';
 import { EmailDomainTypeEnum } from '@shared/enums';
-import { GetDomainTypeOfEmail } from '@shared/utils';
 import { Expose } from 'class-transformer';
 import { UserSerializerGroupsEnum } from '../enums';
 

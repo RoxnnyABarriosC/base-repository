@@ -98,18 +98,19 @@ type ISMTPConfig = {
     }
 };
 
-export interface IS3Config
+export interface IStorageConfig
 {
+    type: 's3' | 'blob';
     host: string;
     accessKey: string;
     secretKey: string;
     useSSL: boolean;
     port: number;
-    publicBucket: string;
-    privateBucket: string;
+    publicStorage: string;
+    privateStorage: string;
     rootPath: string;
     region: string;
-    expire: number;
+    signExpires: number;
 }
 
 export interface ITasksConfig
@@ -188,7 +189,7 @@ export interface IConfig {
     encryption: IEncryptionConfig;
     cache: ICacheConfig;
     smtp: ISMTPConfig;
-    s3: IS3Config;
+    storage: IStorageConfig;
     serializer: Partial<ClassTransformOptions>;
     classValidator: ValidatorOptions;
     tasks: ITasksConfig;

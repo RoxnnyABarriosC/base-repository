@@ -132,16 +132,17 @@ SMTP_SECURE_SSL=false
 SMTP_SENDER_NAME=Notifications
 SMTP_SENDER_EMAIL_DEFAULT=notification@localhost.com
 
-MINIO_HOST=s3
-MINIO_ACCESS_KEY=baserepository
-MINIO_SECRET_KEY=baserepository
-MINIO_USE_SSL=false
-MINIO_PORT=9000
-MINIO_PUBLIC_BUCKET=public.baserepository
-MINIO_PRIVATE_BUCKET=private.baserepository
-MINIO_ROOT_PATH=data
-MINIO_REGION=us-east-1
-MINIO_SIGN_EXPIRE=9000
+STORAGE_TYPE=s3
+STORAGE_HOST=s3
+STORAGE_ACCESS_KEY=baserepository
+STORAGE_SECRET_KEY=baserepository
+STORAGE_USE_SSL=false
+STORAGE_PORT=9000
+STORAGE_PUBLIC=public.baserepository
+STORAGE_PRIVATE=private.baserepository
+STORAGE_ROOT_PATH=data
+STORAGE_REGION=us-east-1
+STORAGE_SIGN_EXPIRE=9000
 
 OTP_LIMIT_ATTEMPTS=50
 OTP_TASK_RESTARTING_ATTEMPTS='0 0 * * *'
@@ -251,6 +252,44 @@ $ make migrate
 
 # run seeds
 $ make seed
+```
+
+### Makefile file config
+
+create a new `config.mk` file, copy and paste the variables that are in the example and modify it to your liking
+```makefile
+PROJECT_NAME=testproject
+
+TLS=false
+ENTRYPOINT=http
+
+#ACME_STAGING=true
+ACME_EMAIL=user@baserepository.com
+
+PROXY_DOMAIN=proxy.localhost
+LOAD_USERS ?= 'nodebaserepository:$$apr1$$RTZSd6uA$$9zpPRgArFsHX2UWgPNXL..'
+APPLY_REDIRECT ?= false
+
+DB_USER=baserepository
+DB_NAME=baserepository
+DB_PASSWORD=baserepository
+
+S3_USER=baserepository
+S3_PASSWORD=baserepository
+S3_DOMAIN=s3.localhost
+S3_URL=http://s3.localhost
+S3_CONSOLE_DOMAIN=s3.localhost
+S3_CONSOLE_URL=http://s3.localhost
+S3_CONSOLE_PATH=/minio/ui/
+
+REDIS_PASSWORD=baserepository
+
+STAGE=dev
+
+API_PORT=3000
+API_DOMAIN=api.localhost
+API_DOC_DOMAIN=doc.api.localhost
+
 ```
 
 ## UNIT TESTS

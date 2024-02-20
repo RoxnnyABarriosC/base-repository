@@ -58,6 +58,7 @@ export const validateEnv =  (config: Record<string, any>): Record<string, any> =
             default: 'postgres', choices: ['postgres']
         }),
         DB_LOGGING: bool({ default: true }),
+        DB_USE_SSL: bool({ default: false }),
 
         PAGINATION_LIMIT: num({ default: 10 }),
 
@@ -77,16 +78,19 @@ export const validateEnv =  (config: Record<string, any>): Record<string, any> =
         SMTP_SENDER_NAME: str(),
         SMTP_SENDER_EMAIL_DEFAULT: str(),
 
-        MINIO_HOST: str(),
-        MINIO_ACCESS_KEY: str(),
-        MINIO_SECRET_KEY: str(),
-        MINIO_USE_SSL: bool(),
-        MINIO_PORT: port({ default: undefined }),
-        MINIO_PUBLIC_BUCKET: str(),
-        MINIO_PRIVATE_BUCKET: str(),
-        MINIO_REGION: str(),
-        MINIO_ROOT_PATH: str(),
-        MINIO_SIGN_EXPIRE: num({ default: 9000 }),
+        STORAGE_TYPE: str({
+            default: 's3', choices: ['s3', 'blob']
+        }),
+        STORAGE_HOST: str(),
+        STORAGE_ACCESS_KEY: str(),
+        STORAGE_SECRET_KEY: str(),
+        STORAGE_USE_SSL: bool(),
+        STORAGE_PORT: port({ default: undefined }),
+        STORAGE_PUBLIC: str(),
+        STORAGE_PRIVATE: str(),
+        STORAGE_REGION: str(),
+        STORAGE_ROOT_PATH: str(),
+        STORAGE_SIGN_EXPIRE: num({ default: 9000 }),
 
         OTP_LIMIT_ATTEMPTS: num({ default: 50 }),
         OTP_TASK_RESTARTING_ATTEMPTS: str({ default: '0 0 * * *' }),

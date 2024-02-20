@@ -14,7 +14,7 @@ services:
     labels:
       # TODO: bloquear por password esta ruta
       - traefik.enable=true
-      - traefik.docker.network=internal_network
+      - traefik.docker.network=external_network
       - traefik.http.routers.mail.entrypoints=http
       - traefik.http.routers.mail.rule=Host(`mail.localhost`)
       - traefik.http.services.mail.loadbalancer.server.port=8025
@@ -24,5 +24,4 @@ services:
     volumes:
       - ./usersfile:/usersfile
     networks:
-      - internal_network
       - external_network

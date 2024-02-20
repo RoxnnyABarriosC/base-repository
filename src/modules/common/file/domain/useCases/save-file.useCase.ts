@@ -1,9 +1,10 @@
 import { FileRepository } from '@modules/common/file/infrastructure/repositories';
 import { SaveFileDto } from '@modules/common/file/presentation/dtos';
-import { Injectable, Logger } from '@nestjs/common';
+import { STORAGE_SERVICE } from '@modules/common/storage';
+import { IStorageService } from '@modules/common/storage/domain/services';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { MulterFile } from 'fastify-file-interceptor';
 import { File } from '../entities';
-import { MinioService } from '../services';
 
 interface ISaveFileUseCaseProps {
     rawFile: MulterFile;
@@ -17,7 +18,7 @@ export class SaveFileUseCase
 
     constructor(
         private readonly repository: FileRepository,
-        private readonly minioService: MinioService
+        @Inject(STORAGE_SERVICE) private readonly storageService: IStorageService
     )
     {}
 
@@ -48,7 +49,7 @@ export class SaveFileUseCase
         {
             // file = await entityManager.save(file) as File;
             file = await this.repository.save(file, transactionManager) as File;
-            void await this.minioService.upload(rawFile, file);
+            void await this.storageService.upload(rawFile, file);
         });
 
         return file;

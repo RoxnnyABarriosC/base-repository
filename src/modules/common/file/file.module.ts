@@ -1,37 +1,23 @@
+import { DeleteFileUseCase, GetFileUseCase, ListFilesUseCase, RestoreFileUseCase, SaveFileUseCase, SaveFilesUseCase } from '@modules/common/file/domain/useCases';
+import { FileRepository } from '@modules/common/file/infrastructure/repositories';
+import { FileController } from '@modules/common/file/presentation/controllers';
+import { StorageModule } from '@modules/common/storage';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MinioModule } from 'nestjs-minio-client';
-import { MinioService } from './domain/services';
-import {
-    DeleteFileUseCase,
-    GetFileUseCase,
-    ListFilesUseCase,
-    RestoreFileUseCase, SaveFileUseCase, SaveFilesUseCase
-} from './domain/useCases';
-import { FileRepository } from './infrastructure/repositories';
+import { IStorageConfig } from '@src/config';
 import { FileSchema } from './infrastructure/schemas';
-import { FileController } from './presentation/controllers';
 
 
 @Global()
 @Module({
     imports: [
         TypeOrmModule.forFeature([FileSchema]),
-        MinioModule.registerAsync({
+        StorageModule.registerAsync({
+            isGlobal: true,
             imports: [ConfigModule],
             inject: [ConfigService],
-            useFactory: (config: ConfigService) =>
-            {
-                return {
-                    endPoint: config.getOrThrow('s3.host'),
-                    region: config.getOrThrow('s3.region'),
-                    accessKey: config.getOrThrow('s3.accessKey'),
-                    secretKey: config.getOrThrow('s3.secretKey'),
-                    port: config.getOrThrow('s3.port'),
-                    useSSL: config.getOrThrow('s3.useSSL')
-                };
-            }
+            useFactory: (config: ConfigService) => config.getOrThrow<IStorageConfig>('storage')
         })
     ],
     controllers: [
@@ -39,7 +25,6 @@ import { FileController } from './presentation/controllers';
     ],
     providers: [
         FileRepository,
-        MinioService,
         SaveFileUseCase,
         SaveFilesUseCase,
         GetFileUseCase,
@@ -48,9 +33,8 @@ import { FileController } from './presentation/controllers';
         ListFilesUseCase
     ],
     exports: [
-        MinioService,
         FileRepository
     ]
 })
 export class FileModule
-{}
+{ }

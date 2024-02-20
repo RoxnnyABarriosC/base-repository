@@ -1,19 +1,19 @@
+import configuration from '@config/configuration';
+import { RmProp } from '@shared/utils';
 import dotenv from 'dotenv';
 import { DataSource } from 'typeorm';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import * as process from 'process';
 dotenv.config();
 
-const env = process.env;
 const seed = process.argv.includes('--SEED');
 
+const dbConfig = { ...configuration().db };
+
+RmProp(dbConfig, ['synchronize', 'autoLoadEntities', 'logging', 'migrationsRun', 'subscribers']);
+
 const config: PostgresConnectionOptions = {
-    host: env.DB_HOST,
-    port: Number(env.DB_PORT),
-    username: env.DB_USER,
-    password: env.DB_PASSWORD,
-    database: env.DB_DATABASE,
-    type: 'postgres',
+    ...dbConfig,
     entities: [`${process.cwd()}/dist/modules/**/infrastructure/schemas/*.schema{.ts,.js}`],
     migrations: [
         `${process.cwd()}/dist/modules/**/infrastructure/${seed ? 'seeds' : 'migrations'}/*{.ts,.js}`

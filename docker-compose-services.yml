@@ -1,0 +1,106 @@
+version: '3.9'
+
+services:
+  db:
+    container_name: ${PROJECT_NAME:-base_repository}_db
+    restart: always
+    build:
+      context: docker/postgres/
+      dockerfile: Dockerfile
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER:-baserepository}
+      POSTGRES_DB: ${DB_NAME:-baserepository}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-baserepository}
+    volumes:
+      - data:/var/lib/postgresql/data
+    networks:
+      - external_network
+
+  s3:
+    container_name: ${PROJECT_NAME:-base_repository}_s3
+    restart: always
+    image: minio/minio:RELEASE.2023-03-22T06-36-24Z
+    environment:
+      MINIO_ROOT_USER: ${S3_USER:-baserepository}
+      MINIO_ROOT_PASSWORD: ${S3_PASSWORD:-baserepository}
+      MINIO_DOMAIN: ${S3_DOMAIN:-s3.localhost}
+      MINIO_SERVER_URL: ${S3_URL:-http://s3.localhost}
+      MINIO_BROWSER_REDIRECT_URL: ${S3_CONSOLE_URL:-http://s3.localhost}${S3_CONSOLE_PATH:-/minio/ui/}
+    ports:
+      - "9002:80"
+      - "9001:9001"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=external_network
+      # Configuración para el servicio de almacenamiento
+      - traefik.http.routers.s3_storage.tls=${TLS:-false}
+      - traefik.http.routers.s3_storage.tls.certResolver=lets-encrypt
+      - traefik.http.routers.s3_storage.entrypoints=${ENTRYPOINT:-http}
+      - traefik.http.routers.s3_storage.service=s3_storage
+      - traefik.http.routers.s3_storage.rule=Host(`${S3_DOMAIN:-s3.localhost}`)
+      - traefik.http.services.s3_storage.loadbalancer.server.port=80
+      - traefik.http.routers.s3_storage.middlewares=rateLimit,securityHeaders,securityHeadersPolicy,log4shell,gzipCompress
+      # Configuración para el panel de control
+      - traefik.http.routers.s3_panel.service=s3_panel
+      - traefik.http.routers.s3_panel.tls=${TLS:-false}
+      - traefik.http.routers.s3_panel.tls.certresolver=lets-encrypt
+      - traefik.http.routers.s3_panel.entrypoints=${ENTRYPOINT:-http}
+      - traefik.http.routers.s3_panel.rule=Host(`${S3_CONSOLE_DOMAIN:-${S3_DOMAIN:-s3.localhost}}`) && PathPrefix(`${S3_CONSOLE_PATH:-/minio/ui/}`)
+      - traefik.http.services.s3_panel.loadbalancer.server.port=9001
+      # Middleware para reescribir la ruta
+      - traefik.http.middlewares.replace_path_regex.replacepathregex.regex=^${S3_CONSOLE_PATH:-/minio/ui/}(.*)
+      - traefik.http.middlewares.replace_path_regex.replacepathregex.replacement=/$$1
+      - traefik.http.routers.s3_panel.middlewares=replace_path_regex,rateLimit,securityHeaders,log4shell,gzipCompress
+    volumes:
+      - s3:/data
+    command: server --address 0.0.0.0:80 --console-address 0.0.0.0:9001 /data
+    networks:
+      - external_network
+
+  buckets:
+    container_name: ${PROJECT_NAME:-base_repository}_s3_buckets
+    image: minio/mc
+    depends_on:
+      - s3
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://s3 ${S3_USER:-baserepository} ${S3_PASSWORD:-baserepository};
+      /usr/bin/mc mb --region=${S3_REGION:-us-east-1} myminio/${S3_PRIVATE_BUCKET:-private.baserepository};
+      /usr/bin/mc mb --region=${S3_REGION:-us-east-1} myminio/${S3_PUBLIC_BUCKET:-public.baserepository};
+      /usr/bin/mc anonymous set public myminio/${S3_PUBLIC_BUCKET:-public.baserepository};
+      exit 0;
+      "
+    networks:
+      - external_network
+
+  redis:
+    container_name: ${PROJECT_NAME:-base_repository}_redis
+    restart: always
+    image: bitnami/redis:latest
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-baserepository}
+      - DISABLE_COMMANDS=FLUSHDB,FLUSHALL,CONFIG
+    volumes:
+      - redis:/bitnami/redis/data
+    networks:
+      - external_network
+
+networks:
+  external_network:
+    external: true
+    name:  external_${PROJECT_NAME:-base_repository}_network
+
+volumes:
+  data:
+    driver: "local"
+    name: ${PROJECT_NAME:-base_repository}_data
+  s3:
+    driver: "local"
+    name: ${PROJECT_NAME:-base_repository}_s3
+  redis:
+    driver: "local"
+    name: ${PROJECT_NAME:-base_repository}_redis
