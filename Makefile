@@ -27,6 +27,7 @@ proxy:
     		PROXY_DOMAIN=$(PROXY_DOMAIN) \
     		ACME_EMAIL=$(ACME_EMAIL) \
     		APPLY_REDIRECT=$(APPLY_REDIRECT) \
+    		LOAD_USERS=$(LOAD_USERS) \
     		PROJECT_NAME=$(PROJECT_NAME) \
     		docker compose -f docker-compose-proxy.yml \
     		$(if $(filter down,$(MAKECMDGOALS)),down,$(if $(filter stop,$(MAKECMDGOALS)),stop, up -d))  \
