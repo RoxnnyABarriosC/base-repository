@@ -29,7 +29,7 @@ export const validateEnv =  (config: Record<string, any>): Record<string, any> =
         LOGGER_SINGLE_LINE: bool({ default: false }),
         LOGGER_TASK_DELETE_TRACE_LOG: str({ default: '*/30 * * * *' }),
 
-        SENTRY_DSN: url({ default: undefined }),
+        SENTRY_DSN: url({ default: 'https://dsn.sentry.io' }),
         SENTRY_ENABLE: bool({ default: false }),
 
         LOCALE: str({ default: 'en', choices: ['en', 'es'] }),
