@@ -48,3 +48,4 @@ local-server.sh
 prod-server.sh
 dev-server.sh
 package-lock.json
+config.mk

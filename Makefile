@@ -1,111 +1,111 @@
+include config.mk
+include default.mk
+
 #########################       CONFIG      #######################
 
 network:
 	@echo '************                               ************'
 	@echo '************         CREATE NETWORK        ************'
 	@echo '************                               ************'
-	sh network.sh $${PROJECT_NAME:-base_repository}
+	sh network.sh $(PROJECT_NAME)
 
 volume:
 	@echo '************                               ************'
 	@echo '************         CLEAN VOLUME          ************'
 	@echo '************                               ************'
-	sh volume.sh $${PROJECT_NAME:-base_repository}
-
-#########################        DOC        #######################
-
-doc:
-	@echo '************                               ************'
-	@echo '************        DOC BUILD     	      ************'
-	@echo '************                               ************'
-	make down-doc && TLS=$${TLS:-false} ENTRYPOINT=$${ENTRYPOINT:-http} \
-		DOC_API_DOMAIN=$${DOC_API_DOMAIN:-doc.api.localhost} \
-		docker compose -f docker-compose-doc.yml up --build -d
-
-down-doc:
-	@echo '************                               ************'
-	@echo '************        DOC DOWN     	      ************'
-	@echo '************                               ************'
-	docker compose -f docker-compose-doc.yml down
-
-stop-doc:
-	@echo '************                               ************'
-	@echo '************        DOC INIT     	      ************'
-	@echo '************                               ************'
-	docker compose -f docker-compose-doc.yml stop
+	sh volume.sh $(PROJECT_NAME)
 
 #########################       PROXY       #######################
 
 proxy:
 	@echo '************                               ************'
-	@echo '************        DOC INIT     	      ************'
+	@echo '************             PROXY     	      ************'
 	@echo '************                               ************'
-	docker compose -f docker-compose-proxy.yml up --build -d
-	make down-proxy && TLS=$${TLS:-false} ENTRYPOINT=$${ENTRYPOINT:-http} \
-			LOCAL_PROXY=$${LOCAL_PROXY} \
-			ACME_STAGING=$${ACME_STAGING} \
-    		PROXY_DOMAIN=$${PROXY_DOMAIN:-proxy.localhost} \
-    		ACME_EMAIL=$${ACME_EMAIL:-user@baserepository.com} \
-    		docker compose -f docker-compose-proxy.yml up --build -d
+	TLS=$(TLS) \
+			ENTRYPOINT=$(ENTRYPOINT) \
+			ACME_STAGING=$(ACME_STAGING) \
+    		PROXY_DOMAIN=$(PROXY_DOMAIN) \
+    		ACME_EMAIL=$(ACME_EMAIL) \
+    		APPLY_REDIRECT=$(APPLY_REDIRECT) \
+    		PROJECT_NAME=$(PROJECT_NAME) \
+    		docker compose -f docker-compose-proxy.yml \
+    		$(if $(filter down,$(MAKECMDGOALS)),down,$(if $(filter stop,$(MAKECMDGOALS)),stop, up -d))  \
+            $(if $(filter build,$(MAKECMDGOALS)),--build,)
 
-down-proxy:
-	@echo '************                               ************'
-	@echo '************        DOC INIT     	      ************'
-	@echo '************                               ************'
-	docker compose -f docker-compose-proxy.yml down
+#########################       SERVICES       #######################
 
-stop-proxy:
+services:
 	@echo '************                               ************'
-	@echo '************        DOC INIT     	      ************'
+	@echo '************         SERVICES    	      ************'
 	@echo '************                               ************'
-	docker compose -f docker-compose-proxy.yml stop
+	TLS=$(TLS) \
+			ENTRYPOINT=$(ENTRYPOINT) \
+			DB_USER=$(DB_USER) \
+			DB_NAME=$(DB_NAME) \
+			DB_PASSWORD=$(DB_PASSWORD) \
+			S3_USER=$(S3_USER) \
+			S3_PASSWORD=$(S3_PASSWORD) \
+			S3_DOMAIN=$(S3_DOMAIN) \
+			S3_URL=$(S3_URL) \
+            S3_CONSOLE_DOMAIN=$(S3_CONSOLE_DOMAIN) \
+            S3_CONSOLE_URL=$(S3_CONSOLE_URL) \
+            S3_CONSOLE_PATH=$(S3_CONSOLE_PATH) \
+            REDIS_PASSWORD=$(REDIS_PASSWORD) \
+            PROJECT_NAME=$(PROJECT_NAME) \
+            docker compose -f docker-compose-services.yml \
+            $(if $(filter down,$(MAKECMDGOALS)),down,$(if $(filter stop,$(MAKECMDGOALS)),stop, up -d))  \
+            $(if $(filter build,$(MAKECMDGOALS)),--build,)
+
+#########################       API       #######################
+
+api:
+	@echo '************                               ************'
+	@echo '************             API     	      ************'
+	@echo '************                               ************'
+	STAGE=$(STAGE) \
+			TLS=$(TLS) \
+            ENTRYPOINT=$(ENTRYPOINT) \
+			API_PORT=$(API_PORT) \
+			API_DOMAIN=$(API_DOMAIN) \
+            PROJECT_NAME=$(PROJECT_NAME) \
+            docker compose -f docker-compose.yml \
+            $(if $(filter local,$(MAKECMDGOALS)),-f docker-compose-dev.yml,) \
+            $(if $(filter down,$(MAKECMDGOALS)),down,$(if $(filter stop,$(MAKECMDGOALS)),stop, up -d))  \
+            $(if $(filter build,$(MAKECMDGOALS)),--build,)
 
 #########################      SERVER      #######################
 
-local:
+server:
 	@echo '************                               ************'
-	@echo '************        DEV LOCAL     	      ************'
+	@echo '************            SERVER  	          ************'
 	@echo '************                               ************'
-	sh local-server.sh
+	$(if $(filter local,$(MAKECMDGOALS)),sh local-server.sh,$(if $(filter dev,$(MAKECMDGOALS)),sh dev-server.sh, sh prod-server.sh))
 
-dev:
-	@echo '************                               ************'
-	@echo '************        DEV INIT     	      ************'
-	@echo '************                               ************'
-	sh dev-server.sh
+#########################        DOC        #######################
 
-
-prod:
+doc:
 	@echo '************                               ************'
-	@echo '************        PROD INIT    	      ************'
+	@echo '************             DOC        	      ************'
 	@echo '************                               ************'
-	sh prod-server.sh
-
-down:
-	@echo '************                               ************'
-	@echo '************        DOWN CONTAINERS        ************'
-	@echo '************                               ************'
-	docker compose -f docker-compose.yml -f docker-compose-dev.yml down
-
-stop:
-	@echo '************                               ************'
-	@echo '************        STOP CONTAINERS        ************'
-	@echo '************                               ************'
-	docker compose -f docker-compose.yml -f docker-compose-dev.yml stop
+	TLS=$(TLS) \
+        ENTRYPOINT=$(ENTRYPOINT) \
+		API_DOC_DOMAIN=$(API_DOC_DOMAIN) \
+		PROJECT_NAME=$(PROJECT_NAME) \
+		docker compose -f docker-compose-doc.yml \
+		$(if $(filter down,$(MAKECMDGOALS)),down,$(if $(filter stop,$(MAKECMDGOALS)),stop, up -d))  \
+        $(if $(filter build,$(MAKECMDGOALS)),--build,)
 
 #########################       EXEC       #######################
 
 exec:
-	@echo '************                               ************'
-	@echo '************       EXEC BASH API           ************'
-	@echo '************                               ************'
-	STAGE=${STAGE} docker compose exec api bash
-
-sh:
-	@echo '************                               ************'
-	@echo '************        Exec SH NODE    	      ************'
-	@echo '************                               ************'
-	docker compose exec api sh
+	@if [ -z "$(service)" ]; then \
+		echo "Error: service is not specified. Use 'make exec service=service_name'"; \
+		exit 1; \
+	fi
+	@echo "************                               ************"
+	@echo "************             EXEC              ************"
+	@echo "************                               ************"
+	docker compose exec $(service) $(if $(filter sh,$(MAKECMDGOALS)),sh,bash)
 
 #########################        DB        #######################
 
@@ -124,12 +124,11 @@ seed:
 #########################       CLEAN       #######################
 
 clean:
-	docker compose down -v --remove-orphans
+	docker compose down $(if $(filter hard,$(MAKECMDGOALS)),-v --remove-orphans,--remove-orphans && sh volume.sh $(PROJECT_NAME))
 	docker rmi $$(docker images -f "dangling=true" -q)
 	docker ps -a | grep _run_ | awk '{print $$1}' | xargs -I {} docker rm {}
 
-clean-soft:
-	docker compose down --remove-orphans
-	sh volume.sh $${PROJECT_NAME:-base_repository}
-	docker rmi $$(docker images -f "dangling=true" -q)
-	docker ps -a | grep _run_ | awk '{print $$1}' | xargs -I {} docker rm {}
+#########################       DUMMY       #######################
+
+%:
+	@:

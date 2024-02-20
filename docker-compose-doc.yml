@@ -17,7 +17,7 @@ services:
       - traefik.http.routers.doc.entrypoints=${ENTRYPOINT:-http}
       - traefik.http.routers.doc.tls=${TLS:-false}
       - traefik.http.routers.doc.tls.certresolver=lets-encrypt
-      - traefik.http.routers.doc.rule=Host(`${DOC_API_DOMAIN:-doc.api.localhost}`)
+      - traefik.http.routers.doc.rule=Host(`${API_DOC_DOMAIN:-doc.api.localhost}`)
       - traefik.http.services.doc.loadbalancer.server.port=8080
       - traefik.http.middlewares.auth.basicauth.users=${LOAD_USERS:-nodebaserepository:$$apr1$$RTZSd6uA$$9zpPRgArFsHX2UWgPNXL..}
       - traefik.http.middlewares.auth.basicauth.usersfile=/usersfile
