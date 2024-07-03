@@ -263,7 +263,7 @@ export class PgSqlFilterCriteria<F = any, E = any>
             {
                 if (partialMatch)
                 {
-                    valueAttr = valueAttr.split(' ').map((value) => `${pgp.as.text(value)}:*`).join(' | ');
+                    valueAttr = valueAttr.split(' ').map((value) => pgp.as.text(`${value}:*`)).join(' | ');
                 }
 
                 queryBuilder.addSelect(`ts_rank_cd( (${searchAtt}) , to_tsquery(${aliasAttr}))`, 'rank');
