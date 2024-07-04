@@ -65,6 +65,11 @@ export class MapCriteria<E = any>
         return this.criterias.has(<any>key) ? this.criterias.get(<any>key) : defaultValue;
     }
 
+    set<F>(key: keyof E | F, value: any): void
+    {
+        this.criterias.set(key as any, value);
+    }
+
     getArray(): any
     {
         return this.criterias.entries();

@@ -59,18 +59,18 @@ export class AuthService
     {
         const user = await this.userRepository.getOneBy({
             condition: { _id: id },
-            options: { initThrow: false },
+            initThrow: false,
             withDeleted: false
         });
 
-        return await this.validateUser(user, null, null, { checkPassword: false });
+        return await this.validateUser(user, null, null, { checkPassword: false, restoreTemporalBlock: false });
     }
 
     async validateUser(
         user: User,
         password: string,
       checkFn: (user: User) => Promise<unknown> = null,
-      { checkSuperAdmin = false, checkPassword = true, checkTempBlock = false } = {}
+      { checkSuperAdmin = false, checkPassword = true, checkTempBlock = false, restoreTemporalBlock = true } = {}
     ): Promise<User>
     {
         this.checkUserValidity(user, checkSuperAdmin, checkTempBlock);
@@ -92,7 +92,10 @@ export class AuthService
             await this.handleCustomCheckFunction(user, checkFn, securityConfig, checkTempBlock);
         }
 
-        await this.handleUserRestorationAndTempBlockReset(user, securityConfig);
+        if (restoreTemporalBlock)
+        {
+            await this.handleUserRestorationAndTempBlockReset(user, securityConfig);
+        }
 
         return user;
     }
@@ -200,7 +203,7 @@ export class AuthService
     {
         if (user.deletedAt)
         {
-            await this.userRepository.restore(user._id);
+            await this.userRepository.restore({ id: user._id });
         }
 
         if (securityConfig.blockedTime)
@@ -242,9 +245,7 @@ export class AuthService
 
         return await this.userRepository.getOneBy({
             condition,
-            options: {
-                initThrow: false
-            }
+            initThrow: false
         });
     }
 }

@@ -1,4 +1,5 @@
 import { EncryptionFactory } from '@modules/auth/domain/factories';
+import { OTPNotFoundException } from '@modules/securityConfig/domain/exceptions';
 import { AuthOTPDto } from '@modules/securityConfig/presentation/dtos';
 import { User } from '@modules/user/domain/entities';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';

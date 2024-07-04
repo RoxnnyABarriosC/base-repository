@@ -4,3 +4,4 @@ export * from './register.dto';
 export * from './me.dto';
 export * from './forgot-password.dto';
 export * from './change-my-password.dto';
+export * from './otp-forgot-password.dto';

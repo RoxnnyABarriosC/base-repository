@@ -1,33 +1,46 @@
-export declare interface IByOptions
-{
-    initThrow?: boolean | undefined;
-    populate?: string | string[] | boolean | undefined;
+import { EntityManager, FindOptionsRelations, FindOptionsSelect } from 'typeorm';
+import { FindOptionsOrder } from 'typeorm/find-options/FindOptionsOrder';
+import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
+
+export declare type Transaction = (transactionManager: EntityManager) => Promise<void>
+
+declare interface ICache {
+    id: any;
+    milliseconds: number;
 }
 
-export declare interface IGetOneParams {
-    id: string;
+export declare interface ICommonParams<E> {
+    initThrow?: boolean;
+    select?: FindOptionsSelect<E>
+    relations?: FindOptionsRelations<E>
     withDeleted?: boolean;
+    loadEagerRelations?: false;
+    cache?: boolean | number | ICache;
+    order?: FindOptionsOrder<E>
 }
 
-export declare interface IDeleteParams {
+export declare interface IUpdateBy<E> {
+    condition: FindOptionsWhere<E>,
+    partial: Partial<E>
+}
+
+export declare interface IRestoreParams<E> extends Omit<ICommonParams<E>, 'withDeleted' | 'initThrow'> {
+    id: string;
+}
+
+export declare interface IDeleteParams<E> extends Omit<ICommonParams<E>, 'initThrow'> {
     id: string;
     softDelete?: boolean;
-    withDeleted?: boolean;
 }
 
-export declare interface IGetOneByParams {
-    condition: Record<string, any>;
-    options?: IByOptions;
-    withDeleted?: boolean;
-    relations?: string[];
+export declare interface IGetOneParams<E> extends Omit<ICommonParams<E>, 'initThrow'> {
+    id: string;
 }
 
-export declare interface IExistParams {
-    condition: Record<string, any> | Record<string, any>[],
-    select: string[];
-    initThrow?: boolean;
-    withDeleted?: boolean
+export declare interface IGetOneByParams<E> extends ICommonParams<E> {
+    condition: FindOptionsWhere<E>[] | FindOptionsWhere<E>;
 }
 
-export declare interface IGetByParams
-    extends Omit<IGetOneByParams, 'withDeleted' | 'relations'> {}
+export declare interface IGetByParams<T>
+    extends IGetOneByParams<T> {}
+

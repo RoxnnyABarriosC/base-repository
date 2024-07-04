@@ -10,16 +10,13 @@ import { LoggerContext } from '@shared/enums/logger-context';
  */
 export const Parse = <T extends number | string | boolean | [] | object | Date>(value: any): T =>
 {
-    Logger.log('Parsing...', LoggerContext.PARSE);
-    Logger.log(`Original value: ${ typeof  value}`, LoggerContext.PARSE);
-
     try
     {
         value = JSON.parse(value);
     }
     catch (e)
     {
-        Logger.log('Changing parsing strategy...', LoggerContext.PARSE);
+        // Do nothing
     }
 
     if (typeof value === 'string')
@@ -35,8 +32,6 @@ export const Parse = <T extends number | string | boolean | [] | object | Date>(
             return new Date(date) as T;
         }
     }
-
-    Logger.log(`New value: ${ typeof  value}`, LoggerContext.PARSE);
 
     return value;
 };

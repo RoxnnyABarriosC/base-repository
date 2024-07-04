@@ -19,6 +19,6 @@ export class RestoreRoleUseCase
     async handle({ id }: IRestoreRoleUseCaseProps): Promise<Role>
     {
         this.logger.log('Restoring role...');
-        return await this.repository.restore(id);
+        return await this.repository.restore({ id });
     }
 }

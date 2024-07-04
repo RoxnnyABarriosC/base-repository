@@ -47,7 +47,7 @@ export class ChangeForgotPasswordUseCase
 
         const user = await this.userRepository.getOneBy({
             condition: { email },
-            options: { initThrow: true }
+            initThrow: true
         });
 
         user.passwordRequestedAt = null;

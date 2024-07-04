@@ -2,16 +2,16 @@ import { Inject, Injectable } from '@nestjs/common';
 import { NotFoundCustomException } from '@src/shared/app/exceptions';
 import {
     DataSource,
-    EntityManager,
-    FindOneOptions,
+    EntityManager, FindOneOptions,
     ObjectLiteral,
     QueryRunner,
     Repository
 } from 'typeorm';
 import { IsolationLevel } from 'typeorm/driver/types/IsolationLevel';
-import type {
+import { UpdateResult } from 'typeorm/query-builder/result/UpdateResult';
+import {
     IDeleteParams,
-    IExistParams, IGetByParams, IGetOneByParams, IGetOneParams
+    IGetByParams, IGetOneByParams, IGetOneParams, IRestoreParams, IUpdateBy, Transaction
 
 } from './base-repository.interface';
 
@@ -39,7 +39,7 @@ export abstract class BaseRepository<T extends ObjectLiteral>
         return this._queryRunner;
     }
 
-    async transaction(transaction: (transactionManager: EntityManager) => Promise<void>, isolationLevel?: IsolationLevel)
+    async transaction(transaction: Transaction, isolationLevel?: IsolationLevel)
     {
         if (isolationLevel)
         {
@@ -61,9 +61,32 @@ export abstract class BaseRepository<T extends ObjectLiteral>
         return await this.save(entities, transactionManager);
     }
 
-    async restore(id: string, transactionManager?: EntityManager): Promise<T>
+    async updateBy(
+        { condition, partial }: IUpdateBy<T>,
+        transactionManager?: EntityManager
+    ): Promise<UpdateResult>
     {
-        const entity: any = await this.repository.findOne({ withDeleted: true, where: { _id: id } as any });
+        const exist = await this.repository.existsBy(condition);
+
+        if (!exist)
+        {
+            throw new NotFoundCustomException(this.entityClass.name);
+        }
+
+        return transactionManager ? await transactionManager.update(this.entityClass, condition, partial)
+            : await this.repository.update(condition, partial);
+    }
+
+    async restore(
+        { id, ...config }: IRestoreParams<T>,
+        transactionManager?: EntityManager
+    ): Promise<T>
+    {
+        const entity: any = await this.repository.findOne({
+            withDeleted: true,
+            where: { _id: id } as any,
+            ...config
+        });
 
         if (!entity)
         {
@@ -71,17 +94,24 @@ export abstract class BaseRepository<T extends ObjectLiteral>
         }
 
         // eslint-disable-next-line no-unused-expressions
-        transactionManager ? await transactionManager.restore(this.entityClass, id) : void await this.repository.restore(id);
-
+        transactionManager ? await transactionManager.restore(this.entityClass, id)
+            : void await this.repository.restore(id);
 
         entity.deletedAt = null;
 
         return entity;
     }
 
-    async delete({ id, softDelete = true, withDeleted = false }: IDeleteParams, transactionManager?: EntityManager): Promise<T>
+    async delete(
+        { id, softDelete = true, withDeleted = false, ...config  }: IDeleteParams<T>,
+        transactionManager?: EntityManager
+    ): Promise<T>
     {
-        const entity: any = await this.repository.findOne({ withDeleted, where: { _id: id } as any });
+        const entity: any = await this.repository.findOne({
+            withDeleted,
+            where: { _id: id } as any,
+            ...config
+        });
 
         if (!entity)
         {
@@ -91,12 +121,14 @@ export abstract class BaseRepository<T extends ObjectLiteral>
         if (softDelete)
         {
             // eslint-disable-next-line no-unused-expressions
-            transactionManager ? await transactionManager.softDelete(this.entityClass, id) : void await this.repository.softDelete(id);
+            transactionManager ? await transactionManager.softDelete(this.entityClass, id)
+                : void await this.repository.softDelete(id);
         }
         else
         {
             // eslint-disable-next-line no-unused-expressions
-            transactionManager ? await transactionManager.delete(this.entityClass, id) : void await this.repository.delete(id);
+            transactionManager ? await transactionManager.delete(this.entityClass, id)
+                : void await this.repository.delete(id);
         }
 
         entity.deletedAt = Date.now();
@@ -104,9 +136,15 @@ export abstract class BaseRepository<T extends ObjectLiteral>
         return entity;
     }
 
-    async getOne({ id, withDeleted = false }: IGetOneParams): Promise<T>
+    async getOne(
+        { id, withDeleted = false, ...config }: IGetOneParams<T>
+    ): Promise<T>
     {
-        const entity = await this.repository.findOne({ withDeleted, where: { _id: id } as any });
+        const entity = await this.repository.findOne({
+            withDeleted,
+            where: { _id: id } as any,
+            ...config
+        });
 
         if (!entity)
         {
@@ -116,11 +154,15 @@ export abstract class BaseRepository<T extends ObjectLiteral>
         return entity;
     }
 
-    async getOneBy({ condition, options = { initThrow: true }, withDeleted = false, relations = [] }: IGetOneByParams): Promise<T | null>
+    async getOneBy(
+        { condition, initThrow = true, withDeleted = false, ...config }: IGetOneByParams<T>
+    ): Promise<T | null>
     {
-        const { initThrow } = options;
-
-        const entity = await this.repository.findOne({ withDeleted, where: condition as any, relations: relations as any });
+        const entity = await this.repository.findOne({
+            withDeleted,
+            where: condition,
+            ...config
+        });
 
         if (initThrow && !entity)
         {
@@ -130,11 +172,15 @@ export abstract class BaseRepository<T extends ObjectLiteral>
         return entity;
     }
 
-    async getBy({ condition, options = { initThrow: false } }: IGetByParams): Promise<T[]>
+    async getBy(
+        { condition, initThrow = false, withDeleted = false, ...config  }: IGetByParams<T>
+    ): Promise<T[]>
     {
-        const { initThrow } = options;
-
-        const entities = await this.repository.findBy(condition as any);
+        const entities = await this.repository.find({
+            withDeleted,
+            where: condition,
+            ...config
+        });
 
         if (initThrow && !entities.length)
         {
@@ -144,7 +190,16 @@ export abstract class BaseRepository<T extends ObjectLiteral>
         return entities;
     }
 
-    async exist<D = any>({ condition, select, initThrow = false, withDeleted = false }: IExistParams): Promise<D>
+    /**
+     *
+     * @param condition
+     * @param select
+     * @param initThrow
+     * @param withDeleted
+     *
+     * @deprecated
+     */
+    async exist<D = any>({ condition, select, initThrow = false, withDeleted = false }): Promise<D>
     {
         const conditionMap: FindOneOptions = {
             select,

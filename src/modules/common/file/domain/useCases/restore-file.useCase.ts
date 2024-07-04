@@ -18,6 +18,6 @@ export class RestoreFileUseCase
 
     async handle({ id }: Props): Promise<File>
     {
-        return await this.repository.restore(id);
+        return await this.repository.restore({ id });
     }
 }

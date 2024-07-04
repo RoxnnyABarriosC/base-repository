@@ -25,7 +25,7 @@ export class RefreshTokenUseCase
 
         const user = await this.userRepository.getOneBy({
             condition: { email },
-            options: { initThrow: true }
+            initThrow: true
         });
 
         if (user.onBoarding)

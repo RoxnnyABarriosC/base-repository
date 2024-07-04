@@ -41,7 +41,7 @@ export class VerifyAccountUseCase
 
         const user = await this.repository.getOneBy({
             condition: { email },
-            options: { initThrow: true }
+            initThrow: true
         });
 
         user.verify = true;

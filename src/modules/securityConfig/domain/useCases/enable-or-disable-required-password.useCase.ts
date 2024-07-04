@@ -23,9 +23,7 @@ export class EnableOrDisableRequiredPasswordUseCase
     {
         const securityConfig = await this.repository.getOneBy({
             condition: { user: { _id: authUser._id } },
-            options: {
-                initThrow: true
-            }
+            initThrow: true
         });
 
         if (!enable && (!securityConfig.otp.email.enable && !securityConfig.otp.phone.enable))

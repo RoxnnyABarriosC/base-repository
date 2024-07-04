@@ -6,5 +6,6 @@
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<EOF
 create extension unaccent;
 create extension "uuid-ossp";
+create extension pg_trgm;
 select * FROM pg_extension;
 EOF

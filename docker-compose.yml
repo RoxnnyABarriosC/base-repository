@@ -21,7 +21,7 @@ services:
       - traefik.http.routers.api.tls.certresolver=lets-encrypt
       - traefik.http.routers.api.rule=Host(`${API_DOMAIN:-api.localhost}`)
       - traefik.http.services.api.loadbalancer.server.port=${API_PORT:-4000}
-      - traefik.http.routers.api.middlewares=rateLimit,log4shell,securityHeaders,gzipCompress,securityHeadersPolicy
+      - traefik.http.routers.api.middlewares=rateLimit,log4shell,gzipCompress,securityHeadersPolicy # TODO: VALIDAR EL MIDDLEWARE securityHeaders
     environment:
       - MINIO_EXPOSE_HOST=${S3_DOMAIN:-s3.localhost}
       - MINIO_EXPOSE_HTTPS=${TLS:-true}

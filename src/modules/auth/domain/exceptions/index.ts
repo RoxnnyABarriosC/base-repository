@@ -11,3 +11,4 @@ export * from './email-domain-not-valid.exception';
 export * from './blocked-account.exception';
 export * from './temporal-blocked-account.exception';
 export * from './auth-attempts-exceeded.exception';
+export * from './expired-token.exception';

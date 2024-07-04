@@ -30,7 +30,7 @@ export class SendOTPUseCase
         private readonly configService: ConfigService,
         private readonly repository: SecurityConfigRepository,
         private readonly userRepository: UserRepository,
-        @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
+      @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
     )
     {}
 

@@ -25,9 +25,7 @@ export class EnableOrDisableOTPUseCase
     {
         const securityConfig = await this.repository.getOneBy({
             condition: { user: { _id: authUser._id } },
-            options: {
-                initThrow: true
-            }
+            initThrow: true
         });
 
         if (target === OTPTargetConfigEnum.PHONE && !(authUser?.phone))

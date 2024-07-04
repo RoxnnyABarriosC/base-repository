@@ -27,14 +27,19 @@ export class JWTStrategy extends PassportStrategy(Strategy)
     {
         super({
             secretOrKey: configService.getOrThrow('jwt.secret'),
-            ignoreExpiration: false,
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
+            ignoreExpiration: true,
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+            passReqToCallback: true
         });
     }
 
-    async validate(payload: IDecodeToken): Promise<IAuthData>
+    async validate(req: FastifyRequest, payload: IDecodeToken): Promise<IAuthData>
     {
         const checkBlackList = this.configService.getOrThrow<boolean>('jwt.checkBlackList');
+
+        const token = req.raw.headers.authorization.split(' ')[1];
+
+        await this.tokenService.checkExpire(token);
 
         if (checkBlackList)
         {

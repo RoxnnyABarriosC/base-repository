@@ -29,14 +29,14 @@ export class SendPublicOTPUseCase
 
     async handle({ dto: { channel, to } }: ISendPublicOTPUseCaseProps): Promise<ILocalMessage>
     {
-        const target = OTPChannelToTargetDictionary.get(channel);
-
-        const exist  = await this.userRepository.exist({ condition: { [target]: to }, select: ['_id'] });
-
-        if (exist)
-        {
-            throw new OTPUniqueTargetException(target, to);
-        }
+        // const target = OTPChannelToTargetDictionary.get(channel);
+        //
+        // const exist  = await this.userRepository.exist({ condition: { [target]: to }, select: ['_id'] });
+        //
+        // if (exist)
+        // {
+        //     throw new OTPUniqueTargetException(target, to);
+        // }
 
         if (channel === OTPSendChannelEnum.SMS)
         {

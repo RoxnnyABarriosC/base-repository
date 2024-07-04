@@ -3,9 +3,9 @@ import {
     ChangeForgotPasswordUseCase,
     ForgotPasswordUseCase,
     LoginUseCase,
-    LogoutUseCase,
+    LogoutUseCase, OTPForgotPasswordUseCase,
     RefreshTokenUseCase,
-    RegisterUseCase,
+    RegisterUseCase, ResendVerifyAccountUseCase,
     VerifyAccountUseCase
 } from '@modules/auth/domain/useCases';
 import { IMyStore } from '@modules/common/store';
@@ -17,7 +17,7 @@ import { PasswordDto } from '@modules/user/presentation/dtos';
 import { UserSerializerGroupsEnum } from '@modules/user/presentation/enums';
 import {
     Body,
-    Controller,
+    Controller, Headers,
     HttpCode,
     HttpStatus,
     Logger,
@@ -31,6 +31,7 @@ import { Agent, UserAgent } from '@shared/app/decorators';
 import { SendRefresh } from '@shared/app/utils';
 import { ApplyValidationBody, SetPipeGroups, SetScopeSerializer, SetSerializerGroups } from '@shared/classValidator/decorators';
 import { ContextGroupsEnum } from '@shared/classValidator/enums';
+import { Email } from '@shared/classValidator/transforms';
 import { Serializer } from '@shared/classValidator/utils';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -42,7 +43,7 @@ import {
     DecodeToken, LocalAuth,
     Protected
 } from '../decorators';
-import { ForgotPasswordDto, LoginDto, OTPLoginDto, RegisterDto } from '../dtos';
+import { ForgotPasswordDto, LoginDto, OTPForgotPasswordDto, OTPLoginDto, RegisterDto } from '../dtos';
 import { AuthSerializer } from '../serializers';
 dayjs.extend(utc);
 
@@ -64,7 +65,9 @@ export class AuthController
         private readonly refreshTokenUseCase: RefreshTokenUseCase,
         private readonly verifyAccountUseCase: VerifyAccountUseCase,
         private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
-        private readonly changeForgotPasswordUseCase: ChangeForgotPasswordUseCase
+        private readonly changeForgotPasswordUseCase: ChangeForgotPasswordUseCase,
+        private readonly resendVerifyAccountUseCase: ResendVerifyAccountUseCase,
+        private readonly otpForgotPasswordOTPUseCase: OTPForgotPasswordUseCase
     )
     {}
 
@@ -244,6 +247,16 @@ export class AuthController
         return await this.forgotPasswordUseCase.handle({ dto });
     }
 
+    @Post('otp-forgot-password')
+    @HttpCode(HttpStatus.CREATED)
+    @SetPipeGroups(ContextGroupsEnum.APP)
+    async forgotPasswordOTP(
+      @Body() dto: OTPForgotPasswordDto
+    )
+    {
+        return await this.otpForgotPasswordOTPUseCase.handle({ dto });
+    }
+
     @Patch('change-password')
     @HttpCode(HttpStatus.CREATED)
     async changePassword(
@@ -254,6 +267,17 @@ export class AuthController
         return await this.changeForgotPasswordUseCase.handle({
             dto,
             confirmationToken
+        });
+    }
+
+    @Post('verify-account/:email')
+    @HttpCode(HttpStatus.CREATED)
+    async resendVerifyAccount(
+      @Email() email: string
+    )
+    {
+        return await this.resendVerifyAccountUseCase.handle({
+            email
         });
     }
 }

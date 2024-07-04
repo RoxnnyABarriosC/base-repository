@@ -19,8 +19,6 @@ export const Serializer = async <S extends NewConstructor<BaseSerializer>, D = a
 {
     const valid = !!data;
 
-    Logger.log(`Data to serialize valid: ${valid}`, LoggerContext.SERIALIZER);
-
     if (serializer)
     {
         return valid ? SerializerMap(data, serializer) : returnNull ? null : undefined;

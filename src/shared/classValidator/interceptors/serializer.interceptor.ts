@@ -2,7 +2,7 @@ import {
     CallHandler,
     ClassSerializerInterceptor,
     ExecutionContext,
-    Injectable,
+    Injectable, Logger,
     NestInterceptor
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -15,6 +15,8 @@ import { SerializerGroupsEnum } from '../enums';
 @Injectable()
 export class SerializerInterceptor implements NestInterceptor
 {
+    private readonly logger = new Logger(SerializerInterceptor.name);
+
     constructor(
         private readonly reflector: Reflector,
         private readonly configService: ConfigService
@@ -40,6 +42,8 @@ export class SerializerInterceptor implements NestInterceptor
                 groups = _groups;
             }
         }
+
+        this.logger.log(groups);
 
         const serializer = new ClassSerializerInterceptor(this.reflector, {
             ... this.configService.getOrThrow('serializer'),

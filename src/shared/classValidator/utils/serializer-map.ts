@@ -18,11 +18,8 @@ export const SerializerMap = async <S extends NewConstructor<BaseSerializer>, D 
 
     if (!serializer)
     {
-        Logger.log('Returning plain data...', LoggerContext.SERIALIZER);
         return data;
     }
-
-    Logger.log('Serializing the data...', LoggerContext.SERIALIZER);
 
     if (typeof data[Symbol.iterator] === 'function')
     {
@@ -39,8 +36,6 @@ export const SerializerMap = async <S extends NewConstructor<BaseSerializer>, D 
         await _serializer.build(data);
         result = _serializer;
     }
-
-    Logger.log('Returning serialized data...', LoggerContext.SERIALIZER);
 
     return result;
 };

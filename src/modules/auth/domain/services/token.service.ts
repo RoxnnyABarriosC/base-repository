@@ -1,8 +1,10 @@
+import { ExpiredTokenException } from '@modules/auth/domain/exceptions/expired-token.exception';
 import { TokenRepository } from '@modules/auth/infrastructure/repositories';
 import { User } from '@modules/user/domain/entities';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, TokenExpiredError } from '@nestjs/jwt';
+import { ForbiddenCustomException } from '@shared/app/exceptions';
 import { GetMilliseconds } from '@shared/utils';
 import { IJwtConfig } from '@src/config';
 import dayjs from 'dayjs';
@@ -143,6 +145,23 @@ export class TokenService
         catch (e)
         {
             throw new InvalidConfirmationTokenException();
+        }
+    }
+
+    async checkExpire(token: string): Promise<IDecodeToken>
+    {
+        try
+        {
+            return await this.jwtService.verifyAsync(token);
+        }
+        catch (e)
+        {
+            if (!(e instanceof TokenExpiredError))
+            {
+                throw new ForbiddenCustomException();
+            }
+
+            throw new ExpiredTokenException();
         }
     }
 

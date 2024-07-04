@@ -20,6 +20,6 @@ export class RestoreUserUseCase
     {
         this.logger.log('Restoring user...');
 
-        return await this.repository.restore(id);
+        return await this.repository.restore({ id });
     }
 }
