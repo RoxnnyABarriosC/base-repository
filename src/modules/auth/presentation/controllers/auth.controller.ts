@@ -3,11 +3,12 @@ import {
     ChangeForgotPasswordUseCase,
     ForgotPasswordUseCase,
     LoginUseCase,
-    LogoutUseCase, OTPForgotPasswordUseCase,
+    LogoutUseCase, OTPForgotPasswordUseCase, OTPRegisterUseCase,
     RefreshTokenUseCase,
     RegisterUseCase, ResendVerifyAccountUseCase,
     VerifyAccountUseCase
 } from '@modules/auth/domain/useCases';
+import { OTPRegisterDto } from '@modules/auth/presentation/dtos/otp-register.dto';
 import { IMyStore } from '@modules/common/store';
 import { RoleSerializerGroupsEnum } from '@modules/role/presentation/enums';
 import { OTPAuth } from '@modules/securityConfig/presentation/decorators';
@@ -67,7 +68,8 @@ export class AuthController
         private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
         private readonly changeForgotPasswordUseCase: ChangeForgotPasswordUseCase,
         private readonly resendVerifyAccountUseCase: ResendVerifyAccountUseCase,
-        private readonly otpForgotPasswordOTPUseCase: OTPForgotPasswordUseCase
+        private readonly otpForgotPasswordOTPUseCase: OTPForgotPasswordUseCase,
+        private readonly otpRegisterUseCase: OTPRegisterUseCase
     )
     {}
 
@@ -170,6 +172,29 @@ export class AuthController
     async register(@Body() dto: RegisterDto)
     {
         return await this.registerUseCase.handle({ dto });
+    }
+
+    @Post('otp-register')
+    @HttpCode(HttpStatus.CREATED)
+    @SetPipeGroups(ContextGroupsEnum.APP)
+    async otpRegister(
+      @Res({ passthrough: true }) res: FastifyReply,
+      @Body() dto: OTPRegisterDto,
+      @UserAgent() agent: Agent
+    )
+    {
+        const data = await this.otpRegisterUseCase.handle({ dto });
+
+        SendRefresh({
+            res,
+            agent,
+            configService: this.configService,
+            store: this.store,
+            refreshHash: data.RefreshHash,
+            expiresRefresh: data.ExpiresRefresh
+        });
+
+        return (await Serializer(data, AuthSerializer)) as typeof AuthSerializer;
     }
 
     @Post('logout')

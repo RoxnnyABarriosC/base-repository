@@ -1,8 +1,17 @@
-import { ChangeMyPasswordUseCase, DeleteAccountUseCase, SetMainPictureOrBannerUseCase, UnsetMainPictureOrBannerUseCase, UpdateMeUseCase, UpdateOnBoardingUseCase } from '@modules/auth/domain/useCases';
+import {
+    ChangeMyEmailOrPhoneUseCase,
+    ChangeMyPasswordUseCase,
+    DeleteAccountUseCase,
+    SetMainPictureOrBannerUseCase,
+    UnsetMainPictureOrBannerUseCase,
+    UpdateMeUseCase,
+    UpdateOnBoardingUseCase
+} from '@modules/auth/domain/useCases';
 import { MimeTypeEnum } from '@modules/common/file/domain/enums';
 import { UploadFile, UploadedFile } from '@modules/common/file/presentation/decorators';
 import { FileSerializer } from '@modules/common/file/presentation/serializers';
 import { RoleSerializerGroupsEnum } from '@modules/role/presentation/enums';
+import { OTPTargetConfigEnum } from '@modules/securityConfig/domain/enums';
 import { SCOPE } from '@modules/user/domain/constants';
 import { User } from '@modules/user/domain/entities';
 import { PropertyFileEnum } from '@modules/user/domain/enums';
@@ -18,7 +27,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { MulterFile } from 'fastify-file-interceptor';
 import { AuthUser, Protected } from '../decorators';
-import { ChangeMyPasswordDto, MeDto } from '../dtos';
+import { ChangeMyEmailDto, ChangeMyPasswordDto, ChangeMyPhoneDto, MeDto } from '../dtos';
 import { AuthUserSerializer } from '../serializers';
 
 dayjs.extend(utc);
@@ -39,7 +48,9 @@ export class MeController
         private readonly unsetMainPictureOrBannerUseCase: UnsetMainPictureOrBannerUseCase,
         private readonly updateOnBoardingUseCase: UpdateOnBoardingUseCase,
         private readonly changeMyPasswordUseCase: ChangeMyPasswordUseCase,
-        private readonly deleteAccountUseCase: DeleteAccountUseCase
+        private readonly deleteAccountUseCase: DeleteAccountUseCase,
+        private readonly changeMyEmailOrPhoneUseCase: ChangeMyEmailOrPhoneUseCase
+
     )
     {}
 
@@ -156,13 +167,33 @@ export class MeController
     }
 
     @Patch('me/change-password')
-    @HttpCode(HttpStatus.CREATED)
+    @HttpCode(HttpStatus.OK)
     async changeMyPassword(
       @Body() dto: ChangeMyPasswordDto,
       @AuthUser() authUser: User
     )
     {
         return await this.changeMyPasswordUseCase.handle({ dto, authUser });
+    }
+
+    @Patch('me/change-email')
+    @HttpCode(HttpStatus.OK)
+    async changeMyEmail(
+      @Body() dto: ChangeMyEmailDto,
+      @AuthUser() authUser: User
+    )
+    {
+        return await this.changeMyEmailOrPhoneUseCase.handle({ dto, authUser, target: OTPTargetConfigEnum.EMAIL });
+    }
+
+    @Patch('me/change-phone')
+    @HttpCode(HttpStatus.OK)
+    async changeMyPhone(
+      @Body() dto: ChangeMyPhoneDto,
+      @AuthUser() authUser: User
+    )
+    {
+        return await this.changeMyEmailOrPhoneUseCase.handle({ dto, authUser, target: OTPTargetConfigEnum.PHONE });
     }
 
     @Delete('me')

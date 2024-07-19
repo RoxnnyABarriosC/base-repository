@@ -14,3 +14,5 @@ export * from './oauth-login.useCase';
 export * from './delete-account.useCase';
 export * from './resend-verify-account.useCase';
 export * from './otp-forgot-password.useCase';
+export * from './otp-register.useCase';
+export * from './change-email-or-phone.useCase';

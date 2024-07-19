@@ -7,7 +7,7 @@ import { IsDateString, IsEmail, IsEnum, IsMobilePhone, IsString, Length } from '
 const {
     firstName,
     lastName,
-    emailDomainLength,
+    // emailDomainLength,
     birthday
 } = configuration().validatorProperties;
 
@@ -30,20 +30,20 @@ export class MeDto
     @ValidateIfPropertyExists()
     public readonly lastName: string;
 
-    @IsEmailFromDomain(emailDomains.admin, {
-        groups: [ContextGroupsEnum.ADMIN]
-    })
-    @IsNotEmailFromDomain(emailDomains.admin, {
-        groups: [ContextGroupsEnum.APP]
-    })
-    @EmailDomainLength(emailDomainLength)
-    @IsEmail()
-    @ValidateIfPropertyExists()
-    public readonly email: string;
+    // @IsEmailFromDomain(emailDomains.admin, {
+    //     groups: [ContextGroupsEnum.ADMIN]
+    // })
+    // @IsNotEmailFromDomain(emailDomains.admin, {
+    //     groups: [ContextGroupsEnum.APP]
+    // })
+    // @EmailDomainLength(emailDomainLength)
+    // @IsEmail()
+    // @ValidateIfPropertyExists()
+    // public readonly email: string;
 
-    @IsMobilePhone()
-    @ValidateIfPropertyExists()
-    public readonly phone: string;
+    // @IsMobilePhone()
+    // @ValidateIfPropertyExists()
+    // public readonly phone: string;
 
     @IsEnum(GenderEnum)
     @ValidateIfPropertyExists()

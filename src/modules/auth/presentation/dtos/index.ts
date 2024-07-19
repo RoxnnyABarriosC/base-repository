@@ -5,3 +5,6 @@ export * from './me.dto';
 export * from './forgot-password.dto';
 export * from './change-my-password.dto';
 export * from './otp-forgot-password.dto';
+export * from './otp-register.dto';
+export * from './change-my-email.dto';
+export * from './change-my-phone.dto';
